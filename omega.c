@@ -222,7 +222,7 @@ double get_nu(const double x[], const double prim[]){
   double nu = viscVal;
   //alpha viscosity
   if (viscChoice == 1){
-    double c2 = gamma_law*prim[PPP]/prim[RHO];
+    double c2 = get_cs2(x);
     nu *= c2/get_height_om(x);
   }
   //generic power law w.r.t. r=0
