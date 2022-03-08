@@ -233,6 +233,7 @@ double get_nu(const double x[], const double prim[]){
   if (viscChoice == 3){
     double cosp, sinp, px, py, script_r, powsum;
     int pi;
+    powsum = 0.0;
     double gx = x[0]*cos(x[1]);
     double gy = x[0]*sin(x[1]);
     for (pi=0; pi<Npl; pi++){
