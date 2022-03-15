@@ -265,8 +265,8 @@ double get_nu(const double x[], const double prim[]){
     py = thePlanets[1].r*sinp;
     r2 = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
 
-    nu *= sqrt(cs2)/Mach;
-    nu *= r1*r2*pow(pow(r1, viscPar) + pow(r2, viscPar), -1.0/viscPar)
+    nu *= sqrt(c2)/Mach;
+    nu *= r1*r2*pow(pow(r1, viscPar) + pow(r2, viscPar), -1.0/viscPar);
   }
 
   return nu;
