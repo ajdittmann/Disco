@@ -246,6 +246,28 @@ double get_nu(const double x[], const double prim[]){
     }
     nu *= powsum;
   }
+  if (viscChoice == 4){		//Siwek+ 2022 `alpha' viscosity for viscPar=5.0
+    double cosp, sinp, px, py, r1, r2;
+    double gx = x[0]*cos(x[1]);
+    double gy = x[0]*sin(x[1]);
+
+    double c2 = get_cs2(x);
+
+    cosp = cos(thePlanets[0].phi);
+    sinp = sin(thePlanets[0].phi);
+    px = thePlanets[0].r*cosp;
+    py = thePlanets[0].r*sinp;
+    r1 = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
+
+    cosp = cos(thePlanets[1].phi);
+    sinp = sin(thePlanets[1].phi);
+    px = thePlanets[1].r*cosp;
+    py = thePlanets[1].r*sinp;
+    r2 = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
+
+    nu *= sqrt(cs2)/Mach;
+    nu *= r1*r2*pow(pow(r1, viscPar) + pow(r2, viscPar), -1.0/viscPar)
+  }
 
   return nu;
   //return nu*pow(x[0], -1.0);
