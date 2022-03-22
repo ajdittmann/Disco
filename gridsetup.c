@@ -120,7 +120,7 @@ void setupGrid( struct domain * theDomain ){
       double trmin = 30.0;
       double rtry = rfoc;
       double err = 10.0;
-      double tol = 1.e-6;
+      double tol = 1.e-3;
 
       double numer;
       double scale;
@@ -129,7 +129,7 @@ void setupGrid( struct domain * theDomain ){
       double drsum;
       double nrsum;
 
-      double brmax = Rmax-1.0; //initial limits for bisection
+      double brmax = rfoc*2.0; //initial limits for bisection
       double brmin = rfoc/3.0;
 
       while( err > tol ) {
