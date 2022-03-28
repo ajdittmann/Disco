@@ -114,83 +114,59 @@ void setupGrid( struct domain * theDomain ){
       double dx = 1.0/Num_R;
 
       double amp = 1.0;
-      double sigma = 0.3;
 
       double rfoc = 1.0/(1.0+q_plan);
-      double trmin = 30.0;
-      double rtry = rfoc;
+      double sigma = rfoc*pow(q_plan/3, 1./3.);
       double err = 10.0;
-      double tol = 1.e-3;
+      double tol = 1.e-12;
 
       double numer;
       double scale;
-      double mindr;
       double ndr;
-      double drsum;
       double nrsum;
 
-      double brmax = rfoc*2.0; //initial limits for bisection
-      double brmin = rfoc/3.0;
+      double fmin = 0.01;
+      double fmax = 100.0;
+      double factor = 1.0;
 
       while( err > tol ) {
-         trmin = 30.0;
-         mindr = 30.0;
-         drsum = Rmin;
          nrsum = Rmin;
          for (i=0; i<Num_R; i++){
             double x = i/ (double) Num_R;
-            double ro = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-            numer = 1.80 - 0.80*ro;
+            numer = 1.60 - 0.60*( (nrsum - Rmin)/(R0 - Rmin));
             if (numer < 1.0) numer = 1.0;
-            scale = numer/(1.0 + amp*exp(-pow((ro-rtry)/sigma, 2.0)));
-            ndr = scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
-            drsum += ndr;
-         }
-         for (i=0; i<Num_R; i++){
-            double x = i/ (double) Num_R;
-            double ro = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-            numer = 1.80 - 0.80*ro;
-            if (numer < 1.0) numer = 1.0;
-            scale = numer/(1.0 + amp*exp(-pow((ro-rtry)/sigma, 2.0)));
-            ndr = Rmax*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) )/drsum;
+            scale = numer/(1.0 + amp*exp(-pow((nrsum-rfoc)/sigma, 2.0)));
+            ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
             nrsum += ndr;
-
-            if (ndr<mindr){
-               mindr = ndr;
-               trmin = nrsum;
-            }
          }
-         err = fabs( (trmin-rfoc)/rfoc );
-         if ( trmin < rfoc ) {
-            brmin = rtry;
-            rtry = 0.5*(brmin + brmax);
+         err = fabs(nrsum - Rmax)/Rmax;
+         if ( nrsum > Rmax ) {
+            fmax = factor;
+            factor = 0.5*(factor + fmin);
          }
          else {
-            brmax = rtry;
-            rtry = 0.5*(brmax + brmin);
+            fmin = factor;
+            factor = 0.5*(factor + fmax);
          }
-         //now know the correct radius to scale at, rtry.
-         double rsum = 0.0; // Figure out the starting radius for this rank
-         for( i=0; i < N0r; i++ ) {
-            double x = (i)/ (double) Num_R;
-            double ro = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-            numer = 1.80 - 0.80*ro;
-            if (numer < 1.0) numer = 1.0;
-            scale = numer/(1.0 + amp*exp(-pow((ro-rtry)/sigma, 2.0)));
-            ndr = Rmax*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) )/drsum;
-            rsum += ndr;
-         }
-         theDomain->r_jph[-1] = rsum;
-         for( j=0 ; j<Nr ; ++j ){
-            double x = (N0r + j ) / (double) Num_R;
-            double ro = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-            numer = 1.80 - 0.80*ro;
-            if (numer < 1.0) numer = 1.0;
-            scale = numer/(1.0 + amp*exp(-pow((ro-rtry)/sigma, 2.0)));
-            ndr = Rmax*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) )/drsum;
-            rsum += ndr;
-            theDomain->r_jph[j]  = rsum;
-         }
+      }
+      double rsum = Rmin; // Figure out the starting radius for this rank
+      for( i=0; i < N0r; i++ ) {
+         double x = i/ (double) Num_R;
+         numer = 1.60 - 0.60*( (rsum - Rmin)/(R0 - Rmin));
+         if (numer < 1.0) numer = 1.0;
+         scale = numer/(1.0 + amp*exp(-pow((rsum-rfoc)/sigma, 2.0)));
+         ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
+         rsum += ndr;
+      }
+      theDomain->r_jph[-1] = rsum;
+      for( j=0 ; j<Nr ; ++j ){
+         double x = (N0r + j)/ (double) Num_R;
+         numer = 1.60 - 0.60*( (rsum - Rmin)/(R0 - Rmin));
+         if (numer < 1.0) numer = 1.0;
+         scale = numer/(1.0 + amp*exp(-pow((rsum-rfoc)/sigma, 2.0)));
+         ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
+         rsum += ndr;
+         theDomain->r_jph[j]  = rsum;
       }
    }
 
