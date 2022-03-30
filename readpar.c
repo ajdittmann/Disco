@@ -84,6 +84,11 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Log_Zoning"            , VAR_INT  , &(theList->LogZoning)       );
          err += readvar( pfile , "R_Periodic"            , VAR_INT  , &(theList->R_Periodic)      );
          err += readvar( pfile , "Z_Periodic"            , VAR_INT  , &(theList->Z_Periodic)      );
+         err += readvar(pfile, "Focus_Type", VAR_INT , &(theList->focusType));
+         err += readvar(pfile, "Focus_Par1", VAR_DOUB, &(theList->focusPar1));
+         err += readvar(pfile, "Focus_Par2", VAR_DOUB, &(theList->focusPar2));
+         err += readvar(pfile, "Focus_Par3", VAR_DOUB, &(theList->focusPar3));
+         err += readvar(pfile, "Focus_Par4", VAR_DOUB, &(theList->focusPar4));
          err += readvar( pfile , "NoBC_Rmin"             , VAR_INT , &(theList->NoBC_Rmin)       );
          err += readvar( pfile , "NoBC_Rmax"             , VAR_INT , &(theList->NoBC_Rmax)       );
          err += readvar( pfile , "NoBC_Zmin"             , VAR_INT , &(theList->NoBC_Zmin)       );
