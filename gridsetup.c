@@ -28,7 +28,6 @@ void setupGrid( struct domain * theDomain ){
    double Zmin = theDomain->theParList.zmin;
    double Zmax = theDomain->theParList.zmax;
    double Pmax = theDomain->theParList.phimax;
-   double q_plan = theDomain->theParList.Mass_Ratio;
 
    int N0r = getN0( dim_rank[0]   , dim_size[0] , Num_R );
    int N1r = getN0( dim_rank[0]+1 , dim_size[0] , Num_R );
@@ -95,78 +94,25 @@ void setupGrid( struct domain * theDomain ){
    ++(theDomain->r_jph);
    ++(theDomain->z_kph);
 
-   int j,k,i;
+   int j,k;
 
    double R0 = theDomain->theParList.LogRadius;
-   if ( LogZoning <= 2){
-      for( j=-1 ; j<Nr ; ++j ){
-         double x = (N0r + j + 1) / (double) Num_R;
-         if( LogZoning == 0 ){
-            theDomain->r_jph[j] = Rmin + x*(Rmax-Rmin);
-         }else if( LogZoning == 1 ){
-            theDomain->r_jph[j] = Rmin*pow(Rmax/Rmin,x);
-         }else{
-            theDomain->r_jph[j] = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-         }
-      }
-   }
-   else{
-      double dx = 1.0/Num_R;
-
-      double amp = 1.0;
-
-      double rfoc = 1.0/(1.0+q_plan);
-      double sigma = rfoc*pow(q_plan/3, 1./3.);
-      double err = 10.0;
-      double tol = 1.e-12;
-
-      double numer;
-      double scale;
-      double ndr;
-      double nrsum;
-
-      double fmin = 0.01;
-      double fmax = 100.0;
-      double factor = 1.0;
-
-      while( err > tol ) {
-         nrsum = Rmin;
-         for (i=0; i<Num_R; i++){
-            double x = i/ (double) Num_R;
-            numer = 1.60 - 0.60*( (nrsum - Rmin)/(R0 - Rmin));
-            if (numer < 1.0) numer = 1.0;
-            scale = numer/(1.0 + amp*exp(-pow((nrsum-rfoc)/sigma, 2.0)));
-            ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
-            nrsum += ndr;
-         }
-         err = fabs(nrsum - Rmax)/Rmax;
-         if ( nrsum > Rmax ) {
-            fmax = factor;
-            factor = 0.5*(factor + fmin);
-         }
-         else {
-            fmin = factor;
-            factor = 0.5*(factor + fmax);
-         }
-      }
-      double rsum = Rmin; // Figure out the starting radius for this rank
-      for( i=0; i < N0r; i++ ) {
-         double x = i/ (double) Num_R;
-         numer = 1.60 - 0.60*( (rsum - Rmin)/(R0 - Rmin));
-         if (numer < 1.0) numer = 1.0;
-         scale = numer/(1.0 + amp*exp(-pow((rsum-rfoc)/sigma, 2.0)));
-         ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
-         rsum += ndr;
-      }
-      theDomain->r_jph[-1] = rsum;
-      for( j=0 ; j<Nr ; ++j ){
-         double x = (N0r + j)/ (double) Num_R;
-         numer = 1.60 - 0.60*( (rsum - Rmin)/(R0 - Rmin));
-         if (numer < 1.0) numer = 1.0;
-         scale = numer/(1.0 + amp*exp(-pow((rsum-rfoc)/sigma, 2.0)));
-         ndr = factor*scale*( (R0-Rmin)*dx + R0*exp( log(1.0 - pow(Rmax/R0,-dx)) + x*log(Rmax/R0)) );
-         rsum += ndr;
-         theDomain->r_jph[j]  = rsum;
+   for( j=-1 ; j<Nr ; ++j ){
+      double x = (N0r + j + 1) / (double) Num_R;
+      if( LogZoning == 0 ){
+         theDomain->r_jph[j] = Rmin + x*(Rmax-Rmin);
+      }else if( LogZoning == 1 ){
+         theDomain->r_jph[j] = Rmin*pow(Rmax/Rmin,x);
+      }else if( LogZoning == 2){
+         theDomain->r_jph[j] = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
+      }else{
+         double x1 = 1.0/(1.0 - R0*log(R0/Rmax)/(R0-Rmin));
+         double b = exp((1-Rmin/R0)/x1);
+         double a = log(b)*Rmax/b;
+         double c = a*pow(b,x1);
+         double val = c*x + Rmin;
+         if (x > x1) val = a*pow(b, x)/log(b);
+         theDomain->r_jph[j] = val;
       }
    }
 
