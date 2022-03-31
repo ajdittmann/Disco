@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -162,8 +161,21 @@ void setupGrid( struct domain * theDomain ){
          }
          double dx = (1/factor)*dr/drxi;
          double a = 2*(1-factor)*dr/factor;
-         double zval = sStep(0.0, xi, dx) + sStep(1.0, xi, dx)*x - sStep(x, xi, dx);
-         theDomain->r_jph[j] += a*zval;
+
+         double rshift = 0.0;
+         double err = 10.0;
+         double f;
+         while (err > 1.e-10) {
+            f = pow(cosh(rshift), -2.0) - pow(cosh(rshift - xi/dx), -2.0)*(1.0 - xi) - pow(cosh(rshift  + (1-xi)/dx), -2.0)*xi;
+            f = (tanh(rshift) - tanh(rshift - xi/dx)*(1-xi) - tanh(rshift + (1-xi)/dx)*xi )/f;
+            err = fabs(f);
+            rshift -= f;
+         }
+         double xs = xi  - shift*rshift*dx;
+         double H = 0.5*(tanh((x-xi)/dx)+1);
+         double H0 = 0.5*(tanh((-xi)/dx)+1);
+         double H1 = 0.5*(tanh((1-xi)/dx)+1);
+         theDomain->r_jph[j] += a*(H1*x + H0*(1-x) - H);
       }
    }
 
@@ -206,7 +218,6 @@ double LambertW(const double z) {
    int i;
    const double eps=4.0e-16, em1=0.36787944117144232;
    double p,e,t,w;
-   if (0.0 == z) return 0.0;
    if (z < em1) {
       // Taylor series initial guess if within radius of convergence
       w = z - z*z + 1.5*pow(z,3) - 8*pow(z, 4)/3 + 125*pow(z,5)/24;
@@ -225,10 +236,6 @@ double LambertW(const double z) {
       w-=t;
       if (fabs(t)<eps*(1.0+fabs(w))) return w;
    }
+   return w;
 }
 
-
-
-double sStep(double x, double x0, double dx){
-  return 0.5*(1.0 + tanh( (x-x0)/dx) );
-}
