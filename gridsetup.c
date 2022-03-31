@@ -172,9 +172,9 @@ void setupGrid( struct domain * theDomain ){
             rshift -= f;
          }
          double xs = xi  - shift*rshift*dx;
-         double H = 0.5*(tanh((x-xi)/dx)+1);
-         double H0 = 0.5*(tanh((-xi)/dx)+1);
-         double H1 = 0.5*(tanh((1-xi)/dx)+1);
+         double H = 0.5*(tanh((x-xs)/dx)+1);
+         double H0 = 0.5*(tanh((-xs)/dx)+1);
+         double H1 = 0.5*(tanh((1-xs)/dx)+1);
          theDomain->r_jph[j] += a*(H1*x + H0*(1-x) - H);
       }
    }
