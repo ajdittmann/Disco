@@ -239,7 +239,7 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV, dou
             double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
             arg = arg/tvisc;
           }
-          else if(sinkRateType == 1){  // sink rate depends on viscous locally
+          else if(sinkRateType == 1){  // sink rate depends on viscous time locally
             double nu = get_nu(x, prim);
             double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
             arg = arg/tvisc;
