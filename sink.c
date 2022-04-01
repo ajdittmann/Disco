@@ -205,8 +205,8 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV, dou
           if(sinkShapeType == 4){	//constant globally - use with care
             arg = 1.0;
           }
-          if(sinkShapeType == 3){	//constant if within sink radius
-            if (mag <= sinkPar4) arg = 1.0;
+          else if(sinkShapeType == 3){	//constant if within sink radius
+            if (mag <= sinkPar3) arg = 1.0;
           }
           else if(sinkShapeType == 2){	//exponential
             eps = sinkPar3;
@@ -228,7 +228,7 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV, dou
           }
           //the part that depends on sink rate profile
           double rate = 0.0;
-          arg = sinkPar1*thePlanets[pi].omega; //constant
+          rate = sinkPar1*thePlanets[pi].omega; //constant
           if(sinkRateType == 2){  // sink rate depends on viscous time at sink radius
             double xnu[3];
             double rnu = thePlanets[pi].r + sinkPar3;
@@ -237,12 +237,12 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV, dou
             xnu[2] = 0.0;
             double nu = get_nu(xnu, prim);
             double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
-            arg = arg/tvisc;
+            rate = rate/tvisc;
           }
           else if(sinkRateType == 1){  // sink rate depends on viscous time locally
             double nu = get_nu(x, prim);
             double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
-            arg = arg/tvisc;
+            rate = rate/tvisc;
           }
 
           surfdiff = rho*rate*arg;
