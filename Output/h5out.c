@@ -330,8 +330,11 @@ void writePars(struct domain *theDomain, char filename[])
     dumpVal(filename, "Pars", "Focus_Par4", &(pars->focusPar4),
                     H5T_NATIVE_DOUBLE);
 
-    dumpVal(filename, "Pars", "Sink_Type", &(pars->sinkType),
+    dumpVal(filename, "Pars", "Sink_Rate_Type", &(pars->sinkRateType),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Sink_Shape_Type", &(pars->sinkShapeType),
+                    H5T_NATIVE_INT);
+
     dumpVal(filename, "Pars", "Sink_Par1", &(pars->sinkPar1),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Sink_Par2", &(pars->sinkPar2),
