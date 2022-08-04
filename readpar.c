@@ -88,6 +88,11 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Log_Zoning"            , VAR_INT  , &(theList->LogZoning)       );
          err += readvar( pfile , "R_Periodic"            , VAR_INT  , &(theList->R_Periodic)      );
          err += readvar( pfile , "Z_Periodic"            , VAR_INT  , &(theList->Z_Periodic)      );
+         err += readvar(pfile, "Focus_Type", VAR_INT , &(theList->focusType));
+         err += readvar(pfile, "Focus_Par1", VAR_DOUB, &(theList->focusPar1));
+         err += readvar(pfile, "Focus_Par2", VAR_DOUB, &(theList->focusPar2));
+         err += readvar(pfile, "Focus_Par3", VAR_DOUB, &(theList->focusPar3));
+         err += readvar(pfile, "Focus_Par4", VAR_DOUB, &(theList->focusPar4));
          err += readvar( pfile , "NoBC_Rmin"             , VAR_INT , &(theList->NoBC_Rmin)       );
          err += readvar( pfile , "NoBC_Rmax"             , VAR_INT , &(theList->NoBC_Rmax)       );
          err += readvar( pfile , "NoBC_Zmin"             , VAR_INT , &(theList->NoBC_Zmin)       );
@@ -150,7 +155,8 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Noise_Type" , VAR_INT  , &(theList->noiseType));
          err += readvar( pfile , "Noise_Abs" , VAR_DOUB  , &(theList->noiseAbs));
          err += readvar( pfile , "Noise_Rel" , VAR_DOUB  , &(theList->noiseRel));
-         err += readvar(pfile, "Sink_Type", VAR_INT , &(theList->sinkType));
+         err += readvar(pfile, "Sink_Shape_Type", VAR_INT , &(theList->sinkShapeType));
+         err += readvar(pfile, "Sink_Rate_Type", VAR_INT , &(theList->sinkRateType));
          err += readvar(pfile, "Sink_Number", VAR_INT , &(theList->sinkNumber));
          err += readvar(pfile, "Sink_Par1", VAR_DOUB, &(theList->sinkPar1));
          err += readvar(pfile, "Sink_Par2", VAR_DOUB, &(theList->sinkPar2));

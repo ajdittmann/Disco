@@ -73,6 +73,13 @@ struct param_list{
    double zmin, zmax;
    double phimax;
 
+   int focusType;
+   double focusPar1;
+   double focusPar2;
+   double focusPar3;
+   double focusPar4;
+
+
    int NoBC_Rmin, NoBC_Rmax, NoBC_Zmin, NoBC_Zmax;
 
    int LogZoning, R_Periodic, Z_Periodic;
@@ -133,7 +140,8 @@ struct param_list{
    double noiseAbs;
    double noiseRel;
 
-   int sinkType;
+   int sinkShapeType;
+   int sinkRateType;
    int sinkNumber;
    double sinkPar1;
    double sinkPar2;

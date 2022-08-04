@@ -3,7 +3,8 @@
 #include "geometry.h"
 #include "planet.h"
 
-static int sinkType = 0;
+static int sinkRateType = 0;
+static int sinkShapeType = 0;
 static int sinkNumber = 0;
 static double sinkPar1 = 0.0;
 static double sinkPar2 = 0.0;
@@ -50,10 +51,12 @@ static double dampLenLower = 0.0;
 
 void initial( double * , double * );
 void prim2cons( double * , double * , double * , double );
+double get_nu( const double *, const double *);
 
 void setSinkParams(struct domain *theDomain)
 {
-    sinkType = theDomain->theParList.sinkType;
+    sinkShapeType = theDomain->theParList.sinkShapeType;
+    sinkRateType = theDomain->theParList.sinkRateType;
     sinkNumber = theDomain->theParList.sinkNumber;
     sinkPar1 = theDomain->theParList.sinkPar1;
     sinkPar2 = theDomain->theParList.sinkPar2;
@@ -139,7 +142,7 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
 
 
 
-    if(sinkType != 0){
+    if(sinkShapeType != 0){
 
       double x[3];
       get_centroid_arr(xp, xm, x);
@@ -159,8 +162,8 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
       double gx = r*cosg;
       double gy = r*sing;
 
-      double px, py, dx, dy, mag, eps, epsfactor;
-      double rate, surfdiff;
+      double px, py, dx, dy, mag, eps, epsfactor, mag2;
+      double surfdiff;
       int pi;
       int numSinks = Npl;
 
@@ -175,15 +178,16 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
 
           dx = gx-px;
           dy = gy-py;
-          mag = dx*dx + dy*dy;
-          mag = sqrt(mag);
+          mag2 = dx*dx + dy*dy;
+          mag = sqrt(mag2);
 
           //the part that depends on sinkType
           double f_acc = 0.0;
           if(sinkType == 3){	//constant
             if (mag <= sinkPar3) f_acc = 1.0;
+
           }
-          else if(sinkType == 2){	//exponential
+          else if(sinkShapeType == 2){	//exponential
             eps = sinkPar3;
             eps = pow(eps, sinkPar4);
             epsfactor = sinkPar5;
@@ -191,7 +195,7 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
             double magPow = pow(mag, sinkPar4);
             f_acc = exp(-magPow/(eps*epsfactor));
           }
-          else if(sinkType == 1){	//polynomial, compact support
+          else if(sinkShapeType == 1){	//polynomial, compact support
             eps = sinkPar3;
             double pwrM = sinkPar4;
             double pwrN = sinkPar5;
@@ -200,6 +204,24 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
             if (mag >= eps){
               f_acc = 0.0;
             }
+          }
+          //the part that depends on sink rate profile
+          double rate = 0.0;
+          rate = sinkPar1*thePlanets[pi].omega; //constant
+          if(sinkRateType == 2){  // sink rate depends on viscous time at sink radius
+            double xnu[3];
+            double rnu = thePlanets[pi].r + sinkPar3;
+            xnu[0] = rnu;
+            xnu[1] = thePlanets[pi].phi;
+            xnu[2] = 0.0;
+            double nu = get_nu(xnu, prim);
+            double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
+            rate = rate/tvisc;
+          }
+          else if(sinkRateType == 1){  // sink rate depends on viscous time locally
+            double nu = get_nu(x, prim);
+            double tvisc = 2*(mag2 + thePlanets[pi].eps*thePlanets[pi].eps)/(nu*3.0);
+            rate = rate/tvisc;
           }
 
           rate = sinkPar1*thePlanets[pi].omega;
@@ -246,6 +268,7 @@ void sink_src(double *prim, double *cons, double *xp, double *xm, double dV,
           cons[LLL] -= r*vg_p*dM;
           cons[SZZ] -= vz*dM;
           double v2 = vxg*vxg + vyg*vyg;
+
           cons[TAU] -= dM*(specenth + 0.5*v2
                     - 0.5*((vxg-vxg1)*(vxg-vxg1) + (vyg-vyg1)*(vyg-vyg1)));
 

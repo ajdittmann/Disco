@@ -442,7 +442,9 @@ void possiblyOutput( struct domain * theDomain , int override ){
          output( theDomain , filename );
       }else{
          if(theDomain->rank==0) printf("Creating Final Checkpoint...\n");
-         output( theDomain , "output" );
+         sprintf(filename,"checkpoint_%04d",theDomain->N_chk);
+         //output( theDomain , "output" );
+         output( theDomain , filename );
       }
    }
    n0 = (int)( t*Nsnp/t_fin );

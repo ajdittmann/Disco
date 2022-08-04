@@ -221,7 +221,7 @@ double get_nu(const double x[], const double prim[]){
   double nu = viscVal;
   //alpha viscosity
   if (viscChoice == 1){
-    double c2 = gamma_law*prim[PPP]/prim[RHO];
+    double c2 = get_cs2(x);
     nu *= c2/get_height_om(x);
   }
   //generic power law w.r.t. r=0
@@ -232,6 +232,7 @@ double get_nu(const double x[], const double prim[]){
   if (viscChoice == 3){
     double cosp, sinp, px, py, script_r;
     int pi;
+    powsum = 0.0;
     double gx = x[0]*cos(x[1]);
     double gy = x[0]*sin(x[1]);
     double powsum = 0.0;
@@ -244,6 +245,28 @@ double get_nu(const double x[], const double prim[]){
       powsum += thePlanets[pi].M*pow(script_r, viscPar);
     }
     nu *= powsum;
+  }
+  if (viscChoice == 4){		//Siwek+ 2022 `alpha' viscosity for viscPar=5.0
+    double cosp, sinp, px, py, r1, r2;
+    double gx = x[0]*cos(x[1]);
+    double gy = x[0]*sin(x[1]);
+
+    double c2 = get_cs2(x);
+
+    cosp = cos(thePlanets[0].phi);
+    sinp = sin(thePlanets[0].phi);
+    px = thePlanets[0].r*cosp;
+    py = thePlanets[0].r*sinp;
+    r1 = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
+
+    cosp = cos(thePlanets[1].phi);
+    sinp = sin(thePlanets[1].phi);
+    px = thePlanets[1].r*cosp;
+    py = thePlanets[1].r*sinp;
+    r2 = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
+
+    nu *= sqrt(c2)/Mach;
+    nu *= r1*r2*pow(pow(r1, viscPar) + pow(r2, viscPar), -1.0/viscPar);
   }
 
   return nu;

@@ -13,9 +13,7 @@ void setPlanetParams( struct domain * theDomain ){
    theDomain->Npl = 3;
    q_bary = theDomain->theParList.Mass_Ratio;
    q_binary = theDomain->theParList.initPar1;
-   //a_bary = theDomain->theParList.RotD;
    a_binary = theDomain->theParList.initPar2;
-
    Mach = theDomain->theParList.Disk_Mach;
    eps = theDomain->theParList.grav_eps;
 }
@@ -41,7 +39,6 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPOINTMASS;
 
-
    thePlanets[1].M     = mu*(1.-mu2);
    thePlanets[1].vr    = 0.0; 
    thePlanets[1].omega = om; 
@@ -49,7 +46,6 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[1].phi   = M_PI; 
    thePlanets[1].eps   = eps;
    thePlanets[1].type  = PLPOINTMASS;
-
 
    thePlanets[2].M     = mu*mu2;
    thePlanets[2].vr    = 0.0;
