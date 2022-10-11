@@ -203,12 +203,20 @@ void sink_src(const double *prim, double *cons, const double *xp,
       int pi;
       int numSinks = Npl;
 
-      if ((sinkNumber>0) && (sinkNumber<numSinks)) numSinks = sinkNumber;
-      for (pi=0; pi<numSinks; pi++){
+      if ((sinkNumber>0) && (sinkNumber<numSinks))
+          numSinks = sinkNumber;
 
-          double irp = 1.0 / thePlanets[pi].r;
-          double cosp = thePlanets[pi].xyz[0] * irp;
-          double sinp = thePlanets[pi].xyz[1] * irp;
+      for (pi=0; pi<numSinks; pi++)
+      {
+
+          double cosp = 1.0;  //Default to phi=0 if r=0
+          double sinp = 0.0;
+          if(thePlanets[pi].r != 0.0)
+          {
+              double irp = 1.0 / thePlanets[pi].r;
+              cosp = thePlanets[pi].xyz[0] * irp;
+              sinp = thePlanets[pi].xyz[1] * irp;
+          }
           px = thePlanets[pi].xyz[0];
           py = thePlanets[pi].xyz[1];
 
@@ -241,8 +249,11 @@ void sink_src(const double *prim, double *cons, const double *xp,
             }
           }
 
-          rate = sinkPar1*thePlanets[pi].omega;
-          surfdiff = rho*rate*f_acc;
+          rate = sinkPar1 * f_acc * thePlanets[pi].omega;
+          rate = -expm1(-rate*dt) / dt;  // replace instantaneous rate with
+                                         // avg rate over timestep, useful
+                                         // when rate * dt ~ 1.0
+          surfdiff = rho * rate;
 
           if(rate == 0.0 || f_acc == 0.0)
               continue;
@@ -295,6 +306,10 @@ void sink_src(const double *prim, double *cons, const double *xp,
           double v2 = vxg*vxg + vyg*vyg + vz*vz;
           cons[TAU] -= dM*(specenth + 0.5*v2
                     - 0.5*((vxg-vxg1)*(vxg-vxg1) + (vyg-vyg1)*(vyg-vyg1)));
+
+          int q;
+          for(q=NUM_C; q<NUM_Q; q++)
+              cons[q] -= dM * prim[q];
 
           double *my_gas_track = pl_gas_track + pi*NUM_PL_INTEGRALS;
           my_gas_track[PL_SNK_M] += dM;

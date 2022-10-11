@@ -364,44 +364,9 @@ void restart( struct domain * theDomain ){
    if( Nq != NUM_Q+NUM_FACES+1 ){ if(rank==0)printf("Ummm, I got an hdf5 read error. Check NUM_Q.\n"); exit(1); }
 
    
-   // Setup Diagnostics
-   int num_tools = num_diagnostics();
-   theDomain->num_tools = num_tools;
-   theDomain->theTools.t_avg = 0.0;
-
-   theDomain->theTools.Qrz = (double *) malloc( Nr*Nz*num_tools*sizeof(double) );
-
-   theDomain->theTools.F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                               * sizeof(double));
-   theDomain->theTools.Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                   * sizeof(double));
-   theDomain->theTools.RK_F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                  * sizeof(double));
-   theDomain->theTools.RK_Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                      * sizeof(double));
-   theDomain->theTools.F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                               * sizeof(double));
-   theDomain->theTools.Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                   * sizeof(double));
-   theDomain->theTools.RK_F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                  * sizeof(double));
-   theDomain->theTools.RK_Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                      * sizeof(double));
-   
-   theDomain->theTools.S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Sgrav = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Svisc = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Ssink = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Scool = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Sdamp = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.RK_S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.RK_Sgrav = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Svisc = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Ssink = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Scool = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Sdamp = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-
-   zero_diagnostics(theDomain);
+    // Setup Diagnostics & snapshot
+    setup_diagnostics(theDomain);
+    setup_snapshot(theDomain);
 
    theDomain->N_ftracks_r = get_num_rzFaces( theDomain->Nr , theDomain->Nz , 1 ); 
    theDomain->N_ftracks_z = get_num_rzFaces( theDomain->Nr , theDomain->Nz , 2 ); 

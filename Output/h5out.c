@@ -369,9 +369,38 @@ void writePars(struct domain *theDomain, char filename[])
 
 }
 
-double get_dV( double * , double * );
-void prim2cons( double * , double * , double *, double );
-void cons2prim( double * , double * , double *, double );
+void writePlanets(struct domain *theDomain, char filename[])
+{
+    int Npl = theDomain->Npl;
+
+    int NpDat = 7 + NUM_PL_KIN;
+
+    double PlanetData[Npl*NpDat];
+    int p;
+    for( p=0 ; p<Npl ; ++p )
+    {
+        struct planet * pl = theDomain->thePlanets+p;
+        PlanetData[NpDat*p + 0] = pl->M;
+        PlanetData[NpDat*p + 1] = pl->vr;
+        PlanetData[NpDat*p + 2] = pl->omega;
+        PlanetData[NpDat*p + 3] = pl->r;
+        PlanetData[NpDat*p + 4] = pl->phi;
+        PlanetData[NpDat*p + 5] = pl->eps;
+        PlanetData[NpDat*p + 6] = (double)pl->type;
+
+        int q;
+        for(q=0; q<NUM_PL_KIN; q++)
+            PlanetData[NpDat*p + q + 7] = theDomain->pl_kin[p*NUM_PL_KIN + q];
+    }
+
+    hsize_t fdims2[2];
+    fdims2[0] = Npl;
+    fdims2[1] = NpDat;
+    createDataset(filename, "Data", "Planets", 2, fdims2, H5T_NATIVE_DOUBLE);
+
+    writeSimple(filename, "Data", "Planets", PlanetData, H5T_NATIVE_DOUBLE);
+}
+
 
 void output( struct domain * theDomain , char * filestart ){
 
@@ -379,7 +408,6 @@ void output( struct domain * theDomain , char * filestart ){
    int Nr = theDomain->Nr;
    int Nz = theDomain->Nz;
    int * Np = theDomain->Np;
-   int Npl = theDomain->Npl;
    int Ng = theDomain->Ng;
    int NgRa = theDomain->NgRa;
    int NgRb = theDomain->NgRb;
@@ -394,13 +422,10 @@ void output( struct domain * theDomain , char * filestart ){
    int * dim_rank = theDomain->dim_rank;
    int * dim_size = theDomain->dim_size;
 
-   int NpDat = 7 + NUM_PL_KIN;
    int Ntools = theDomain->num_tools;
 
    double diag_dt = theDomain->theTools.t_avg;
    avg_diagnostics( theDomain );
-   struct diagnostic_inst theSlowTools = {0};
-   run_inst_diagnostics(theDomain, &theSlowTools);
 
    char filename[256];
    sprintf(filename,"%s.h5",filestart);
@@ -459,9 +484,6 @@ void output( struct domain * theDomain , char * filestart ){
       fdims2[0] = Ntot;
       fdims2[1] = Ndoub;
       createDataset(filename,"Data","Cells",2,fdims2,H5T_NATIVE_DOUBLE);
-      fdims2[0] = Npl;
-      fdims2[1] = NpDat;
-      createDataset(filename,"Data","Planets",2,fdims2,H5T_NATIVE_DOUBLE);
       
       fdims1[0] = 1;
       createDataset(filename,"Data","Diagnostics_DT", 1, fdims1,
@@ -469,10 +491,6 @@ void output( struct domain * theDomain , char * filestart ){
       
       hsize_t fdims3[3] = {Nz_Tot, Nr_Tot, Ntools};
       createDataset(filename,"Data","Diagnostics",3,fdims3,H5T_NATIVE_DOUBLE);
-      
-      hsize_t fdims3_instDiag[3] = {Nz_Tot, Nr_Tot, theSlowTools.Ntools};
-      createDataset(filename,"Data","InstDiagnostics",3,
-                    fdims3_instDiag, H5T_NATIVE_DOUBLE);
       
       hsize_t fdims3_fr[3] = {Nz_Tot, Nr_Tot-1, NUM_Q};
       createDataset(filename, "Data", "FluxHydroAvgR", 3, fdims3_fr,
@@ -508,23 +526,7 @@ void output( struct domain * theDomain , char * filestart ){
                   H5T_NATIVE_DOUBLE);
       writePars(theDomain, filename);
       writeOpts(theDomain, filename);
-      double PlanetData[Npl*NpDat];
-      int p;
-      for( p=0 ; p<Npl ; ++p ){
-         struct planet * pl = theDomain->thePlanets+p;
-         PlanetData[NpDat*p + 0] = pl->M;
-         PlanetData[NpDat*p + 1] = pl->vr;
-         PlanetData[NpDat*p + 2] = pl->omega;
-         PlanetData[NpDat*p + 3] = pl->r;
-         PlanetData[NpDat*p + 4] = pl->phi;
-         PlanetData[NpDat*p + 5] = pl->eps;
-         PlanetData[NpDat*p + 6] = (double)pl->type;
-
-         int q;
-         for(q=0; q<NUM_PL_KIN; q++)
-             PlanetData[NpDat*p + q + 7] = theDomain->pl_kin[p*NUM_PL_KIN + q];
-      }
-      writeSimple(filename,"Data","Planets",PlanetData,H5T_NATIVE_DOUBLE);
+      writePlanets(theDomain, filename);
    }
 
    int jSize = jmax-jmin;
@@ -572,16 +574,10 @@ void output( struct domain * theDomain , char * filestart ){
    int * Size    = (int *) malloc( jSize*kSize*sizeof(int) );
    int * Id_phi0 = (int *) malloc( jSize*kSize*sizeof(int) );
    double * diagRZwrite = (double *) malloc( jSize*kSize*Ntools*sizeof(double) );
-   double * instDiagRZwrite = NULL;
    double *fluxRwrite = NULL; 
    double *fluxViscRwrite = NULL;
    double *fluxZwrite = NULL; 
    double *fluxViscZwrite = NULL;
-   if(theSlowTools.Ntools > 0)
-   {
-        instDiagRZwrite = (double *) malloc(
-                        jSize*kSize * theSlowTools.Ntools * sizeof(double) );
-   }
    if(jFrSize > 0)
    {
        fluxRwrite = (double *)malloc(jFrSize*kSize*NUM_Q*sizeof(double));
@@ -623,11 +619,6 @@ void output( struct domain * theDomain , char * filestart ){
          Size[jk] = Np[j+Nr*k];
          for(q=0; q<Ntools; q++)
             diagRZwrite[Ntools*jk+q] = Qrz[Ntools*(j+Nr*k)+q];
-         for(q=0; q<theSlowTools.Ntools; q++)
-         {
-             instDiagRZwrite[theSlowTools.Ntools * jk + q]
-                 = theSlowTools.Qrz[theSlowTools.Ntools*(j+Nr*k)+q];
-         }
  
          double phi0 = M_PI;
          int Id = 0;
@@ -721,17 +712,6 @@ void output( struct domain * theDomain , char * filestart ){
          int glo_size3[3] = {Nz_Tot, Nr_Tot, Ntools};
          writePatch( filename , "Data" , "Diagnostics" , diagRZwrite , H5T_NATIVE_DOUBLE , 3 , start3 , loc_size3 , glo_size3 );
 
-         // RZ Instantaneous Diagnostics
-         if(theSlowTools.Ntools > 0)
-         {
-             int start3_instDiag[3] = {k0, j0, 0};
-             int loc_size3_instDiag[3] = {kSize, jSize, theSlowTools.Ntools};
-             int glo_size3_instDiag[3] = {Nz_Tot, Nr_Tot, theSlowTools.Ntools};
-             writePatch( filename , "Data" , "InstDiagnostics" ,
-                 instDiagRZwrite , H5T_NATIVE_DOUBLE , 3 ,
-                 start3_instDiag , loc_size3_instDiag , glo_size3_instDiag );
-         }
-         
          // Flux Diagnostics
          if(jFrSize > 0)
          {
@@ -809,15 +789,12 @@ void output( struct domain * theDomain , char * filestart ){
 #endif
    }
    zero_diagnostics( theDomain );
-   free_inst_diagnostics(&theSlowTools);
 
    free(Index);
    free(Size);
    free(Id_phi0);
    free(Qwrite);
    free(diagRZwrite);
-   if(instDiagRZwrite != NULL)
-       free(instDiagRZwrite);
    if(fluxRwrite != NULL)
        free(fluxRwrite);
    if(fluxViscRwrite != NULL)
@@ -837,4 +814,146 @@ void output( struct domain * theDomain , char * filestart ){
 #endif
 }
 
+void writeSnapshot(struct domain *theDomain, char filestart[])
+{
+    int rank = theDomain->rank;
+    int size = theDomain->size;
 
+    char filename[256];
+    sprintf(filename, "%s.h5", filestart);
+
+    int Nr_Tot = theDomain->Nr_glob;
+    int Nz_Tot = theDomain->Nz_glob;
+    int N0r = theDomain->N0r;
+    int N0z = theDomain->N0z;
+    int N0r_glob = theDomain->N0r_glob;
+    int N0z_glob = theDomain->N0z_glob;
+    int Nr = theDomain->Nr;
+    int Nz = theDomain->Nz;
+    int NgRa = theDomain->NgRa;
+    int NgRb = theDomain->NgRb;
+    int NgZa = theDomain->NgZa;
+    int NgZb = theDomain->NgZb;
+    int *dim_rank = theDomain->dim_rank;
+    int *dim_size = theDomain->dim_size;
+    struct snapshot_data *theSnap = &(theDomain->theSnap);
+    
+    int num_Qrz = theSnap->num_Qrz;
+    int num_Qarr = theSnap->num_Qarr;
+    
+    hsize_t fdims1[1];
+    hsize_t fdims3[3];
+
+    if(rank == 0)
+    {
+        printf("Writing %s ...\n", filename);
+        
+        createFile(filename);
+        createGroup(filename,"Grid");
+        createGroup(filename,"Data");
+        createGroup(filename, "Snapshot");
+
+        fdims1[0] = 1;
+        createDataset(filename, "Grid", "T", 1, fdims1, H5T_NATIVE_DOUBLE);
+        fdims1[0] = Nr_Tot+1;
+        createDataset(filename, "Grid", "r_jph", 1,fdims1,H5T_NATIVE_DOUBLE);
+        fdims1[0] = Nz_Tot+1;
+        createDataset(filename, "Grid", "z_kph", 1,fdims1,H5T_NATIVE_DOUBLE);
+        
+        writeSimple(filename, "Grid", "T", &(theDomain->t), H5T_NATIVE_DOUBLE);
+        writePars(theDomain, filename);
+        writeOpts(theDomain, filename);
+        writePlanets(theDomain, filename);
+
+        fdims3[0] = Nz_Tot;
+        fdims3[1] = Nr_Tot;
+        fdims3[2] = num_Qrz;
+        createDataset(filename, "Snapshot", "Qrz", 3, fdims3,
+                      H5T_NATIVE_DOUBLE);
+        
+        fdims1[0] = num_Qarr;
+        createDataset(filename, "Snapshot", "Qarr", 1, fdims1,
+                      H5T_NATIVE_DOUBLE);
+        writeSimple(filename, "Snapshot", "Qarr", theSnap->Qarr,
+                    H5T_NATIVE_DOUBLE);
+    }
+
+    int k0 = NgZa;
+    int k1 = Nz - NgZb;
+    int j0 = NgRa;
+    int j1 = Nr - NgRb;
+
+    // This process is at Rmin
+    if(dim_rank[0] == 0)
+        j0 -= NgRa;
+    // This process is at Rmax
+    if(dim_rank[0] == dim_size[0] - 1)
+        j1 += NgRb;
+    // This process is at Zmin
+    if(dim_rank[1] == 0)
+        k0 -= NgZa;
+    // This process is at Zmax
+    if(dim_rank[1] == dim_size[1] - 1)
+        k1 += NgZb;
+
+    int Qrz_size_glob[3] = {Nz_Tot, Nr_Tot, num_Qrz};
+    int Qrz_size_loc[3] = {k1-k0, j1-j0, num_Qrz};
+    int Qrz_start_glob[3] = {N0z-N0z_glob + k0, N0r-N0r_glob + j0, 0};
+
+    double *QrzWrite = (double *)malloc((k1-k0) * (j1-j0) * num_Qrz
+                                        * sizeof(double));
+
+    int k;
+    for(k=k0; k<k1; k++)
+    {
+        int idx0 = (Nr * k + j0) * num_Qrz;
+        int idxWrite0 = (j1-j0) * (k-k0) * num_Qrz;
+
+        memcpy(QrzWrite + idxWrite0, theSnap->Qrz + idx0,
+               (j1-j0) * num_Qrz * sizeof(double));
+    }
+
+    int nrk;
+    for(nrk = 0; nrk < size; nrk++)
+    {
+#if USE_MPI
+        MPI_Barrier(theDomain->theComm);
+#endif
+        if(nrk != rank)
+            continue;
+
+        // Write Qrz Data
+        writePatch(filename, "Snapshot", "Qrz", QrzWrite, 
+                   H5T_NATIVE_DOUBLE, 3,
+                   Qrz_start_glob, Qrz_size_loc, Qrz_size_glob);
+
+        //Write r_jph if you're on Zmin
+        if(dim_rank[1] == 0)
+        {
+            int start_glob[1] = {N0r-N0r_glob + j0};
+            int size_glob[1] = {Nr_Tot+1};
+            int size_loc[1] = {j1-j0};
+            if(dim_rank[0] == dim_size[0]-1)
+                size_loc[0] += 1;
+            writePatch(filename, "Grid", "r_jph", theDomain->r_jph+j0-1,
+                        H5T_NATIVE_DOUBLE, 1,
+                        start_glob, size_loc, size_glob);
+        }
+
+        //Write z_kph if you're on Rmin
+        if(dim_rank[0] == 0)
+        {
+            int start_glob[1] = {N0z-N0z_glob + k0};
+            int size_glob[1] = {Nz_Tot+1};
+            int size_loc[1] = {k1-k0};
+            if(dim_rank[1] == dim_size[1]-1)
+                size_loc[0] += 1;
+            writePatch(filename, "Grid", "z_kph", theDomain->z_kph+k0-1,
+                        H5T_NATIVE_DOUBLE, 1,
+                        start_glob, size_loc, size_glob);
+        }
+
+    }
+
+    free(QrzWrite);
+}

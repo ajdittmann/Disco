@@ -13,7 +13,8 @@ enum{PROF_TOT, PROF_DT, PROF_TIMESTEP, PROF_OUTPUT, PROF_RECON, PROF_FLUX,
      PROF_EXCH_PREP, PROF_EXCH_COMM, PROF_EXCH_FIN,
      PROF_STEP_INIT, PROF_STEP_PL, PROF_MOVE, PROF_CLEAN,
      NUM_PROF}; // NUM_PROF must be at end
-enum{PLPOINTMASS, PLPW, PLSURFACEGRAV, PLSPLINE, PLWEGGC, PLQUAD};
+enum{PLPOINTMASS, PLPW, PLSURFACEGRAV, PLSPLINE, PLWEGGC, PLQUAD,
+     PLUNIFORM, PLLINEARX};
 enum{COOL_NONE, COOL_BETA, COOL_BETA_RELAX};
 enum{PL_M, PL_R, PL_PHI, PL_Z, PL_PR, PL_LL, PL_PZ, PL_SZ, PL_EINT};
 enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
@@ -197,9 +198,11 @@ struct diagnostic_avg{
    double t_avg;
 };
 
-struct diagnostic_inst {
+struct snapshot_data {
     double *Qrz;
-    int Ntools;
+    double *Qarr;
+    int num_Qrz;
+    int num_Qarr;
 };
 
 struct domain{
@@ -243,6 +246,7 @@ struct domain{
    struct param_list theParList;
    int num_tools;
    struct diagnostic_avg theTools;
+   struct snapshot_data theSnap;
 
    double t;
    int count_steps;

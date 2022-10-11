@@ -1,0 +1,146 @@
+
+//Disco Parameter File//
+Restart			0	//Restart from input.h5
+
+//Time Range//
+T_Start			0.0 //1.0
+T_End		    1.0
+T_Times_2pi		1
+
+//Output Frequency/3
+Num_Reports		1e3
+Num_Snapshots		0
+Num_Checkpoints		100
+Use_Logtime		0
+
+//Grid Dimensions//
+Num_R			192
+Num_Z			1
+aspect			1.0	//Cell Aspect Ratio, for calculating N_phi
+Max_Aspect_Short	1.5	
+Max_Aspect_Long		1.5	//Aspect Ratio AMR Refinement Criteria
+
+//Domain Parameters//
+R_Min			0.0
+R_Max			1.5
+Z_Min			-0.5 //-0.0625
+Z_Max			0.5  //0.0625
+R_Periodic		0
+Z_Periodic		0
+Phi_Max			1.0
+P_Times_2pi		1
+Z_Times_pi      0
+Log_Zoning		0	//0=Uniform, 1=Log, 2=Hybrid
+Log_Radius		0.0	//Only for option 2 of Log_Zoning
+
+NoBC_Rmin       1   //0 = Regular boundary. Ghost zones added and
+NoBC_Rmax       0   //    boundary condition applied.
+NoBC_Zmin       0   //1 = Coordinate boundary (like r=0 origin).
+NoBC_Zmax       0   //    No ghost zones or explicit BC applied.
+
+//Numerical Parameters
+CFL			0.5
+PLM			1.5
+Max_DT              0.0    //If > 0.0, the maximum allowed time step.
+Timestep            0   // 0=RK2, 1=FE
+Riemann_Solver		1	//0=HLL, 1=HLLC, 2=HLLD
+Mesh_Motion		    3	//0=Fixed, 1=By Cell, 2=Riemann, 3=Avg, 4=Exact
+Exact_Mesh_Omega        0   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep
+Exact_Mesh_Omega_Par    0.0 //unused so far
+Energy_Omega        0   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep, 4=Gaussian
+Energy_Omega_Par    0.0 //unused so far
+Absorbing_BC		0
+Initial_Regrid		0
+Density_Floor		1.0e-15 //1e-5
+Pressure_Floor		0.0
+Constrained_Transport   0
+Cartesian_Interp        0   // Fixes the pole at the cost of disks 0 off, 1 on  
+Cartesian_Interp_R0     0.0 // Radius within which Cartesian_Interp acts.
+
+//Hydro Parameters
+Adiabatic_Index		1.0000001
+Isothermal		    1
+Cs2_Profile         5   //0=Flat,1=FlatDiskMach,2=Visc,3=Sorathia,5=Potential
+Cs2_Par             0.0 //unused so far
+Use_Viscosity		1
+Viscosity		    0.001
+Viscosity_Profile   0   //0=Flat, 1=alpha, 2=powerlaw, 3=power law (binary)
+Viscosity_Par       0.0
+
+
+//Planet Parameters	
+Mass_Ratio		1.0
+Eccentricity	0.0
+Drift_Rate		0.0 //-2.5e-4
+Drift_Exp		0.0
+Grav2D          1
+Softening       0.05
+
+//Rotating Frame
+RotFrame            0       //0=off, 1=on
+RotOmega            0.0     //Angular speed of frame
+RotD                0.0     //Distance from rotational axis to grid axis.
+
+//Disk Parameters
+Mach_Number		10.0
+Include_Atmos	0
+
+//Initial Condition Parameters
+Init_Par0       0       // int
+Init_Par1       0.1     // R_cav - internal
+Init_Par2       0.6     // R_out
+Init_Par3       1.0e-6  // atm density
+Init_Par4       0.0     // 
+Init_Par5       0.0     // 
+Init_Par6       0.0     // 
+Init_Par7       0.0     // doub
+Init_Par8       0.0     // doub
+
+//Noise Parameters
+Noise_Type      0       // 0: No Noise, 1: URR and UPP 
+Noise_Abs       0.0     // Amplitude of Absolute Noise
+Noise_Rel       0.0     // Amplitude of Relative Noise
+
+//Sink & Nozzle Parameters
+Sink_Type       1       //0: No Sink
+Sink_Number     1		//0: all planets have sinks. else: first N planets have sinks
+Sink_Par1       1.0     // Sink Rate
+Sink_Par2       1.0     // Torque Control (0: Naive, 1: Torque-free)
+Sink_Par3       0.05    // Sink Size
+Sink_Par4       4.0     //(double)
+Sink_Par5       4.0     //(double)
+
+Nozzle_Type     0       //0: No Nozzle, 1: Circular Nozzle
+Nozzle_Par1     0.0     //(double)
+Nozzle_Par2     0.0     //(double)
+Nozzle_Par3     0.0     //(double)
+Nozzle_Par4     0.0     //(double)
+
+//Damping parameters
+DampInner_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
+DampInner_Time       0.0     //(double)
+DampInner_Len        0.0     //(double)
+DampOuter_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
+DampOuter_Time       0.0     //(double)
+DampOuter_Len        0.0     //(double)
+DampLower_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
+DampLower_Time       0.0     //(double)
+DampLower_Len        0.0     //(double)
+DampUpper_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
+DampUpper_Time       0.0     //(double)
+DampUpper_Len        0.0     //(double)
+
+//Cooling parameters
+Cool_Type       0       //0: No cooling, 1: beta cooling, 2: beta relaxation
+Cool_Par1       0.0     //(double)
+Cool_Par2       0.0     //(double)
+Cool_Par3       0.0     //(double)
+Cool_Par4       0.0     //(double)
+
+//Metric Parameters
+Metric_Par0     0    //(int)
+Metric_Par1     0.0  //Om_rot (double)
+Metric_Par2     1.0  //M (double)
+Metric_Par3     0.0  //a (double)
+Metric_Par4     0.0
+

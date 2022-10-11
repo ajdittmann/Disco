@@ -2,6 +2,103 @@
 #include "paul.h"
 #include "geometry.h"
 #include "analysis.h"
+#include "output.h"
+
+void setup_diagnostics(struct domain *theDomain)
+{
+    struct diagnostic_avg *theTools = &(theDomain->theTools);
+    int num_tools = num_diagnostics();
+
+    int Nr = theDomain->Nr;
+    int Nz = theDomain->Nz;
+
+    theDomain->num_tools = num_tools;
+    theTools->t_avg = 0.0;
+
+    if(num_tools == 0)
+        theTools->Qrz = NULL;
+    else
+        theTools->Qrz = (double *) malloc(Nr * Nz * num_tools
+                                          * sizeof(double));
+
+    if(Nr == 1)
+    {   
+        theTools->F_r = NULL;
+        theTools->Fvisc_r = NULL;
+        theTools->RK_F_r = NULL;
+        theTools->RK_Fvisc_r = NULL;
+    }
+    else
+    {
+        theTools->F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+                                            * sizeof(double));
+        theTools->Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+                                            * sizeof(double));
+        theTools->RK_F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+                                            * sizeof(double));
+        theTools->RK_Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+                                            * sizeof(double));
+    }
+    if(Nz == 1)
+    {
+        theTools->F_z = NULL;
+        theTools->Fvisc_z = NULL;
+        theTools->RK_F_z = NULL;
+        theTools->RK_Fvisc_z = NULL;
+    }
+    else
+    {
+        theTools->F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+                                                * sizeof(double));
+        theTools->Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+                                                * sizeof(double));
+        theTools->RK_F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+                                                * sizeof(double));
+        theTools->RK_Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+                                                * sizeof(double));
+    }
+   
+    theTools->S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->Sgrav = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->Svisc = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->Ssink = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->Scool = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->Sdamp = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->RK_S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
+    theTools->RK_Sgrav = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    theTools->RK_Svisc = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    theTools->RK_Ssink = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    theTools->RK_Scool = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    theTools->RK_Sdamp = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+
+    zero_diagnostics(theDomain);
+}
+
+void setup_snapshot(struct domain *theDomain)
+{
+    int num_Qrz = num_snapshot_rz();
+    int num_Qarr = num_snapshot_arr();
+    
+    int Nr = theDomain->Nr;
+    int Nz = theDomain->Nz;
+
+    struct snapshot_data *theSnap = &(theDomain->theSnap);
+
+    theSnap->num_Qrz = num_Qrz;
+    theSnap->num_Qarr = num_Qarr;
+
+    if(num_Qrz == 0)
+        theSnap->Qrz = NULL;
+    else
+        theSnap->Qrz = (double *) malloc(Nr * Nz * num_Qrz * sizeof(double));
+
+    if(num_Qarr == 0)
+        theSnap->Qarr = NULL;
+    else
+        theSnap->Qarr = (double *) malloc(Nr * Nz * num_Qarr * sizeof(double));
+
+    zero_snapshot(theDomain);
+}
 
 void zero_diagnostics( struct domain * theDomain )
 {
@@ -40,6 +137,13 @@ void zero_diagnostics( struct domain * theDomain )
     memset(theTools->Sdamp, 0, Nz*Nr*NUM_Q * sizeof(double));
 
     theTools->t_avg = 0.0;
+}
+
+void zero_snapshot( struct domain * theDomain )
+{
+    memset(theDomain->theSnap.Qrz, 0,
+            theDomain->Nr * theDomain->Nz * theDomain->theSnap.num_Qrz);
+    memset(theDomain->theSnap.Qarr, 0, theDomain->theSnap.num_Qarr);
 }
 
 void avg_diagnostics( struct domain * theDomain ){
@@ -242,40 +346,64 @@ void add_diagnostics( struct domain * theDomain , double dt ){
    theTools->t_avg += dt;
 }
 
-
-void run_inst_diagnostics( struct domain * theDomain ,
-                            struct diagnostic_inst *theSlowTools )
+void snapshot(struct domain *theDomain, char filename[])
 {
-   int Nr = theDomain->Nr;
-   int Nz = theDomain->Nz;
-   int * Np = theDomain->Np;
-   int Nq = num_inst_diagnostics();
-   
-   theSlowTools->Ntools = Nq;
-   if(Nq == 0)
-   {
-       theSlowTools->Qrz = NULL;
-       return;
-   }
+    if(theDomain->rank==0)
+        printf("Generating Snapshot...\n");
 
-   theSlowTools->Qrz = (double *)malloc(Nr*Nz*Nq*sizeof(double));
-   memset( theSlowTools->Qrz, 0 , Nr*Nz*Nq*sizeof(double) );
-   
-   struct cell ** theCells = theDomain->theCells;
-   double * r_jph = theDomain->r_jph;
-   double * z_kph = theDomain->z_kph;
+    zero_snapshot(theDomain);
+    calc_snapshot_rz(theDomain);
+    calc_snapshot_arr(theDomain);
 
-   int i,j,k,q;
-   int kmin = 0;
-   int kmax = Nz;
-   int jmin = 0;
-   int jmax = Nr;
+#if USE_MPI
+    struct snapshot_data *theSnap = &(theDomain->theSnap);
+    double *send_Q = theSnap->Qarr;
+
+    if(theDomain->rank == 0)
+        send_Q = MPI_IN_PLACE;
+
+    MPI_Reduce(send_Q, theSnap->Qarr, theSnap->num_Qarr,
+               MPI_DOUBLE, MPI_SUM, 0, theDomain->theComm);
+#endif
+
+    writeSnapshot(theDomain, filename); 
+}
+
+
+void calc_snapshot_rz(struct domain *theDomain)
+{
+    double *Qrz = theDomain->theSnap.Qrz;
+    int num_Qrz = theDomain->theSnap.num_Qrz;
+
+    if(Qrz == NULL || num_Qrz == 0)
+        return;
+
+    int Nr = theDomain->Nr;
+    int Nz = theDomain->Nz;
+    int * Np = theDomain->Np;
+   
+    struct cell ** theCells = theDomain->theCells;
+    double * r_jph = theDomain->r_jph;
+    double * z_kph = theDomain->z_kph;
+
+    int i,j,k,q;
+    int kmin = 0;
+    int kmax = Nz;
+    int jmin = 0;
+    int jmax = Nr;
 
     for(k=kmin; k<kmax; k++)
     {
         for(j=jmin; j<jmax; j++)
         {
             int jk = k*Nr + j;
+                
+            double Qrz_dV[num_Qrz];
+            double tot_dV = 0.0;
+
+            for(q=0; q<num_Qrz; q++)
+                Qrz_dV[q] = 0.0;
+
             for(i=0; i<Np[jk]; i++)
             {
                 struct cell * c = theCells[jk]+i;
@@ -283,22 +411,134 @@ void run_inst_diagnostics( struct domain * theDomain ,
                 double phim = phip - c->dphi;
                 double xp[3] = {r_jph[j  ] , phip , z_kph[k  ]};  
                 double xm[3] = {r_jph[j-1] , phim , z_kph[k-1]};
+                
                 double xc[3];
                 get_centroid_arr(xp, xm, xc);  
+            
                 double dV = get_dV(xp,xm);
-                double Qrz[Nq];
-                get_inst_diagnostics( xc , c->prim , Qrz , theDomain );
-                for( q=0 ; q<Nq ; ++q ) 
-                    theSlowTools->Qrz[ jk*Nq + q ] += Qrz[q]*dV;
+                tot_dV += dV;
+
+                double Qrz_loc[num_Qrz];
+                get_snapshot_rz(xc, c->prim, Qrz_loc, theDomain);
+                for(q=0; q<num_Qrz; q++) 
+                    Qrz_dV[q] += Qrz_loc[q] * dV;
+            }
+
+            double idV = 1.0 / tot_dV;
+            for(q=0; q<num_Qrz; q++)
+                Qrz[jk*num_Qrz + q] = Qrz_dV[q] * idV;
+        }
+    }
+}
+
+
+void calc_snapshot_arr(struct domain *theDomain)
+{
+    double *Qarr = theDomain->theSnap.Qarr;
+    int num_Qarr = theDomain->theSnap.num_Qarr;
+
+    if(Qarr == NULL || num_Qarr == 0)
+        return;
+
+    int Nr = theDomain->Nr;
+    int Nz = theDomain->Nz;
+    int * Np = theDomain->Np;
+   
+    struct cell ** theCells = theDomain->theCells;
+    double * r_jph = theDomain->r_jph;
+    double * z_kph = theDomain->z_kph;
+
+    int i,j,k,q;
+    int kmin = 0;
+    int kmax = Nz;
+    int jmin = 0;
+    int jmax = Nr;
+
+    for(k=kmin; k<kmax; k++)
+    {
+        for(j=jmin; j<jmax; j++)
+        {
+            int jk = k*Nr + j;
+                
+            for(i=0; i<Np[jk]; i++)
+            {
+                struct cell * c = theCells[jk]+i;
+                double phip = c->piph;
+                double phim = phip - c->dphi;
+                double xp[3] = {r_jph[j  ] , phip , z_kph[k  ]};  
+                double xm[3] = {r_jph[j-1] , phim , z_kph[k-1]};
+                
+                double xc[3];
+                get_centroid_arr(xp, xm, xc);  
+            
+                double dV = get_dV(xp,xm);
+
+                double Qarr_loc[num_Qarr];
+                get_snapshot_arr(xc, c->prim, Qarr_loc, theDomain);
+                
+                for(q=0; q<num_Qarr; q++) 
+                    Qarr[q] += Qarr_loc[q] * dV;
             }
         }
     }
 }
 
-void free_inst_diagnostics(struct diagnostic_inst *theSlowTools)
+void free_diagnostics(struct diagnostic_avg *theTools)
 {
-    if(theSlowTools->Qrz != NULL)
-        free(theSlowTools->Qrz);
+    if(theTools->Qrz != NULL)
+        free(theTools->Qrz);
+    
+    if(theTools->F_r != NULL)
+        free(theTools->F_r);
+    if(theTools->Fvisc_r != NULL)
+        free(theTools->Fvisc_r);
+    if(theTools->F_z != NULL)
+        free(theTools->F_z);
+    if(theTools->Fvisc_z != NULL)
+        free(theTools->Fvisc_z);
+    
+    if(theTools->RK_F_r != NULL)
+        free(theTools->RK_F_r);
+    if(theTools->RK_Fvisc_r != NULL)
+        free(theTools->RK_Fvisc_r);
+    if(theTools->RK_F_z != NULL)
+        free(theTools->RK_F_z);
+    if(theTools->RK_Fvisc_z != NULL)
+        free(theTools->RK_Fvisc_z);
+
+    if(theTools->S != NULL)
+        free(theTools->S);
+    if(theTools->Sgrav != NULL)
+        free(theTools->Sgrav);
+    if(theTools->Svisc != NULL)
+        free(theTools->Svisc);
+    if(theTools->Ssink != NULL)
+        free(theTools->Ssink);
+    if(theTools->Scool != NULL)
+        free(theTools->Scool);
+    if(theTools->Sdamp != NULL)
+        free(theTools->Sdamp);
+
+    if(theTools->RK_S != NULL)
+        free(theTools->RK_S);
+    if(theTools->RK_Sgrav != NULL)
+        free(theTools->RK_Sgrav);
+    if(theTools->RK_Svisc != NULL)
+        free(theTools->RK_Svisc);
+    if(theTools->RK_Ssink != NULL)
+        free(theTools->RK_Ssink);
+    if(theTools->RK_Scool != NULL)
+        free(theTools->RK_Scool);
+    if(theTools->RK_Sdamp != NULL)
+        free(theTools->RK_Sdamp);
+}
+
+void free_snapshot(struct snapshot_data *theSnap)
+{
+    if(theSnap->Qrz != NULL)
+        free(theSnap->Qrz);
+    if(theSnap->Qarr != NULL)
+        free(theSnap->Qarr);
 }
 
 

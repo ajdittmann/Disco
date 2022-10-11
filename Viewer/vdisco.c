@@ -124,7 +124,7 @@ double getval( double * thisZone , int q ){
    double Br = thisZone[5];
    double Bp = thisZone[6];
    double Bz = thisZone[7];
-   return  P / pow(rho, 1.666666666667); //return( sqrt(5*P/(3*rho)) ); //fabs(P/pow(rho,5./3.)-1.) );// fabs(thisZone[1]/pow(thisZone[0],5./3.)-1.) );
+   return  sqrt(P/rho); //return( sqrt(5*P/(3*rho)) ); //fabs(P/pow(rho,5./3.)-1.) );// fabs(thisZone[1]/pow(thisZone[0],5./3.)-1.) );
 //   return( rho*P );
 }
 
@@ -1221,7 +1221,7 @@ void drawText(double RotationAngleX, double RotationAngleY,
                     double yoff, double zoff)
 {
     char tprint[256];
-    sprintf(tprint,"t = %.2e",t/2./M_PI);
+    sprintf(tprint,"t = %.2e",t);
     glutPrint( -.6 , .5 , camdist + .001 , glutFonts[6] , tprint , 0.0f, 0.0f , 0.0f , 0.5f );
     //    sprintf(tprint,"uMax = %.1f",uMax);
     //    glutPrint( -.8 , .4 , camdist + .001 , glutFonts[6] , tprint , 0.0f, 0.0f , 0.0f , 0.5f );

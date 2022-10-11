@@ -58,19 +58,19 @@ void setupGrid( struct domain * theDomain ){
    int Nz_glob = Num_Z;
    int N0r_glob = 0;
    int N0z_glob = 0;
-   if(!theDomain->theParList.NoBC_Rmin)
+   if(!theDomain->theParList.NoBC_Rmin && Num_R > 1)
    {
        Nr_glob += Ng;
        N0r_glob -= Ng;
    }
-   if(!theDomain->theParList.NoBC_Rmax)
+   if(!theDomain->theParList.NoBC_Rmax && Num_R > 1)
        Nr_glob += Ng;
-   if(!theDomain->theParList.NoBC_Zmin)
+   if(!theDomain->theParList.NoBC_Zmin && Num_Z > 1)
    {
        Nz_glob += Ng;
        N0z_glob -= Ng;
    }
-   if(!theDomain->theParList.NoBC_Zmax)
+   if(!theDomain->theParList.NoBC_Zmax && Num_Z > 1)
        Nz_glob += Ng;
 
    theDomain->Nr = Nr;

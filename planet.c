@@ -79,6 +79,14 @@ double phigrav( double M , double r , double eps , int type)
 
         return -1*M*val/eps;
     }
+    else if(type == PLUNIFORM)
+    {
+        return 0.0;
+    }
+    else if(type == PLLINEARX)
+    {
+        return 0.0;
+    }
     return 0.0;
 }
 
@@ -126,6 +134,14 @@ double fgrav( double M , double r , double eps , int type)
         else
             val = 1./u2;
         return M*val/(eps*eps);
+    }
+    else if(type == PLUNIFORM)
+    {
+        return M;
+    }
+    else if(type == PLLINEARX)
+    {
+        return M*r;
     }
     return 0.0;
     
@@ -208,6 +224,19 @@ void planetaryForce( struct planet * pl , const double *xyz, double *Fxyz)
         z = 1.0;
     }
 
+    if(pl->type == PLUNIFORM)
+    {
+        xp = xyz[0] + 1.0*cos(pl->phi);
+        yp = xyz[1] + 1.0*sin(pl->phi);
+        zp = xyz[2];
+    }
+    else if(pl->type == PLLINEARX)
+    {
+        xp = xyz[0] + xyz[0]*cos(pl->phi);
+        yp = xyz[1] + xyz[0]*sin(pl->phi);
+        zp = xyz[2];
+    }
+
     double dx = xyz[0] - xp;
     double dy = xyz[1] - yp;
     double dz = z - zp;
@@ -271,18 +300,14 @@ void planet_src( struct planet * pl, const double * prim, double * cons,
    cons[SZZ] += rho*F[2]*dVdt;
    cons[TAU] += rho*( F[0]*vr + F[1]*omega + F[2]*vz )*dVdt;
 
-   double irp = 1.0 / pl->r;
-   double cosp = pl->xyz[0] * irp;
-   double sinp = pl->xyz[1] * irp;
-   double Fp[3] = {cosp*Fxyz[0] + sinp*Fxyz[1],
-                  -sinp*Fxyz[0] + cosp*Fxyz[1], Fxyz[2]};
+   double rFp = pl->xyz[0] * Fxyz[1] - pl->xyz[1] * Fxyz[0];
 
    double Phi = planetaryPotential(pl, xyz);
 
    pl_gas_track[PL_GRV_PX] -= rho*Fxyz[0]*dVdt;
    pl_gas_track[PL_GRV_PY] -= rho*Fxyz[1]*dVdt;
    pl_gas_track[PL_GRV_PZ] -= rho*Fxyz[2]*dVdt;
-   pl_gas_track[PL_GRV_JZ] -= rho*(pl->r)*Fp[1]*dVdt;
+   pl_gas_track[PL_GRV_JZ] -= rho*rFp*dVdt;
    pl_gas_track[PL_GRV_EGAS] -= rho*(F[0]*vr + F[1]*omega + F[2]*vz)*dVdt;
    pl->Uf += rho*Phi*dV;
 }
@@ -431,7 +456,7 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
     int p;
     int Npl = theDomain->Npl;
     struct planet *thePlanets = theDomain->thePlanets;
-
+   
     int live_planet = !planet_motion_analytic();
 
     for(p=0; p<Npl; p++)
@@ -562,7 +587,7 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         double dz_snk = dMz_snk / M;
         
         double dr_snk = cosp * dx_snk + sinp * dy_snk;
-        double dphi_snk = (-sinp * dx_snk + cosp * dy_snk) / r;
+        double dphi_snk = r==0.0 ? 0.0 : (-sinp * dx_snk + cosp * dy_snk) / r;
 
         // Radial Momentum
         double dPr_grv = cosp * dPx_grv + sinp * dPy_grv;

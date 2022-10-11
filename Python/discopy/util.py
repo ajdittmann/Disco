@@ -140,7 +140,7 @@ def loadFluxR(filename):
 
     opts = loadOpts(filename)
 
-    Z = dg.getCentroid(zkph[:-1], zkph[1:], 2, opts)
+    Z = dg.getCentroid(zkph[:-1], zkph[1:], 3, opts)
 
     r = np.empty((Nz, Nr-1))
     z = np.empty((Nz, Nr-1))
@@ -160,6 +160,7 @@ def loadFluxZ(filename):
     zkph = f['Grid']['z_kph'][...]
     fluxHydro = f['Data']['FluxHydroAvgZ'][...]
     fluxVisc = f['Data']['FluxViscAvgZ'][...]
+    dt = f['Data']['Diagnostics_DT'][0]
 
     f.close()
 
@@ -171,7 +172,6 @@ def loadFluxZ(filename):
         return None
 
     opts = loadOpts(filename)
-    dt = 1.0
 
     R = dg.getCentroid(rjph[:-1], rjph[1:], 1, opts)
 
@@ -197,6 +197,7 @@ def loadSource(filename):
     srcSink = f['Data']['SourceSinkAvg'][...]
     srcCool = f['Data']['SourceCoolAvg'][...]
     srcDamp = f['Data']['SourceDampAvg'][...]
+    dt = f['Data']['Diagnostics_DT'][0]
 
     f.close()
 
@@ -204,10 +205,9 @@ def loadSource(filename):
     Nz = zkph.shape[0]-1
 
     opts = loadOpts(filename)
-    dt = 1.0
 
     R = dg.getCentroid(rjph[:-1], rjph[1:], 1, opts)
-    Z = dg.getCentroid(zkph[:-1], zkph[1:], 2, opts)
+    Z = dg.getCentroid(zkph[:-1], zkph[1:], 3, opts)
 
     r = np.empty((Nz, Nr))
     z = np.empty((Nz, Nr))
@@ -217,6 +217,48 @@ def loadSource(filename):
 
     return t, r, z, srcHydro, srcGrav, srcVisc, srcSink, srcCool, srcDamp,\
             dt, rjph, zkph
+
+
+def loadSnapshotRZ(filename):
+
+    with h5.File(filename, "r") as f:
+
+        t = f['Grid']['T'][0]
+        rjph = f['Grid']['r_jph'][...]
+        zkph = f['Grid']['z_kph'][...]
+        planetDat = f['Data']['Planets'][...]
+
+        Qrz = f['Snapshot']['Qrz'][...]
+    
+    Nr = rjph.shape[0]-1
+    Nz = zkph.shape[0]-1
+
+    opts = loadOpts(filename)
+
+    R = dg.getCentroid(rjph[:-1], rjph[1:], 1, opts)
+    Z = dg.getCentroid(zkph[:-1], zkph[1:], 3, opts)
+
+    r = np.empty((Nz, Nr))
+    z = np.empty((Nz, Nr))
+
+    r[:, :] = R[None, :]
+    z[:, :] = Z[:, None]
+
+    return t, r, z, Qrz, rjph, zkph, planetDat
+
+
+def loadSnapshotArr(filename):
+
+    with h5.File(filename, "r") as f:
+
+        t = f['Grid']['T'][0]
+        rjph = f['Grid']['r_jph'][...]
+        zkph = f['Grid']['z_kph'][...]
+        planetDat = f['Data']['Planets'][...]
+
+        Qarr = f['Snapshot']['Qarr'][...]
+
+    return t, Qarr, rjph, zkph, planetDat
 
 
 def plotAx(ax, x, y, xscale, yscale, xlabel, ylabel, *args, **kwargs):

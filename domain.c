@@ -9,6 +9,7 @@
 #include "report.h"
 #include "riemann.h"
 #include "sink.h"
+#include "output.h"
 
 void setICparams( struct domain * );
 void setHlldParams( struct domain * );
@@ -62,41 +63,11 @@ void setupDomain( struct domain * theDomain ){
    }
    setupPlanets(theDomain);
 
-   int num_tools = num_diagnostics();
-   theDomain->num_tools = num_tools;
-   theDomain->theTools.t_avg = 0.0;
-   theDomain->theTools.Qrz = (double *) malloc( Nr*Nz*num_tools*sizeof(double) );
-   theDomain->theTools.F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                               * sizeof(double));
-   theDomain->theTools.Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                   * sizeof(double));
-   theDomain->theTools.RK_F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                  * sizeof(double));
-   theDomain->theTools.RK_Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
-                                                      * sizeof(double));
-   theDomain->theTools.F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                               * sizeof(double));
-   theDomain->theTools.Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                   * sizeof(double));
-   theDomain->theTools.RK_F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                  * sizeof(double));
-   theDomain->theTools.RK_Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
-                                                      * sizeof(double));
-   
-   theDomain->theTools.S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Sgrav = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Svisc = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Ssink = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Scool = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.Sdamp = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.RK_S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-   theDomain->theTools.RK_Sgrav = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Svisc = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Ssink = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Scool = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-   theDomain->theTools.RK_Sdamp = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    //Setup Diagnostics & Snapshot
 
-   zero_diagnostics(theDomain);
+    setup_diagnostics(theDomain);
+    setup_snapshot(theDomain);
+
 
     //Setup independent of node layout: pick the right rand()'s
     double Pmax = theDomain->phi_max;
@@ -347,28 +318,9 @@ void freeDomain( struct domain * theDomain ){
    if(theDomain->pl_RK_aux != NULL)
       free( theDomain->pl_RK_aux);
 
-   free( theDomain->theTools.Qrz );
-   free( theDomain->theTools.F_r );
-   free( theDomain->theTools.Fvisc_r );
-   free( theDomain->theTools.F_z );
-   free( theDomain->theTools.Fvisc_z );
-   free( theDomain->theTools.RK_F_r );
-   free( theDomain->theTools.RK_Fvisc_r );
-   free( theDomain->theTools.RK_F_z );
-   free( theDomain->theTools.RK_Fvisc_z );
-   
-   free( theDomain->theTools.S );
-   free( theDomain->theTools.Sgrav );
-   free( theDomain->theTools.Svisc );
-   free( theDomain->theTools.Ssink );
-   free( theDomain->theTools.Scool );
-   free( theDomain->theTools.Sdamp );
-   free( theDomain->theTools.RK_S );
-   free( theDomain->theTools.RK_Sgrav );
-   free( theDomain->theTools.RK_Svisc );
-   free( theDomain->theTools.RK_Ssink );
-   free( theDomain->theTools.RK_Scool );
-   free( theDomain->theTools.RK_Sdamp );
+
+   free_diagnostics(&(theDomain->theTools));
+   free_snapshot(&(theDomain->theSnap));
 
    free( theDomain->fIndex_r );
    free( theDomain->fIndex_z );
@@ -403,10 +355,6 @@ void check_dt( struct domain * theDomain , double * dt ){
    if( check ) theDomain->check_plz = 1;
 
 }
-
-void report( struct domain * );
-void snapshot( struct domain * , char * );
-void output( struct domain * , char * );
 
 void possiblyOutput( struct domain * theDomain , int override ){
 
@@ -457,9 +405,11 @@ void possiblyOutput( struct domain * theDomain , int override ){
    if( (theDomain->nsnp < n0 && Nsnp>0) || override ){
       theDomain->nsnp = n0;
       char filename[256];
-      if(!override) sprintf( filename , "snapshot_%04d" , n0 );
-      else sprintf( filename , "snapshot" );
-      //snapshot( theDomain , filename );
+      if(!override)
+          sprintf( filename , "snapshot_%06d" , n0 );
+      else
+          sprintf( filename , "snapshot_output" );
+      snapshot( theDomain , filename );
    }
 
 }

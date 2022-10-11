@@ -192,21 +192,13 @@ double get_cs2( const double *x ){
         double xyz[3];
         get_xyz(x, xyz);
 
-        double gx = xyz[0];
-        double gy = xyz[1];
         int pi;
         double phip = 0.0;
  
-        for (pi = 0; pi<Npl; pi++)
-        {
-            double px, py, pr;
-            px = thePlanets[pi].xyz[0];
-            py = thePlanets[pi].xyz[1];
-            pr = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy));
-            phip += phigrav( thePlanets[pi].M , pr , thePlanets[pi].eps , thePlanets[pi].type );
-        }
+        for(pi = 0; pi < Npl; pi++)
+            phip -= planetaryPotential(thePlanets+pi, xyz);
 
-        cs2 = phip/(Mach*Mach);        
+        cs2 = fabs(phip)/(Mach*Mach);        
     }
     else
         cs2 = 1.0;
