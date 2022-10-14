@@ -199,6 +199,7 @@ void onestep( struct domain * theDomain , double RK , double dt , int first_step
 
    prof_tick(theDomain->prof, PROF_CLEAN);
    clean_pi( theDomain );
+   set_cell_xyz(theDomain);
    prof_tock(theDomain->prof, PROF_CLEAN);
 
    prof_tick(theDomain->prof, PROF_C2P);
