@@ -12,6 +12,7 @@ RESTART  = h5in
 PLANETS  = none
 HLLD     = hlld
 ANALYSIS = diag_euler
+REPORT   = rep_none
 
 METRIC   = flat_rpz
 FRAME    = normal

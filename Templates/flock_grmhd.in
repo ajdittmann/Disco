@@ -6,12 +6,13 @@
 INITIAL  = flock_grmhd
 HYDRO    = grmhd2
 GEOMETRY = cylindrical
-BOUNDARY = fixed
+BOUNDARY = fixed3d
 OUTPUT   = h5out
 RESTART  = h5in
 PLANETS  = none
 HLLD     = hlld_grmhd
 ANALYSIS = diag_euler
+REPORT   = rep_none
 
 METRIC   = schw_ks_eq_rpz
 FRAME    = normal

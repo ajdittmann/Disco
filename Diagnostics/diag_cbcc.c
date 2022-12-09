@@ -16,7 +16,7 @@ void setDiagParams( struct domain * theDomain )
 
 int num_diagnostics(void)
 {
-    return(17);
+    return(15);
 }
 
 int num_snapshot_rz(void)
@@ -78,18 +78,16 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     planetaryForce( theDomain->thePlanets + 0, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
     Qrz[9] = rho * r * Fp;				//Torque density from pl 0
-    Qrz[10] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
     planetaryForce( theDomain->thePlanets + 1, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
-    Qrz[11] = rho * r * Fp;				//Torque density from pl 1
-    Qrz[12] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+    Qrz[10] = rho * r * Fp;				//Torque density from pl 1
 
     double cos2p = (cosp - sinp) * (cosp + sinp);
     double sin2p = 2*sinp*cosp;
-    Qrz[13]  = rho * r * cosp;
-    Qrz[14]  = rho * r * sinp;
-    Qrz[15]  = rho * r*r * cos2p;
-    Qrz[16] = rho * r*r * sin2p;
+    Qrz[11]  = rho * r * cosp;
+    Qrz[12]  = rho * r * sinp;
+    Qrz[13]  = rho * r*r * cos2p;
+    Qrz[14] = rho * r*r * sin2p;
 }
 
 

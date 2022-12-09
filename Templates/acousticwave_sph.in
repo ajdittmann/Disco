@@ -6,12 +6,13 @@
 INITIAL  = acousticwave
 HYDRO    = euler_sph
 GEOMETRY = spherical
-BOUNDARY = fixed
+BOUNDARY = fixed3d
 OUTPUT   = h5out
 RESTART  = h5in
 PLANETS  = none
 HLLD     = hlld
 ANALYSIS = diag_euler
+REPORT   = rep_none
 
 METRIC   = flat_rpz
 FRAME    = normal
