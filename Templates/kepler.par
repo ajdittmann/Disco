@@ -59,7 +59,7 @@ Adiabatic_Index		1.66666666667
 Isothermal		0
 Cs2_Profile         0   //0=Flat,1=FlatDiskMach,2=Visc,3=Sorathia
 Cs2_Par             0.0 //unused so far
-Energy_Omega        0   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep, 4=Gaussian
+Energy_Omega        2   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep, 4=Gaussian
 Energy_Omega_Par    0.0 //unused so far
 Use_Viscosity		0
 Viscosity		0.0 //2.5e-5 //.01
@@ -73,7 +73,7 @@ Eccentricity		0.0
 Drift_Rate		0.0 //-2.5e-4
 Drift_Exp		0.66666667
 Grav2D          1
-Softening       0.05
+Softening       0.00
 //Rotating Frame
 RotFrame            0       //0=off, 1=on
 RotOmega            0.0     //Angular speed of frame

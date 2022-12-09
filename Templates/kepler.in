@@ -11,7 +11,7 @@ OUTPUT   = h5out
 RESTART  = h5in
 PLANETS  = sun
 HLLD     = hlld
-ANALYSIS = diag_disk2d
+ANALYSIS = diag_none
 REPORT   = rep_none
 
 METRIC   = flat_rpz
