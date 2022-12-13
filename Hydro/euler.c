@@ -22,7 +22,6 @@ void setHydroParams( struct domain * theDomain ){
        polar_sources = 1;
 }
 
-double get_nu( const double *, const double *);
 
 int set_B_flag(void){
    return(0);
