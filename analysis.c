@@ -142,8 +142,10 @@ void zero_diagnostics( struct domain * theDomain )
 void zero_snapshot( struct domain * theDomain )
 {
     memset(theDomain->theSnap.Qrz, 0,
-            theDomain->Nr * theDomain->Nz * theDomain->theSnap.num_Qrz);
-    memset(theDomain->theSnap.Qarr, 0, theDomain->theSnap.num_Qarr);
+            theDomain->Nr * theDomain->Nz * theDomain->theSnap.num_Qrz
+            * sizeof(double));
+    memset(theDomain->theSnap.Qarr, 0, theDomain->theSnap.num_Qarr
+            * sizeof(double));
 }
 
 void avg_diagnostics( struct domain * theDomain ){
@@ -449,10 +451,10 @@ void calc_snapshot_arr(struct domain *theDomain)
     double * z_kph = theDomain->z_kph;
 
     int i,j,k,q;
-    int kmin = 0;
-    int kmax = Nz;
-    int jmin = 0;
-    int jmax = Nr;
+    int kmin = theDomain->NgZa;
+    int kmax = Nz - theDomain->NgZb;
+    int jmin = theDomain->NgRa;
+    int jmax = Nr - theDomain->NgRb;
 
     for(k=kmin; k<kmax; k++)
     {
