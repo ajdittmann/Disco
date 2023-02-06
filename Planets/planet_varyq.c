@@ -33,7 +33,7 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].omega = om;
    thePlanets[0].r     = a*mu;
    thePlanets[0].phi   = M_PI;
-   thePlanets[0].eps   = eps;
+   thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPOINTMASS;
 
 
