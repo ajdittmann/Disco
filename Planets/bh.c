@@ -15,8 +15,10 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].M     = 1.0; 
    thePlanets[0].vr    = 0.0; 
    thePlanets[0].omega = 0.0; 
+   thePlanets[0].vz    = 0.0; 
    thePlanets[0].r     = 0.0; 
    thePlanets[0].phi   = 0.0; 
+   thePlanets[0].z     = 0.0; 
    thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPW;
 }

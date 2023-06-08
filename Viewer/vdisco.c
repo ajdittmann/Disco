@@ -9,9 +9,9 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-//#include <fstream>
 
 #include <hdf5.h>
+#include "vutil.h"
 
 #include "gifer.h"
 
@@ -39,6 +39,9 @@
 #define DIAGMODE 1 // 1: checkpoints store RZ diagnostics (default,new)
                    // 0: checkpoints store R diagnostics (old)
 
+#define NUM_LAYERS 17  // number of vertical layers to cycle through
+#define NUM_ROT 12    // number of rotations to cycle through
+
 static int WindowWidth  = 800;
 static int WindowHeight = 600;
  
@@ -53,6 +56,7 @@ int cmap = 6;
 int draw_1d = 0;
 int draw_bar = 0;
 int draw_t   = 0;
+int t_orb   = 0;
 int draw_spiral = 0;
 int draw_jet = 0;
 int draw_planet = 0;
@@ -78,7 +82,7 @@ double maxval = -HUGE_VAL;
 double minval = HUGE_VAL;
 
 double t;
-int Nr,Nz,Nq,Npl,NpDat,N1d,Nc,KK, layer;
+int Nr,Nz,Nq,Npl,NpDat,N1d,Nc,KK, layer, rot_idx;
 int * Np = NULL;
 double * r_jph = NULL;
 double * z_kph = NULL;
@@ -178,101 +182,6 @@ void getMaxMin(void){
    //if( floors ) minval = log( getval( theZones[0][Np[0]-1] , q ) )/log(10.);
 }
 
-void getH5dims( char * file , char * group , char * dset , hsize_t * dims ){
-   hid_t h5fil = H5Fopen( file , H5F_ACC_RDONLY , H5P_DEFAULT );
-   hid_t h5grp = H5Gopen1( h5fil , group );
-   hid_t h5dst = H5Dopen1( h5grp , dset );
-   hid_t h5spc = H5Dget_space( h5dst );
-
-   H5Sget_simple_extent_dims( h5spc , dims , NULL);
-
-   H5Sclose( h5spc );
-   H5Dclose( h5dst );
-   H5Gclose( h5grp );
-   H5Fclose( h5fil );
-}
-
-void readSimple( char * file , char * group , char * dset , void * data , hid_t type ){
-   hid_t h5fil = H5Fopen( file , H5F_ACC_RDONLY , H5P_DEFAULT );
-   hid_t h5grp = H5Gopen1( h5fil , group );
-   hid_t h5dst = H5Dopen1( h5grp , dset );
-
-   H5Dread( h5dst , type , H5S_ALL , H5S_ALL , H5P_DEFAULT , data );
-
-   H5Dclose( h5dst );
-   H5Gclose( h5grp );
-   H5Fclose( h5fil );
-}
-
-void readString(char *file, char *group, char *dset, char *buf, int len)
-{
-   hid_t strtype = H5Tcopy(H5T_C_S1);
-   H5Tset_size(strtype, H5T_VARIABLE);
-
-   hid_t h5fil = H5Fopen( file , H5F_ACC_RDONLY , H5P_DEFAULT );
-   hid_t h5grp = H5Gopen1( h5fil , group );
-
-   if(!H5Lexists(h5grp, dset, H5P_DEFAULT))
-   {
-       buf[0] = '\0';
-       return;
-   }
-   hid_t h5dst = H5Dopen1( h5grp , dset );
-
-   hid_t space = H5Dget_space(h5dst);
-   hsize_t dims[1];
-   H5Sget_simple_extent_dims(space, dims, NULL);
-
-   char **rdata = (char **)malloc(dims[0] * sizeof(char *));
-   H5Dread(h5dst, strtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, rdata);
-   strncpy(buf, rdata[0], len-1);
-   buf[len-1] = '\0';
-
-   H5Dvlen_reclaim(strtype, space, H5P_DEFAULT, rdata);
-   free(rdata);
-   H5Dclose(h5dst);
-   H5Sclose(space);
-   H5Tclose(strtype);
-   H5Gclose(h5grp);
-   H5Fclose(h5fil);
-}
-
-void readPatch( char * file , char * group , char * dset , void * data , hid_t type , int dim , int * start , int * loc_size , int * glo_size){
-   hid_t h5fil = H5Fopen( file , H5F_ACC_RDONLY , H5P_DEFAULT );
-   hid_t h5grp = H5Gopen1( h5fil , group );
-   hid_t h5dst = H5Dopen1( h5grp , dset );
-
-   hsize_t mdims[dim];
-   hsize_t fdims[dim];
-
-   hsize_t fstart[dim];
-   hsize_t fstride[dim];
-   hsize_t fcount[dim];
-   hsize_t fblock[dim];
-
-   int d;
-   for( d=0 ; d<dim ; ++d ){
-      mdims[d] = loc_size[d];
-      fdims[d] = glo_size[d];
-
-      fstart[d]  = start[d];
-      fstride[d] = 1;
-      fcount[d]  = loc_size[d];
-      fblock[d]  = 1;
-   }
-   hid_t mspace = H5Screate_simple(dim,mdims,NULL);
-   hid_t fspace = H5Screate_simple(dim,fdims,NULL);
-
-   H5Sselect_hyperslab( fspace , H5S_SELECT_SET , fstart , fstride , fcount , fblock );
-
-   H5Dread( h5dst , type , mspace , fspace , H5P_DEFAULT , data );
-
-   H5Sclose( mspace );
-   H5Sclose( fspace );
-   H5Dclose( h5dst );
-   H5Gclose( h5grp );
-   H5Fclose( h5fil );
-}
 
 /* The number of our GLUT window */
 int window; 
@@ -1114,31 +1023,57 @@ void drawPlanet(double RotationAngleX, double RotationAngleY,
                     double RotationAngleZ, double camdist, double xoff,
                     double yoff, double zoff)
 {
-    glRotatef(-RotationAngleZ, 0, 0, 1);
-    glRotatef(-RotationAngleY, 0, 1, 0);
-    glRotatef(-RotationAngleX, 1, 0, 0);
+    //glRotatef(-RotationAngleZ, 0, 0, 1);
+    //glRotatef(-RotationAngleY, 0, 1, 0);
+    //glRotatef(-RotationAngleX, 1, 0, 0);
     double eps = 0.01;
     int p;
+
+    float cX = cos(RotationAngleX*M_PI/180.0);
+    float sX = sin(RotationAngleX*M_PI/180.0);
+    float cZ = cos(RotationAngleZ*M_PI/180.0);
+    float sZ = sin(RotationAngleZ*M_PI/180.0);
+
+    //float nx[3] = {1.0, 0.0, 0.0};
+    //float ny[3] = {0.0, cX, -sX};
+    //float nz[3] = {0.0, sX, cX};
+    
+    float nx[3] = {cZ,   -sZ, 0.0};
+    float ny[3] = {cX*sZ, cX*cZ, -sX};
+    float nz[3] = {sX*sX, sX*cZ, cX};
+
     for( p=0 ; p<Npl ; ++p )
     {
         double r   = thePlanets[p][0]/rescale;
         double phi = thePlanets[p][1];
+        double z   = thePlanets[p][2]/rescale;
         if( t_off && !p_off ) phi -= t;
         if( p_off ) phi -= thePlanets[1][1];
+
+        double x = r*cos(phi);
+        double y = r*sin(phi);
 
         glColor3f(0.0,0.0,0.0);
         glLineWidth(2.0);
 
         glBegin(GL_LINE_LOOP);
-        glVertex3f( r*cos(phi)-xoff+eps , r*sin(phi)-yoff+eps , camdist+.001 );
-        glVertex3f( r*cos(phi)-xoff-eps , r*sin(phi)-yoff+eps , camdist+.001 );
-        glVertex3f( r*cos(phi)-xoff-eps , r*sin(phi)-yoff-eps , camdist+.001 );
-        glVertex3f( r*cos(phi)-xoff+eps , r*sin(phi)-yoff-eps , camdist+.001 );
+        glVertex3f( x-xoff + eps*( nx[0]+ny[0]) + (camdist+0.001) * nz[0],
+                    y-yoff + eps*( nx[1]+ny[1]) + (camdist+0.001) * nz[1],
+                    z-zoff + eps*( nx[2]+ny[2]) + (camdist+0.001) * nz[2]);
+        glVertex3f( x-xoff + eps*(-nx[0]+ny[0]) + (camdist+0.001) * nz[0],
+                    y-yoff + eps*(-nx[1]+ny[1]) + (camdist+0.001) * nz[1],
+                    z-zoff + eps*(-nx[2]+ny[2]) + (camdist+0.001) * nz[2]);
+        glVertex3f( x-xoff + eps*(-nx[0]-ny[0]) + (camdist+0.001) * nz[0],
+                    y-yoff + eps*(-nx[1]-ny[1]) + (camdist+0.001) * nz[1],
+                    z-zoff + eps*(-nx[2]-ny[2]) + (camdist+0.001) * nz[2]);
+        glVertex3f( x-xoff + eps*( nx[0]-ny[0]) + (camdist+0.001) * nz[0],
+                    y-yoff + eps*( nx[1]-ny[1]) + (camdist+0.001) * nz[1],
+                    z-zoff + eps*( nx[2]-ny[2]) + (camdist+0.001) * nz[2]);
         glEnd();
     }
-    glRotatef(RotationAngleX, 1, 0, 0);
-    glRotatef(RotationAngleY, 0, 1, 0);
-    glRotatef(RotationAngleZ, 0, 0, 1);
+    //glRotatef(RotationAngleX, 1, 0, 0);
+    //glRotatef(RotationAngleY, 0, 1, 0);
+    //glRotatef(RotationAngleZ, 0, 0, 1);
 }
 
 void drawSpiral(double RotationAngleX, double RotationAngleY,
@@ -1221,7 +1156,10 @@ void drawText(double RotationAngleX, double RotationAngleY,
                     double yoff, double zoff)
 {
     char tprint[256];
-    sprintf(tprint,"t = %.2e",t);
+    if(t_orb)
+        sprintf(tprint,"t/2pi = %.2e",t/(2*M_PI));
+    else
+        sprintf(tprint,"t = %.2e",t);
     glutPrint( -.6 , .5 , camdist + .001 , glutFonts[6] , tprint , 0.0f, 0.0f , 0.0f , 0.5f );
     //    sprintf(tprint,"uMax = %.1f",uMax);
     //    glutPrint( -.8 , .4 , camdist + .001 , glutFonts[6] , tprint , 0.0f, 0.0f , 0.0f , 0.5f );
@@ -1270,6 +1208,8 @@ void DrawGLScene(){
    double RotationAngleX = 0.0;
    double RotationAngleY = 0.0;
    double RotationAngleZ = 0.0;
+
+   RotationAngleZ += rot_idx * 360.0 / NUM_ROT;
 
    if( dim3d==1 ) RotationAngleX = -60.0;
    if( dim3d==2 ) RotationAngleX = -90.0;
@@ -1369,7 +1309,8 @@ void keyPressed(unsigned char key, int x, int y)
    if( key == 'h' ) help_screen = !help_screen;
    if( key == 'l' ) logscale = !logscale;
    if( key == 's' ) draw_scale = !draw_scale;
-   if( key == 't' ) draw_t = !draw_t;
+   if( key == 't' ) {t_orb = 0;  draw_t = !draw_t;}
+   if( key == 'T' ) {t_orb = 1;  draw_t = !draw_t;}
    if( key == 'u' ) draw_1d = !draw_1d;
    if( key == 'x' ){
       rescale *= 1.3;
@@ -1403,29 +1344,40 @@ void keyPressed(unsigned char key, int x, int y)
    if( key == 'q' )
    {
        layer++;
-       if(layer > 8)
+       if(layer >= NUM_LAYERS)
           layer = 0;
 
-       if(layer == 0)
-           KK = 0;
-       else if(layer == 1)
-           KK = Nz/8;
-       else if(layer == 2)
-           KK = Nz/4;
-       else if(layer == 3)
-           KK = (3*Nz)/8;
-       else if(layer == 4)
-           KK = Nz/2;
-       else if(layer == 5)
-           KK = (5*Nz)/8;
-       else if(layer == 6)
-           KK = (3*Nz)/4;
-       else if(layer == 7)
-           KK = (7*Nz)/8;
-       else
+       KK = (layer * Nz) / (NUM_LAYERS-1);
+       if(KK > Nz - 1 )
            KK = Nz - 1;
+
        loadSliceZ(filename, KK);
        loadDiagnostics(filename, KK);
+   }
+   if( key == 'Q' )
+   {
+       layer--;
+       if(layer < 0)
+          layer = NUM_LAYERS-1;
+
+       KK = (layer * Nz) / (NUM_LAYERS-1);
+       if(KK > Nz - 1 )
+           KK = Nz - 1;
+
+       loadSliceZ(filename, KK);
+       loadDiagnostics(filename, KK);
+   }
+   if( key == 'r' )
+   {
+       rot_idx++;
+       if(rot_idx >= NUM_ROT)
+          rot_idx = 0;
+   }
+   if( key == 'R' )
+   {
+       rot_idx--;
+       if(rot_idx < 0)
+          rot_idx = NUM_ROT-1;
    }
    if( key == ',')
    {
@@ -1629,7 +1581,7 @@ void loadPlanets(char *filename)
 
        thePlanets = (double **) malloc( Npl*sizeof(double *) );
        for( p=0 ; p<Npl ; ++p ){ 
-          thePlanets[p] = (double *) malloc( 2*sizeof(double) );
+          thePlanets[p] = (double *) malloc( 3*sizeof(double) );
        }
    }
    
@@ -1646,6 +1598,10 @@ void loadPlanets(char *filename)
       printf("\n");
       thePlanets[p][0] = thisPlanet[3];
       thePlanets[p][1] = thisPlanet[4];
+      if(NpDat >= 8)
+          thePlanets[p][2] = thisPlanet[8];
+      else
+          thePlanets[p][2] = 0.0;
    }
 }
 
@@ -1869,7 +1825,8 @@ int main(int argc, char *argv[])
    loadPlanets(filename);
 
    KK = Nz/2;
-   layer = 4;
+   layer = NUM_LAYERS / 2;
+   rot_idx = 0;
    loadSliceZ(filename, KK);
    loadSlicePhi(filename);
    loadDiagnostics(filename, KK);

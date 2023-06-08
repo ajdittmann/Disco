@@ -87,9 +87,9 @@ void setupGrid( struct domain * theDomain ){
    theDomain->Nz_glob = Nz_glob;
    printf("Rank = %d, Nr = %d, Nz = %d\n",theDomain->rank,Nr,Nz);
 
-   theDomain->Np    = (int *)    malloc( Nr*Nz*sizeof(int) );
-   theDomain->r_jph = (double *) malloc( (Nr+1)*sizeof(double) );
-   theDomain->z_kph = (double *) malloc( (Nz+1)*sizeof(double) );
+   theDomain->Np    = (int *)    malloc( ((size_t) (Nr*Nz))*sizeof(int) );
+   theDomain->r_jph = (double *) malloc( ((size_t) (Nr+1))*sizeof(double) );
+   theDomain->z_kph = (double *) malloc( ((size_t) (Nz+1))*sizeof(double) );
 
    ++(theDomain->r_jph);
    ++(theDomain->z_kph);

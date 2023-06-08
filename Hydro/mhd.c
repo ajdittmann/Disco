@@ -28,11 +28,15 @@ int set_B_flag(void){
 }
 
 double get_omega( const double * prim , const double * x ){
+   UNUSED(x);
    return( prim[UPP] );
 }
 
 
 void prim2cons( const double * prim , double * cons , const double * x , double dV, const double *xp, const double *xm){
+
+   UNUSED(xp);
+   UNUSED(xm);
 
    double r = x[0];
    double rho = prim[RHO];
@@ -136,6 +140,8 @@ void getUstar( const double * prim , double * Ustar , const double * x , double 
 }
 
 void cons2prim( const double * cons , double * prim , const double * x , double dV, const double *xp, const double *xm ){
+   UNUSED(xp);
+   UNUSED(xm);
 
    double r = x[0];
    
@@ -185,6 +191,8 @@ void cons2prim( const double * cons , double * prim , const double * x , double 
 }
 
 void flux( const double * prim , double * flux , const double * x , const double * n, const double *xp, const double *xm ){
+   UNUSED(xp);
+   UNUSED(xm);
 
    double r = x[0];
    double rho = prim[RHO];
@@ -224,6 +232,9 @@ void flux( const double * prim , double * flux , const double * x , const double
 
 void source( const double * prim , double * cons , const double * xp , const double * xm , double dVdt ){
    
+   UNUSED(xp);
+   UNUSED(xm);
+
    double rp = xp[0];
    double rm = xm[0];
    double dphi = get_dp(xp[1],xm[1]);
@@ -272,11 +283,30 @@ void source( const double * prim , double * cons , const double * xp , const dou
 
 void visc_flux(const double * prim, const double * gradr, const double * gradp,
                const double * gradz, double * flux,
-               const double * x, const double * n){}
+               const double * x, const double * n)
+{
+   UNUSED(prim); 
+   UNUSED(gradr); 
+   UNUSED(gradp); 
+   UNUSED(gradz); 
+   UNUSED(flux); 
+   UNUSED(x);
+   UNUSED(n);
+}
 
 void visc_source(const double * prim, const double * gradr, const double *gradp,
                  const double * gradz, double * cons, const double *xp,
-                 const double *xm, double dVdt){}
+                 const double *xm, double dVdt)
+{
+   UNUSED(prim); 
+   UNUSED(gradr); 
+   UNUSED(gradp); 
+   UNUSED(gradz); 
+   UNUSED(cons); 
+   UNUSED(xp);
+   UNUSED(xm);
+   UNUSED(dVdt);
+}
 
 void prim_to_E(const double *prim, double *E, const double *x)
 {
@@ -510,6 +540,7 @@ double getReynolds( const double * prim , double w , const double * x , double d
 
 void reflect_prims(double * prim, const double * x, int dim)
 {
+    UNUSED(x);
     //dim == 0: r, dim == 1: p, dim == 2: z
     if(dim == 0)
         prim[URR] = -prim[URR];
@@ -533,5 +564,6 @@ double bfield_scale_factor(double x, int dim)
 
 double getCartInterpWeight(const double *x)
 {
+    UNUSED(x);
     return 0.0;
 }

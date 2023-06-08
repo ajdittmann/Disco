@@ -63,6 +63,8 @@ void initial(double *prim, double *x)
         double Phi = -1.0 / sqrt(r*r + z*z);
 
         rho = rho0 * exp(-(Phi - Phi0) / cs2);
+        if(rho < rho_atm)
+            rho = rho_atm;
         vr *= rho/rho0;
     }
     else

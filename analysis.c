@@ -18,7 +18,7 @@ void setup_diagnostics(struct domain *theDomain)
     if(num_tools == 0)
         theTools->Qrz = NULL;
     else
-        theTools->Qrz = (double *) malloc(Nr * Nz * num_tools
+        theTools->Qrz = (double *) malloc(((size_t) (Nr * Nz * num_tools))
                                           * sizeof(double));
 
     if(Nr == 1)
@@ -30,13 +30,13 @@ void setup_diagnostics(struct domain *theDomain)
     }
     else
     {
-        theTools->F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+        theTools->F_r = (double *) malloc(((size_t) ((Nr-1) * Nz * NUM_Q))
                                             * sizeof(double));
-        theTools->Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+        theTools->Fvisc_r = (double *) malloc(((size_t) ((Nr-1) * Nz * NUM_Q))
                                             * sizeof(double));
-        theTools->RK_F_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+        theTools->RK_F_r = (double *) malloc(((size_t) ((Nr-1) * Nz * NUM_Q))
                                             * sizeof(double));
-        theTools->RK_Fvisc_r = (double *) malloc((Nr-1) * Nz * NUM_Q
+        theTools->RK_Fvisc_r = (double *) malloc(((size_t)((Nr-1) * Nz * NUM_Q))
                                             * sizeof(double));
     }
     if(Nz == 1)
@@ -48,28 +48,40 @@ void setup_diagnostics(struct domain *theDomain)
     }
     else
     {
-        theTools->F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+        theTools->F_z = (double *) malloc(((size_t) (Nr * (Nz-1) * NUM_Q))
                                                 * sizeof(double));
-        theTools->Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+        theTools->Fvisc_z = (double *) malloc(((size_t) (Nr * (Nz-1) * NUM_Q))
                                                 * sizeof(double));
-        theTools->RK_F_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+        theTools->RK_F_z = (double *) malloc(((size_t) (Nr * (Nz-1) * NUM_Q))
                                                 * sizeof(double));
-        theTools->RK_Fvisc_z = (double *) malloc(Nr * (Nz-1) * NUM_Q
+        theTools->RK_Fvisc_z = (double *) malloc(((size_t)(Nr * (Nz-1) * NUM_Q))
                                                 * sizeof(double));
     }
    
-    theTools->S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->Sgrav = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->Svisc = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->Ssink = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->Scool = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->Sdamp = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->RK_S = (double *) malloc( Nr*Nz*NUM_Q*sizeof(double) );
-    theTools->RK_Sgrav = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-    theTools->RK_Svisc = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-    theTools->RK_Ssink = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-    theTools->RK_Scool = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
-    theTools->RK_Sdamp = (double *) malloc(Nr*Nz*NUM_Q*sizeof(double));
+    theTools->S = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->Sgrav = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->Svisc = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->Ssink = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->Scool = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->Sdamp = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->RK_S = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double) );
+    theTools->RK_Sgrav = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double));
+    theTools->RK_Svisc = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double));
+    theTools->RK_Ssink = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double));
+    theTools->RK_Scool = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double));
+    theTools->RK_Sdamp = (double *) malloc( ((size_t) (Nr*Nz*NUM_Q))
+                                        * sizeof(double));
 
     zero_diagnostics(theDomain);
 }
@@ -90,12 +102,14 @@ void setup_snapshot(struct domain *theDomain)
     if(num_Qrz == 0)
         theSnap->Qrz = NULL;
     else
-        theSnap->Qrz = (double *) malloc(Nr * Nz * num_Qrz * sizeof(double));
+        theSnap->Qrz = (double *) malloc(((size_t) (Nr * Nz * num_Qrz))
+                                        * sizeof(double));
 
     if(num_Qarr == 0)
         theSnap->Qarr = NULL;
     else
-        theSnap->Qarr = (double *) malloc(Nr * Nz * num_Qarr * sizeof(double));
+        theSnap->Qarr = (double *) malloc(((size_t) (Nr * Nz * num_Qarr))
+                                        * sizeof(double));
 
     zero_snapshot(theDomain);
 }
@@ -109,32 +123,32 @@ void zero_diagnostics( struct domain * theDomain )
 
     if(Nq > 0)
     {
-        memset(theTools->Qrz, 0, Nz*Nr*Nq * sizeof(double));
+        memset(theTools->Qrz, 0, ((size_t) (Nz*Nr*Nq)) * sizeof(double));
     }
 
     if(Nr > 1)
     {
-        memset(theTools->F_r,        0, Nz*(Nr-1)*NUM_Q * sizeof(double));
-        memset(theTools->Fvisc_r,    0, Nz*(Nr-1)*NUM_Q * sizeof(double));
-        memset(theTools->RK_F_r,     0, Nz*(Nr-1)*NUM_Q * sizeof(double));
-        memset(theTools->RK_Fvisc_r, 0, Nz*(Nr-1)*NUM_Q * sizeof(double));
+        memset(theTools->F_r,        0, ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
+        memset(theTools->Fvisc_r,    0, ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
+        memset(theTools->RK_F_r,     0, ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
+        memset(theTools->RK_Fvisc_r, 0, ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
     }
 
     if(Nz > 1)
     {
-        memset(theTools->F_z,        0, (Nz-1)*Nr*NUM_Q * sizeof(double));
-        memset(theTools->Fvisc_z,    0, (Nz-1)*Nr*NUM_Q * sizeof(double));
-        memset(theTools->RK_F_z,     0, (Nz-1)*Nr*NUM_Q * sizeof(double));
-        memset(theTools->RK_Fvisc_z, 0, (Nz-1)*Nr*NUM_Q * sizeof(double));
+        memset(theTools->F_z,        0, ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
+        memset(theTools->Fvisc_z,    0, ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
+        memset(theTools->RK_F_z,     0, ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
+        memset(theTools->RK_Fvisc_z, 0, ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
     }
 
 
-    memset(theTools->S,     0, Nz*Nr*NUM_Q * sizeof(double));
-    memset(theTools->Sgrav, 0, Nz*Nr*NUM_Q * sizeof(double));
-    memset(theTools->Svisc, 0, Nz*Nr*NUM_Q * sizeof(double));
-    memset(theTools->Ssink, 0, Nz*Nr*NUM_Q * sizeof(double));
-    memset(theTools->Scool, 0, Nz*Nr*NUM_Q * sizeof(double));
-    memset(theTools->Sdamp, 0, Nz*Nr*NUM_Q * sizeof(double));
+    memset(theTools->S,     0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
+    memset(theTools->Sgrav, 0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
+    memset(theTools->Svisc, 0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
+    memset(theTools->Ssink, 0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
+    memset(theTools->Scool, 0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
+    memset(theTools->Sdamp, 0, ((size_t) (Nz*Nr*NUM_Q)) * sizeof(double));
 
     theTools->t_avg = 0.0;
 }
@@ -142,9 +156,10 @@ void zero_diagnostics( struct domain * theDomain )
 void zero_snapshot( struct domain * theDomain )
 {
     memset(theDomain->theSnap.Qrz, 0,
-            theDomain->Nr * theDomain->Nz * theDomain->theSnap.num_Qrz
+            ((size_t) 
+                (theDomain->Nr * theDomain->Nz * theDomain->theSnap.num_Qrz))
             * sizeof(double));
-    memset(theDomain->theSnap.Qarr, 0, theDomain->theSnap.num_Qarr
+    memset(theDomain->theSnap.Qarr, 0, ((size_t) theDomain->theSnap.num_Qarr)
             * sizeof(double));
 }
 
@@ -270,25 +285,31 @@ void copy_RK_diag(struct domain *theDomain)
     if(Nr > 1)
     {
         memcpy(theTools->RK_F_r, theTools->F_r,
-               Nz*(Nr-1)*NUM_Q*sizeof(double));
+               ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
         memcpy(theTools->RK_Fvisc_r, theTools->Fvisc_r,
-               Nz*(Nr-1)*NUM_Q*sizeof(double));
+               ((size_t) (Nz*(Nr-1)*NUM_Q)) * sizeof(double));
     }
 
     if(Nz > 1)
     {
         memcpy(theTools->RK_F_z, theTools->F_z,
-               (Nz-1)*Nr*NUM_Q*sizeof(double));
+               ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
         memcpy(theTools->RK_Fvisc_z, theTools->Fvisc_z,
-               (Nz-1)*Nr*NUM_Q*sizeof(double));
+               ((size_t) ((Nz-1)*Nr*NUM_Q)) * sizeof(double));
     }
 
-    memcpy(theTools->RK_S,     theTools->S,     Nr*Nz*NUM_Q*sizeof(double));
-    memcpy(theTools->RK_Sgrav, theTools->Sgrav, Nr*Nz*NUM_Q*sizeof(double));
-    memcpy(theTools->RK_Svisc, theTools->Svisc, Nr*Nz*NUM_Q*sizeof(double));
-    memcpy(theTools->RK_Ssink, theTools->Ssink, Nr*Nz*NUM_Q*sizeof(double));
-    memcpy(theTools->RK_Scool, theTools->Scool, Nr*Nz*NUM_Q*sizeof(double));
-    memcpy(theTools->RK_Sdamp, theTools->Sdamp, Nr*Nz*NUM_Q*sizeof(double));
+    memcpy(theTools->RK_S,     theTools->S, 
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
+    memcpy(theTools->RK_Sgrav, theTools->Sgrav,
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
+    memcpy(theTools->RK_Svisc, theTools->Svisc,
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
+    memcpy(theTools->RK_Ssink, theTools->Ssink,
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
+    memcpy(theTools->RK_Scool, theTools->Scool,
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
+    memcpy(theTools->RK_Sdamp, theTools->Sdamp,
+            ((size_t) (Nr*Nz*NUM_Q)) *sizeof(double));
 }
 
 
@@ -305,8 +326,8 @@ void add_diagnostics( struct domain * theDomain , double dt ){
 
    double temp_sum[Nr*Nz*Nq];
    double temp_vol[Nr*Nz];
-   memset( temp_sum, 0 , Nr*Nz*Nq*sizeof(double) );
-   memset( temp_vol, 0 , Nr*Nz*sizeof(double) );
+   memset( temp_sum, 0 , ((size_t) (Nr*Nz*Nq)) * sizeof(double) );
+   memset( temp_vol, 0 , ((size_t) (Nr*Nz)) * sizeof(double) );
    int i,j,k,q;
    int kmin = 0;
    int kmax = Nz;

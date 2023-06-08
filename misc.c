@@ -179,8 +179,8 @@ void set_wcell( struct domain * theDomain ){
 
 void clear_cell( struct cell * );
 
-void regrid( struct domain * theDomain ){
 /*
+void regrid( struct domain * theDomain ){
    struct cell ** theCells = theDomain->theCells;
    int Nt = theDomain->Nt;
    int Np = theDomain->Np;
@@ -229,8 +229,8 @@ void regrid( struct domain * theDomain ){
       }
    }
    }
-*/
 }
+*/
 
 
 void adjust_RK_cons( struct domain * theDomain , double RK ){
@@ -246,9 +246,11 @@ void adjust_RK_cons( struct domain * theDomain , double RK ){
          for( q=0 ; q<NUM_Q ; ++q ){
             c->cons[q] = (1.-RK)*c->cons[q] + RK*c->RKcons[q];
          }
+#if NUM_FACES > 0
          for( q=0 ; q<NUM_FACES ; ++q ){
             c->Phi[q] = (1.-RK)*c->Phi[q] + RK*c->RK_Phi[q];
          }
+#endif
       }
    }
 }
@@ -591,7 +593,7 @@ void setup_faces( struct domain * theDomain , int dim ){
 
    buildfaces( theDomain , dim , 0 );
    int Nf = nn[NN];
-   *theFaces = (struct face *) malloc( Nf*sizeof(struct face) );
+   *theFaces = (struct face *) malloc(((size_t) Nf) * sizeof(struct face));
    buildfaces( theDomain , dim , 1 );
 
 }
@@ -696,6 +698,7 @@ void longandshort( struct domain * theDomain , double * L , double * S , int * i
 
 }
 
+/*
 void AMRsweep( struct domain * theDomain , struct cell ** swptr , int jk ){
 
    double * r_jph = theDomain->r_jph;
@@ -809,6 +812,7 @@ void AMR( struct domain * theDomain ){
       AMRsweep( theDomain , theCells+jk , jk );
    }
 }
+*/
 
 void print_welcome()
 {

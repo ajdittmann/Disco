@@ -139,6 +139,7 @@ double get_om1( const double *x){
 }
   
 double get_om2( const double *x){
+    UNUSED(x);
     return 0.0;
 }
 
@@ -227,8 +228,8 @@ double get_nu(const double x[], const double prim[]){
     for (pi=0; pi<Npl; pi++){
       double px = thePlanets[pi].xyz[0];
       double py = thePlanets[pi].xyz[1];
-      double eps = thePlanets[pi].eps;
-      script_r = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy) + eps*eps);
+      double pl_eps = thePlanets[pi].eps;
+      script_r = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy) + pl_eps*pl_eps);
       powsum += thePlanets[pi].M*pow(script_r, viscPar);
     }
     nu *= powsum;

@@ -57,8 +57,8 @@ void generate_log( struct domain * theDomain ){
        prof_secs[i] = ((double)theDomain->prof->elapsed_ticks[i])
                         / CLOCKS_PER_SEC;
 
-       prof_time[i] = theDomain->prof->elapsed_time[i].tv_sec
-                        + 1.0e-9 * theDomain->prof->elapsed_time[i].tv_nsec;
+       prof_time[i] = ((double) theDomain->prof->elapsed_time[i].tv_sec)
+                + 1.0e-9 * ((double) theDomain->prof->elapsed_time[i].tv_nsec);
    }
 
    if( theDomain->rank==0 ){
@@ -365,8 +365,8 @@ void prof_tock(struct profiler *prof, int label)
 
     prof->elapsed_ticks[label] += end_clock - prof->ticks[label];
 
-    struct timespec dt = {difftime(end_time.tv_sec,
-                                         prof->time[label].tv_sec),
+    struct timespec dt = {((long) difftime(end_time.tv_sec,
+                                         prof->time[label].tv_sec)),
                                 end_time.tv_nsec - prof->time[label].tv_nsec};
     
     prof->elapsed_time[label].tv_sec += dt.tv_sec;

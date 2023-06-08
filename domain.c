@@ -28,10 +28,12 @@ void setupDomain( struct domain * theDomain ){
    int Nr = theDomain->Nr;
    int Nz = theDomain->Nz;
    int * Np = theDomain->Np;
-   theDomain->theCells = (struct cell **) malloc( Nr*Nz*sizeof(struct cell *) );
+   theDomain->theCells = (struct cell **) malloc(((size_t) (Nr*Nz))
+                                                 * sizeof(struct cell *) );
    int jk;
    for( jk=0 ; jk<Nr*Nz ; ++jk ){
-      theDomain->theCells[jk] = (struct cell *) malloc( Np[jk]*sizeof(struct cell) );
+      theDomain->theCells[jk] = (struct cell *) malloc(((size_t) Np[jk])
+                                                       * sizeof(struct cell) );
    }
 
    setGravParams( theDomain );
@@ -48,18 +50,18 @@ void setupDomain( struct domain * theDomain ){
    if(Npl > 0)
    {
        theDomain->thePlanets = (struct planet *) malloc(
-                                    Npl * sizeof(struct planet) );
+                            ((size_t) Npl) * sizeof(struct planet) );
 
        theDomain->pl_gas_track = (double *) malloc(
-                                    Npl * NUM_PL_INTEGRALS * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_INTEGRALS)) * sizeof(double));
        theDomain->pl_kin = (double *) malloc(
-                                    Npl * NUM_PL_KIN * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_KIN)) * sizeof(double));
        theDomain->pl_RK_kin = (double *) malloc(
-                                    Npl * NUM_PL_KIN * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_KIN)) * sizeof(double));
        theDomain->pl_aux = (double *) malloc(
-                                    Npl * NUM_PL_AUX * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_AUX)) * sizeof(double));
        theDomain->pl_RK_aux = (double *) malloc(
-                                    Npl * NUM_PL_AUX * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_AUX)) * sizeof(double));
    }
    setupPlanets(theDomain);
 
@@ -132,8 +134,10 @@ void setupDomain( struct domain * theDomain ){
    theDomain->N_ftracks_r = get_num_rzFaces( Nr , Nz , 1 );
    theDomain->N_ftracks_z = get_num_rzFaces( Nr , Nz , 2 );
 
-   theDomain->fIndex_r = (int *) malloc( (theDomain->N_ftracks_r+1)*sizeof(int) );
-   theDomain->fIndex_z = (int *) malloc( (theDomain->N_ftracks_z+1)*sizeof(int) );
+   theDomain->fIndex_r = (int *) malloc(((size_t)(theDomain->N_ftracks_r+1))
+                                        * sizeof(int) );
+   theDomain->fIndex_z = (int *) malloc(((size_t)(theDomain->N_ftracks_z+1))
+                                        * sizeof(int) );
 
    setICparams( theDomain );
    setHydroParams( theDomain );
@@ -156,7 +160,9 @@ void calc_dp( struct domain * );
 void set_cell_xyz( struct domain * );
 void set_wcell( struct domain * );
 void adjust_gas( struct planet * , double * , double * , double );
+#if CT_MODE > 0
 void set_B_fields( struct domain * );
+#endif
 void subtract_omega( double * );
 void addNoise(double *prim, double *x);
 void exchangeData(struct domain *, int);
@@ -245,8 +251,9 @@ void setupCells( struct domain * theDomain ){
       exchangeData(theDomain, 0);
       if( Nz > 1 )
          exchangeData(theDomain, 1);
-
+#if CT_MODE > 0
       set_B_fields(theDomain);
+#endif
    }
 
    for( k=NgZa ; k<Nz-NgZb ; ++k ){
@@ -295,7 +302,7 @@ void freeDomain( struct domain * theDomain ){
    int Nr = theDomain->Nr;
    int Nz = theDomain->Nz;
    int jk;
-   for( jk=0 ; jk<Nr*Nz ; ++jk ){
+   for( jk=0 ; jk<Nr*Nz ; jk++ ){
       free( theDomain->theCells[jk] );
    }
    free( theDomain->theCells );

@@ -57,25 +57,45 @@ def loadCheckpointPrims(filename):
     return prim
 
 
+def loadTime(filename):
+    
+    with h5.File(filename, "r") as f:
+        t = f['Grid']['T'][0]
+
+    return t
+
+
+def loadPlanets(filename, fd=None):
+
+    if fd is None:
+        with h5.File(filename, "r") as f:
+            planetRaw = f['Data']['Planets'][...]
+    else:
+        planetRaw = fd['Data']['Planets'][...]
+
+
+    return planetRaw
+
+
 def loadCheckpoint(filename):
 
-    f = h5.File(filename, "r")
+    with h5.File(filename, "r") as f:
 
-    NUM_C = f['Opts']['NUM_C'][0]
-    NUM_N = f['Opts']['NUM_N'][0]
-    NUM_Q = NUM_N + NUM_C
+        NUM_C = f['Opts']['NUM_C'][0]
+        NUM_N = f['Opts']['NUM_N'][0]
+        NUM_Q = NUM_N + NUM_C
 
-    piph = f['Data']['Cells'][:, -1][...]
-    prim = f['Data']['Cells'][:, :NUM_Q][...]
-    Phi = f['Data']['Cells'][:, NUM_Q:-1][...]
-    index = f['Grid']['Index'][...]
-    idPhi0 = f['Grid']['Id_phi0'][...]
-    nphi = f['Grid']['Np'][...]
-    index = f['Grid']['Index'][...]
-    t = f['Grid']['T'][0]
-    riph = f['Grid']['r_jph'][...]
-    ziph = f['Grid']['z_kph'][...]
-    planetDat = f['Data']['Planets'][...]
+        piph = f['Data']['Cells'][:, -1][...]
+        prim = f['Data']['Cells'][:, :NUM_Q][...]
+        Phi = f['Data']['Cells'][:, NUM_Q:-1][...]
+        index = f['Grid']['Index'][...]
+        idPhi0 = f['Grid']['Id_phi0'][...]
+        nphi = f['Grid']['Np'][...]
+        index = f['Grid']['Index'][...]
+        t = f['Grid']['T'][0]
+        riph = f['Grid']['r_jph'][...]
+        ziph = f['Grid']['z_kph'][...]
+        planetDat = loadPlanets(filename, f)
 
     primPhi0 = np.zeros((index.shape[0], index.shape[1], prim.shape[1]))
     for k in range(index.shape[0]):

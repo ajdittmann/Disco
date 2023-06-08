@@ -2,6 +2,13 @@
 #include "paul.h"
 
 int mpiSetup( struct domain * theDomain , int argc, char * argv[] ){
+    
+    printf("Invoked as:");
+    int j;
+    for(j=0; j<argc; j++)
+        printf(" %s", argv[j]);
+    printf("\n");
+
 
 #if USE_MPI
    MPI_Comm_size(MPI_COMM_WORLD,&(theDomain->size));

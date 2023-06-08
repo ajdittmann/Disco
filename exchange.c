@@ -13,18 +13,35 @@ struct cell_lite{
    double dphi;
    double wiph;
    double xyz[3];
+#if NUM_FACES > 0
    double Phi[NUM_FACES];
    double RK_Phi[NUM_FACES];
+#endif
 };
 
 #if USE_MPI
 void generate_mpi_cell( MPI_Datatype * cell_mpi ){
 
    struct cell_lite test;
+   int blocksize[]      = {NUM_Q,NUM_Q,NUM_Q,1,1,1,3
+#if NUM_FACES > 0
+       ,NUM_FACES,NUM_FACES
+#endif
+   };
+   
+   MPI_Datatype types[] = {MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE
+#if NUM_FACES > 0
+       ,MPI_DOUBLE,MPI_DOUBLE
+#endif
+   };
+   
+#if NUM_FACES > 0
    int count = 9;
-   int blocksize[]      = {NUM_Q,NUM_Q,NUM_Q,1,1,1,3,NUM_FACES,NUM_FACES};
-   MPI_Datatype types[] = {MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE};
    MPI_Aint offsets[9];
+#else
+   int count = 7;
+   MPI_Aint offsets[7];
+#endif
 
    offsets[0] = (char *)&(test.prim)   - (char *)(&test);
    offsets[1] = (char *)&(test.cons)   - (char *)(&test);
@@ -33,8 +50,10 @@ void generate_mpi_cell( MPI_Datatype * cell_mpi ){
    offsets[4] = (char *)&(test.dphi)   - (char *)(&test);
    offsets[5] = (char *)&(test.wiph)   - (char *)(&test);
    offsets[6] = (char *)&(test.xyz)    - (char *)(&test);
+#if NUM_FACES > 0
    offsets[7] = (char *)&(test.Phi)    - (char *)(&test);
    offsets[8] = (char *)&(test.RK_Phi) - (char *)(&test);
+#endif
 
    MPI_Type_create_struct( count , blocksize , offsets , types , cell_mpi );
    MPI_Type_commit( cell_mpi );
@@ -46,9 +65,11 @@ void copy_cell_to_lite( struct cell * c , struct cell_lite * cl ){
    memcpy( cl->prim   , c->prim   , NUM_Q*sizeof(double) ); 
    memcpy( cl->cons   , c->cons   , NUM_Q*sizeof(double) ); 
    memcpy( cl->RKcons , c->RKcons , NUM_Q*sizeof(double) );
+   memcpy( cl->xyz    , c->xyz    , 3*sizeof(double) );
+#if NUM_FACES > 0
    memcpy( cl->Phi    , c->Phi    , NUM_FACES*sizeof(double) );
    memcpy( cl->RK_Phi , c->RK_Phi , NUM_FACES*sizeof(double) );
-   memcpy( cl->xyz    , c->xyz    , 3*sizeof(double) );
+#endif
    cl->piph   = c->piph;
    cl->dphi   = c->dphi;
    cl->wiph   = c->wiph; 
@@ -60,9 +81,11 @@ void copy_lite_to_cell( struct cell_lite * cl , struct cell * c ){
    memcpy( c->prim   , cl->prim   , NUM_Q*sizeof(double) ); 
    memcpy( c->cons   , cl->cons   , NUM_Q*sizeof(double) ); 
    memcpy( c->RKcons , cl->RKcons , NUM_Q*sizeof(double) );
+   memcpy( c->xyz    , cl->xyz    , 3*sizeof(double) );
+#if NUM_FACES > 0
    memcpy( c->Phi    , cl->Phi    , NUM_FACES*sizeof(double) );
    memcpy( c->RK_Phi , cl->RK_Phi , NUM_FACES*sizeof(double) );
-   memcpy( c->xyz    , cl->xyz    , 3*sizeof(double) );
+#endif
    c->piph   = cl->piph;
    c->dphi   = cl->dphi;
    c->wiph   = cl->wiph;
@@ -150,7 +173,8 @@ void generate_intbuffer( struct domain * theDomain , int rnum , int znum , int d
             Npl[ iL ] = Np[jk];
          }else if( mode==2 && ( dim_rank[dim] != 0 || Periodic ) ){ 
             Np[jk] = Npl[ iL ];
-            theCells[jk] = (struct cell *) realloc( theCells[jk] , Np[jk]*sizeof(struct cell) );
+            theCells[jk] = (struct cell *) realloc( theCells[jk] ,
+                    ((size_t) Np[jk]) * sizeof(struct cell) );
          }    
          ++iL;
 
@@ -161,7 +185,8 @@ void generate_intbuffer( struct domain * theDomain , int rnum , int znum , int d
             Npr[ iR ] = Np[jk];
          }else if( mode==2 && ( dim_rank[dim] != dim_size[dim]-1 || Periodic ) ){
             Np[jk] = Npr[ iR ];
-            theCells[jk] = (struct cell *) realloc( theCells[jk] , Np[jk]*sizeof(struct cell) );
+            theCells[jk] = (struct cell *) realloc( theCells[jk] ,
+                    ((size_t) Np[jk]) * sizeof(struct cell) );
          }    
          ++iR;
 
@@ -273,13 +298,13 @@ void exchangeData( struct domain * theDomain , int dim ){
    //struct cell_lite pl_recv[recv_sizeL];
    //struct cell_lite pr_recv[recv_sizeR];
    struct cell_lite *pl_send = (struct cell_lite *)malloc(
-                                        sizeof(struct cell_lite) * send_sizeL);
+                            sizeof(struct cell_lite) * ((size_t) send_sizeL));
    struct cell_lite *pr_send = (struct cell_lite *)malloc(
-                                        sizeof(struct cell_lite) * send_sizeR);
+                            sizeof(struct cell_lite) * ((size_t) send_sizeR));
    struct cell_lite *pl_recv = (struct cell_lite *)malloc(
-                                        sizeof(struct cell_lite) * recv_sizeL);
+                            sizeof(struct cell_lite) * ((size_t) recv_sizeL));
    struct cell_lite *pr_recv = (struct cell_lite *)malloc(
-                                        sizeof(struct cell_lite) * recv_sizeR);
+                            sizeof(struct cell_lite) * ((size_t) recv_sizeR));
 //Build up list of cells to send...
    generate_sendbuffer( theDomain , rnum , znum , dim , nijk , &indexL , &indexR , pl_send , pr_send , Ng , NN-2*Ng , 1 );
 
@@ -306,6 +331,9 @@ void exchangeData( struct domain * theDomain , int dim ){
    free(pr_recv);
 
    MPI_Type_free( &cell_mpi );
+#else
+   UNUSED(theDomain);
+   UNUSED(dim);
 #endif
 }
 

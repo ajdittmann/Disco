@@ -52,7 +52,7 @@ void buildfaces( struct domain * theDomain , int dim , int mode ){
    double * r_jph = theDomain->r_jph;
    double * z_kph = theDomain->z_kph;
    double Pmax = theDomain->phi_max;
-   int i,j,k; 
+   int j,k; 
 
    int I0[Nr*Nz];
 
@@ -61,6 +61,8 @@ void buildfaces( struct domain * theDomain , int dim , int mode ){
          int jk = j+Nr*k;
          int found=0;
          int quad_prev=0;
+
+         int i;
          for( i=0 ; i<Np[jk] && !found ; ++i ){
             struct cell * c = theCells[jk]+i;
             double convert = 2.*M_PI/Pmax;
@@ -85,7 +87,6 @@ void buildfaces( struct domain * theDomain , int dim , int mode ){
    if( dim==1 ) Nzmax = Nz;
 
    if( mode==0 ){
-      int n=0;
       for( k=0 ; k<Nzmax ; ++k ){
          for( j=0 ; j<Nrmax ; ++j ){
             int JK  = j+Nrmax*k;

@@ -14,6 +14,25 @@ ifndef ENABLE_CART_INTERP
 ENABLE_CART_INTERP = 0
 endif
 
+GIT_VERSION := $(strip $(GIT_VERSION))
+INITIAL := $(strip $(INITIAL))
+HYDRO := $(strip $(HYDRO))
+GEOMETRY := $(strip $(GEOMETRY))
+BOUNDARY := $(strip $(BOUNDARY))
+OUTPUT := $(strip $(OUTPUT))
+RESTART := $(strip $(RESTART))
+PLANETS := $(strip $(PLANETS))
+HLLD := $(strip $(HLLD))
+ANALYSIS := $(strip $(ANALYSIS))
+REPORT := $(strip $(REPORT))
+METRIC := $(strip $(METRIC))
+FRAME := $(strip $(FRAME))
+ENABLE_CART_INTERP := $(strip $(ENABLE_CART_INTERP))
+NUM_C := $(strip $(NUM_C))
+NUM_N := $(strip $(NUM_N))
+CT_MODE := $(strip $(CT_MODE))
+USE_MPI := $(strip $(USE_MPI))
+
 OPT_DEFS = -DGIT_VERSION=\"$(GIT_VERSION)\"
 OPT_DEFS += -DINITIAL=\"$(INITIAL)\"
 OPT_DEFS += -DHYDRO=\"$(HYDRO)\"
@@ -35,8 +54,9 @@ OPT_DEFS += -DCT_MODE=$(CT_MODE)
 DIR_DEFS = -DUSE_MPI=$(USE_MPI)
 
 DEBUG_FLAGS = -g
+WARNING_FLAGS = -Wall #-Wextra -Wshadow -Wconversion -Werror
 
-FLAGS = -Wall -O3 $(OPT_DEFS) $(DIR_DEFS) $(DEBUG_FLAGS)
+FLAGS = -O3 $(OPT_DEFS) $(DIR_DEFS) $(DEBUG_FLAGS) $(WARNING_FLAGS)
 
 INC = -I$(H55)/include
 LIB = -L$(H55)/lib -lhdf5 -lm
@@ -44,9 +64,15 @@ LIB = -L$(H55)/lib -lhdf5 -lm
 #INC = -I/usr/include
 #LIB = -L/usr/include -lhdf5 -lm
 
-OBJ = main.o readpar.o timestep.o onestep.o riemann.o mpisetup.o gridsetup.o domain.o misc.o $(GEOMETRY).o faces_alt.o exchange.o plm.o report.o profiler.o planet.o omega.o analysis.o bfields.o $(HLLD).o rotframe.o boundary_functions.o geometry_functions.o $(INITIAL).o $(OUTPUT).o $(HYDRO).o $(BOUNDARY).o $(RESTART).o $(PLANETS).o $(METRIC).o $(FRAME).o calc.a $(ANALYSIS).o $(REPORT).o noise.o sink.o #snapshot.o
+OBJ = main.o readpar.o timestep.o onestep.o riemann.o mpisetup.o gridsetup.o domain.o misc.o $(GEOMETRY).o faces_alt.o exchange.o plm.o report.o profiler.o planet.o omega.o analysis.o $(HLLD).o rotframe.o boundary_functions.o geometry_functions.o $(INITIAL).o $(OUTPUT).o $(HYDRO).o $(BOUNDARY).o $(RESTART).o $(PLANETS).o $(METRIC).o $(FRAME).o calc.a $(ANALYSIS).o $(REPORT).o noise.o sink.o #snapshot.o
 
 CALC_OBJ = Calc/bondi.o Calc/integrate.o Calc/magnetosonic.o
+CT_OBJ = bfields.o
+
+ifneq ($(CT_MODE), 0)
+OBJ += $(CT_OBJ)
+endif
+
 
 default: disco
 

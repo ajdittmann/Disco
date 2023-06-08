@@ -115,7 +115,7 @@ double intpow(double x, int p)
         p = -p;
     }
 
-    unsigned int n = p;
+    unsigned int n = (unsigned int) p;
     
     double y = 1.0;
 
