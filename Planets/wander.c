@@ -31,8 +31,10 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].M     = mu; 
    thePlanets[0].vr    = 0.0; 
    thePlanets[0].omega = om; 
+   thePlanets[0].vz    = 0.0; 
    thePlanets[0].r     = R*(1-mu); 
    thePlanets[0].phi   = 0.0; 
+   thePlanets[0].z     = 0.0; 
    thePlanets[0].eps   = eps;
    thePlanets[0].type  = PLSPLINE;
 
@@ -43,8 +45,10 @@ void initializePlanets( struct planet * thePlanets ){
        thePlanets[1].M     = mu; 
        thePlanets[1].vr    = 0.0; 
        thePlanets[1].omega = om; 
+       thePlanets[1].vz    = 0.0; 
        thePlanets[1].r     = R*(1-mu); 
        thePlanets[1].phi   = 0.5*M_PI;
+       thePlanets[1].z     = 0.0; 
        thePlanets[1].eps   = eps;
        thePlanets[1].type  = PLSPLINE;
    

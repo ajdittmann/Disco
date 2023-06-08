@@ -105,6 +105,8 @@ void get_coords_from_rpz(const double *rpz, double *x)
 
 void get_vec_rpz(const double *x, const double *v, double *vrpz)
 {
+    UNUSED(x);
+
     vrpz[0] = v[0];
     vrpz[1] = v[1];
     vrpz[2] = v[2];
@@ -112,6 +114,8 @@ void get_vec_rpz(const double *x, const double *v, double *vrpz)
 
 void get_vec_from_rpz(const double *x, const double *vrpz, double *v)
 {
+    UNUSED(x);
+
     v[0] = vrpz[0];
     v[1] = vrpz[1];
     v[2] = vrpz[2];
@@ -142,6 +146,8 @@ void get_vec_from_xyz(const double *x, const double *vxyz, double *v)
 void geom_grad(const double *prim, double *grad, const double *xp, const double *xm, 
                 double PLM, int dim, int LR)
 {
+    UNUSED(PLM);
+
     if(dim !=1 || LR != 0)
     {
         printf("Geometric gradient called on non-geometric boundary\n");

@@ -4,6 +4,7 @@
 
 void setFrameParams(struct domain *theDomain)
 {
+    UNUSED(theDomain);
 }
 
 void frame_U(const double x[3], double U[4])

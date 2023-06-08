@@ -63,6 +63,9 @@ enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
     #define NUM_AZ_EDGES 0 
 #endif
 
+// Hack to touch a parameter if it is unused in a function.
+#define UNUSED(x) (void)(x)
+
 struct param_list{
 
    double t_min, t_max;
@@ -276,11 +279,19 @@ struct cell{
    double wiph;
    double xyz[3];
 
+
+#if NUM_EDGES > 0
    double E[NUM_EDGES];
    double B[NUM_EDGES];
+#endif
+#if NUM_AZ_EDGES > 0
    double E_phi[NUM_AZ_EDGES];
+#endif
+#if NUM_FACES > 0
    double    Phi[NUM_FACES];
    double RK_Phi[NUM_FACES];
+#endif
+   
    double tempDoub;
 
    int real;
@@ -317,9 +328,11 @@ struct face{
 struct planet{
    double r;
    double phi; 
+   double z;
    double M;
    double omega;
    double vr;
+   double vz;
 
    double eps;
 

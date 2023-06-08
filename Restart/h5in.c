@@ -49,12 +49,12 @@ void readPatch( char * file , char * group , char * dset , void * data , hid_t t
 
    int d;
    for( d=0 ; d<dim ; ++d ){
-      mdims[d] = loc_size[d];
-      fdims[d] = glo_size[d];
+      mdims[d] = (hsize_t) loc_size[d];
+      fdims[d] = (hsize_t) glo_size[d];
 
-      fstart[d]  = start[d];
+      fstart[d]  = (hsize_t) start[d];
       fstride[d] = 1;
-      fcount[d]  = loc_size[d];
+      fcount[d]  = (hsize_t) loc_size[d];
       fblock[d]  = 1;
    }
    hid_t mspace = H5Screate_simple(dim,mdims,NULL);
@@ -75,7 +75,9 @@ void readPatch( char * file , char * group , char * dset , void * data , hid_t t
 void Doub2Cell( double * Q , struct cell * c ){
    int q;
    for( q=0 ; q<NUM_Q ; ++q ) c->prim[q] = Q[q];
+#if NUM_FACES > 0
    for( q=0 ; q<NUM_FACES ; ++q ) c->Phi[q] = Q[NUM_Q+q];
+#endif
    c->piph = Q[NUM_Q+NUM_FACES];
 }
 
@@ -131,8 +133,8 @@ void restart( struct domain * theDomain ){
 #endif
       readSimple( filename , group1 ,"T", &tstart , H5T_NATIVE_DOUBLE );
       getH5dims( filename , group1 ,"Index", dims );
-      NUM_Z_Tot = dims[0];
-      NUM_R_Tot = dims[1];
+      NUM_Z_Tot = (int) dims[0];
+      NUM_R_Tot = (int) dims[1];
 
 #if USE_MPI
    }
@@ -199,11 +201,12 @@ void restart( struct domain * theDomain ){
    theDomain->NgZa = NgZa;
    theDomain->NgZb = NgZb;
 
-   theDomain->Np    = (int *)    malloc( Nr*Nz*sizeof(int) );
-   theDomain->r_jph = (double *) malloc( (Nr+1)*sizeof(double) );
-   theDomain->z_kph = (double *) malloc( (Nz+1)*sizeof(double) );
+   theDomain->Np    = (int *)    malloc( ((size_t) (Nr*Nz)) * sizeof(int) );
+   theDomain->r_jph = (double *) malloc( ((size_t) (Nr+1)) * sizeof(double) );
+   theDomain->z_kph = (double *) malloc( ((size_t) (Nz+1)) * sizeof(double) );
 
-   theDomain->theCells = (struct cell **) malloc( Nr*Nz*sizeof( struct cell * ) );
+   theDomain->theCells = (struct cell **) malloc( ((size_t) (Nr*Nz))
+                                                    * sizeof( struct cell * ) );
 
    struct cell ** theCells = theDomain->theCells;
 
@@ -222,7 +225,7 @@ void restart( struct domain * theDomain ){
       int glo_size1[1] = {NUM_R_Tot+1};
       double r_jph[Nr+1];
       readPatch( filename , group1 ,"r_jph", r_jph , H5T_NATIVE_DOUBLE , 1 , start1 , loc_size1 , glo_size1 ); 
-      memcpy( theDomain->r_jph , r_jph , (Nr+1)*sizeof(double) );
+      memcpy( theDomain->r_jph , r_jph , ((size_t) (Nr+1)) * sizeof(double) );
  
       //Read the Z values of the grid...
       start1[0]    = N0z;
@@ -230,7 +233,7 @@ void restart( struct domain * theDomain ){
       glo_size1[0] = NUM_Z_Tot+1;
       double z_kph[Nz+1];
       readPatch( filename , group1 ,"z_kph", z_kph , H5T_NATIVE_DOUBLE , 1 , start1 , loc_size1 , glo_size1 );
-      memcpy( theDomain->z_kph , z_kph , (Nz+1)*sizeof(double) );
+      memcpy( theDomain->z_kph , z_kph , ((size_t) (Nz+1)) * sizeof(double) );
 
       ++(theDomain->r_jph);
       ++(theDomain->z_kph);
@@ -250,11 +253,11 @@ void restart( struct domain * theDomain ){
 
       readPatch( filename , group1 ,"Np"   , Np    , H5T_NATIVE_INT , 2 , start2 , loc_size2 , glo_size2 );
       readPatch( filename , group1 ,"Index", Index , H5T_NATIVE_INT , 2 , start2 , loc_size2 , glo_size2 );
-      memcpy( theDomain->Np , Np , Nr*Nz*sizeof(int) );
+      memcpy( theDomain->Np , Np , ((size_t) (Nr*Nz)) * sizeof(int) );
 
       getH5dims( filename , group2 ,"Cells", dims );
-      int Nc = dims[0];
-      Nq = dims[1];
+      int Nc = (int) dims[0];
+      Nq = (int) dims[1];
 
       //Read in each radial track one at a time, because
       //you don't really know where the different radial
@@ -275,7 +278,7 @@ void restart( struct domain * theDomain ){
                 readPatch(filename, group2, "Cells", TrackData,
                           H5T_NATIVE_DOUBLE, 2, start2, loc_size2, glo_size2);
                 theDomain->theCells[jk] = (struct cell *) malloc(
-                        Np[jk] * sizeof(struct cell));
+                        ((size_t) Np[jk]) * sizeof(struct cell));
             
                 for(i = 0; i < Np[jk]; ++i)
                 {
@@ -299,24 +302,24 @@ void restart( struct domain * theDomain ){
        if(Npl > 0)
        {
            theDomain->thePlanets = (struct planet *) malloc(
-                                    Npl * sizeof(struct planet) );
+                                    ((size_t) Npl) * sizeof(struct planet) );
 
            theDomain->pl_gas_track = (double *) malloc(
-                                    Npl * NUM_PL_INTEGRALS * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_INTEGRALS)) * sizeof(double));
            theDomain->pl_kin = (double *) malloc(
-                                    Npl * NUM_PL_KIN * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_KIN)) * sizeof(double));
            theDomain->pl_RK_kin = (double *) malloc(
-                                    Npl * NUM_PL_KIN * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_KIN)) * sizeof(double));
            theDomain->pl_aux = (double *) malloc(
-                                    Npl * NUM_PL_AUX * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_AUX)) * sizeof(double));
            theDomain->pl_RK_aux = (double *) malloc(
-                                    Npl * NUM_PL_AUX * sizeof(double));
+                        ((size_t) (Npl * NUM_PL_AUX)) * sizeof(double));
        }
       
       initializePlanets( theDomain->thePlanets );
       
       getH5dims( filename , group2 ,"Planets", dims );
-      int NpDat = dims[1];
+      int NpDat = (int) dims[1];
 
 
       double PlanetData[Npl*NpDat];
@@ -330,7 +333,14 @@ void restart( struct domain * theDomain ){
       readPatch( filename , group2 ,"Planets", PlanetData , H5T_NATIVE_DOUBLE,
                     2, start2 , loc_size2 , glo_size2 );
       int p, q;
-      for(p=0; p<Npl; ++p){
+      for(p=0; p<Npl; ++p)
+      {
+          /*
+           * This is a little ugly to preserve backwards-compatibility.
+           * The checkpoint we're restarting from may have been made from a
+           * version of the code that did not include the KIN parameters
+           * or vertical position & velocity.
+           */
          struct planet * pl = theDomain->thePlanets+p;
          pl->M     = PlanetData[NpDat*p + 0];
          pl->vr    = PlanetData[NpDat*p + 1];
@@ -345,12 +355,28 @@ void restart( struct domain * theDomain ){
 
          if(NpDat == 7 + NUM_PL_KIN)
          {
+             pl->z = 0.0;
+             pl->vz = 0.0;
+
              for(q=0; q<NUM_PL_KIN; q++)
                  theDomain->pl_kin[p*NUM_PL_KIN+q] = PlanetData[NpDat*p+q+7];
          }
+         else if(NpDat == 9 + NUM_PL_KIN)
+         {
+             pl->vz = PlanetData[NpDat*p + 7];
+             pl->z = PlanetData[NpDat*p + 8];
+             
+             for(q=0; q<NUM_PL_KIN; q++)
+                 theDomain->pl_kin[p*NUM_PL_KIN+q] = PlanetData[NpDat*p+q+9];
+         }
          else
+         {
+             pl->z = 0.0;
+             pl->vz = 0.0;
+
              planet_init_kin(theDomain->thePlanets + p,
                              theDomain->pl_kin + p*NUM_PL_KIN);
+         }
       }
       
       setPlanetsXYZ(theDomain);
@@ -370,8 +396,10 @@ void restart( struct domain * theDomain ){
 
    theDomain->N_ftracks_r = get_num_rzFaces( theDomain->Nr , theDomain->Nz , 1 ); 
    theDomain->N_ftracks_z = get_num_rzFaces( theDomain->Nr , theDomain->Nz , 2 ); 
-   theDomain->fIndex_r = (int *) malloc( (theDomain->N_ftracks_r+1)*sizeof(int) );
-   theDomain->fIndex_z = (int *) malloc( (theDomain->N_ftracks_z+1)*sizeof(int) );
+   theDomain->fIndex_r = (int *) malloc( ((size_t) (theDomain->N_ftracks_r+1))
+                                        * sizeof(int) );
+   theDomain->fIndex_z = (int *) malloc( ((size_t) (theDomain->N_ftracks_z+1))
+                                        * sizeof(int) );
 
    // Reset parameters in case the restart changed things
    // This really necessary only if pointers moved around.

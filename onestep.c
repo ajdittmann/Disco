@@ -5,7 +5,7 @@
 #include "analysis.h"
 #include "planet.h"
 
-void AMR( struct domain * ); 
+//void AMR( struct domain * ); 
 void move_BCs( struct domain * , double );
 
 void clean_pi( struct domain * );
@@ -27,11 +27,13 @@ void phi_flux( struct domain * , double dt );
 void trans_flux( struct domain * , double dt , int );
 void add_source( struct domain * , double dt );
 
+#if CT_MODE > 0
 void avg_Efields( struct domain * );
 void update_B_fluxes( struct domain * , double );
 void subtract_advective_B_fluxes( struct domain * );
 void check_flipped( struct domain * , int );
 void flip_fluxes( struct domain * , int );
+#endif
 
 void boundary_trans( struct domain * , int );
 void exchangeData( struct domain * , int );
@@ -84,11 +86,13 @@ void checkNaNs(struct domain *theDomain, char label[])
 }
 
 
-void onestep( struct domain * theDomain , double RK , double dt , int first_step , int last_step , double global_dt ){
+void onestep( struct domain * theDomain , double RK , double dt , int first_step , int last_step) {
 
    int Nz = theDomain->Nz;
    int Nr = theDomain->Nr;
+#if CT_MODE > 0
    int bflag = set_B_flag();
+#endif
 
    prof_tick(theDomain->prof, PROF_STEP_INIT);
    
@@ -149,13 +153,15 @@ void onestep( struct domain * theDomain , double RK , double dt , int first_step
    prof_tock(theDomain->prof, PROF_FLUX);
 
    //CT update
-   if( bflag && NUM_EDGES >= 4 ){
+#if CT_MODE > 0
+   if( bflag){
       prof_tick(theDomain->prof, PROF_CT);
       avg_Efields( theDomain );
       subtract_advective_B_fluxes( theDomain );
       update_B_fluxes( theDomain , dt );
       prof_tock(theDomain->prof, PROF_CT);
    }
+#endif
   
    //Soucres
    prof_tick(theDomain->prof, PROF_SOURCE);
@@ -167,6 +173,7 @@ void onestep( struct domain * theDomain , double RK , double dt , int first_step
       move_cells( theDomain , dt );
       calc_dp( theDomain );
       set_cell_xyz(theDomain);
+#if CT_MODE > 0
       if( bflag ){
          check_flipped( theDomain , 0 );
          flip_fluxes( theDomain , 0 );
@@ -175,6 +182,7 @@ void onestep( struct domain * theDomain , double RK , double dt , int first_step
             flip_fluxes( theDomain , 1 );
          }
       }
+#endif
    }
    prof_tock(theDomain->prof, PROF_MOVE);
 
@@ -203,10 +211,12 @@ void onestep( struct domain * theDomain , double RK , double dt , int first_step
    prof_tock(theDomain->prof, PROF_CLEAN);
 
    prof_tick(theDomain->prof, PROF_C2P);
-   
+  
+#if CT_MODE > 0
    if( bflag && theDomain->theParList.CT ){
       B_faces_to_cells( theDomain , 1 );
    }
+#endif
    
    calc_prim( theDomain ); //ORDERING??? AFTER?
    

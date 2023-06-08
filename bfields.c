@@ -20,52 +20,51 @@ void set_B_fields( struct domain * theDomain ){
    double * r_jph = theDomain->r_jph;
    double * z_kph = theDomain->z_kph;
 
-   if(NUM_FACES > 0)
-   {
-       for( k=0 ; k<Nz ; ++k ){
-          double z = get_centroid(z_kph[k], z_kph[k-1], 2);
-          for( j=0 ; j<Nr ; ++j ){
-             double r = get_centroid(r_jph[j], r_jph[j-1], 1);
-             int jk = j+Nr*k;
-             for( i=0 ; i<Np[jk] ; ++i ){
-                struct cell * c = &(theCells[jk][i]);
-                double phip = c->piph;
-                double phim = phip-c->dphi;
-                double xp[3] = { r_jph[j]   , phip , z_kph[k]   };
-                double xm[3] = { r_jph[j-1] , phim , z_kph[k-1] };
-                double x[3] = { r , phip , z};
-                double prim[NUM_Q];
-                initial( prim , x ); 
-                double dA = get_dA( xp , xm , 0 );
-                double Phi = 0.0;
-                if( NUM_Q > BPP ) Phi = prim[BPP]*dA;
-                    c->Phi[0] = Phi;
-             }    
-          }    
-       }
-   }
+#if NUM_FACES > 0
+    for( k=0 ; k<Nz ; ++k ){
+      double z = get_centroid(z_kph[k], z_kph[k-1], 2);
+      for( j=0 ; j<Nr ; ++j ){
+         double r = get_centroid(r_jph[j], r_jph[j-1], 1);
+         int jk = j+Nr*k;
+         for( i=0 ; i<Np[jk] ; ++i ){
+            struct cell * c = &(theCells[jk][i]);
+            double phip = c->piph;
+            double phim = phip-c->dphi;
+            double xp[3] = { r_jph[j]   , phip , z_kph[k]   };
+            double xm[3] = { r_jph[j-1] , phim , z_kph[k-1] };
+            double x[3] = { r , phip , z};
+            double prim[NUM_Q];
+            initial( prim , x ); 
+            double dA = get_dA( xp , xm , 0 );
+            double Phi = 0.0;
+            if( NUM_Q > BPP ) Phi = prim[BPP]*dA;
+                c->Phi[0] = Phi;
+         }    
+      }    
+    }
+#endif
 
    int NRZ1 = theDomain->N_ftracks_r;
    setup_faces( theDomain , 1 ); 
 
+#if NUM_FACES >= 3
    int n;
-   if(NUM_FACES >= 3)
-   {
-       for( n=0 ; n<theDomain->fIndex_r[NRZ1] ; ++n ){
-          struct face * f = theDomain->theFaces_1 + n;
-          double prim[NUM_Q];
-          initial( prim , f->cm );
-          double Phi = 0.0;
-          if( NUM_Q > BRR ) Phi = prim[BRR]*f->dA;
-          if( f->LRtype == 0 ){
-             f->L->Phi[2] = Phi;
-          }else{
-             f->R->Phi[1] = Phi;
-          }
-       }
+   for( n=0 ; n<theDomain->fIndex_r[NRZ1] ; ++n ){
+      struct face * f = theDomain->theFaces_1 + n;
+      double prim[NUM_Q];
+      initial( prim , f->cm );
+      double Phi = 0.0;
+      if( NUM_Q > BRR ) Phi = prim[BRR]*f->dA;
+      if( f->LRtype == 0 ){
+         f->L->Phi[2] = Phi;
+      }else{
+         f->R->Phi[1] = Phi;
+      }
    }
+#endif
 
-   if( NUM_FACES==5 && theDomain->Nz > 1 ){
+#if NUM_FACES == 5
+   if(theDomain->Nz > 1 ){
       int NRZ2 = theDomain->N_ftracks_z;
       setup_faces( theDomain , 2 );
       for( n=0 ; n<theDomain->fIndex_z[NRZ2] ; ++n ){
@@ -82,6 +81,7 @@ void set_B_fields( struct domain * theDomain ){
          }    
       }
    }
+#endif
 
    B_faces_to_cells( theDomain , 0 );
    B_faces_to_cells( theDomain , 1 );
@@ -434,16 +434,16 @@ void avg_Efields( struct domain * theDomain ){
                 cp->B[3] = Br_avg;
 
                 if( NUM_EDGES == 8 ){
-                   double El_avg = .5*( c->E[4] + cp->E[6] );
-                   double Er_avg = .5*( c->E[5] + cp->E[7] );
+                   El_avg = .5*( c->E[4] + cp->E[6] );
+                   Er_avg = .5*( c->E[5] + cp->E[7] );
 
                     c->E[4] = El_avg;
                     c->E[5] = Er_avg;
                    cp->E[6] = El_avg;
                    cp->E[7] = Er_avg;
 
-                   double Bl_avg = .5*( c->B[4] + cp->B[6] );
-                   double Br_avg = .5*( c->B[5] + cp->B[7] );
+                   Bl_avg = .5*( c->B[4] + cp->B[6] );
+                   Br_avg = .5*( c->B[5] + cp->B[7] );
 
                     c->B[4] = Bl_avg;
                     c->B[5] = Br_avg;
@@ -458,10 +458,11 @@ void avg_Efields( struct domain * theDomain ){
 
    int Nf = theDomain->fIndex_r[theDomain->N_ftracks_r];
    struct face * theFaces = theDomain->theFaces_1;
-   int n;
   
    if(NUM_EDGES >= 4)
    {
+       int n;
+
        for( n=0 ; n<Nf ; ++n ){
           struct face * f = theFaces+n;
           struct cell * c1;
@@ -912,9 +913,11 @@ int get_which4( double phi , double phiR , double phiU , double phiUR , int * LR
 
 void make_edge_adjust( struct domain * theDomain , double dt ){
 
-    if(NUM_FACES < 5 || NUM_AZ_EDGES < 4)
-        return;
-
+#if (NUM_FACES < 5) && (NUM_AZ_EDGES < 4)
+    UNUSED(theDomain);
+    UNUSED(dt);
+    return;
+#else
    struct cell ** theCells = theDomain->theCells;
    int Nr = theDomain->Nr;
    int Nz = theDomain->Nz;
@@ -922,7 +925,7 @@ void make_edge_adjust( struct domain * theDomain , double dt ){
    double * r_jph = theDomain->r_jph;
    double * z_kph = theDomain->z_kph;
    double Pmax = theDomain->phi_max;
-   int i,j,k;
+   int j,k;
 
    int I0[Nr*Nz];
    for( k=0 ; k<Nz ; ++k ){
@@ -930,6 +933,8 @@ void make_edge_adjust( struct domain * theDomain , double dt ){
          int jk = j+Nr*k;
          int found=0;
          int quad_prev=0;
+         
+         int i;
          for( i=0 ; i<Np[jk] && !found ; ++i ){
             struct cell * c = theCells[jk]+i;
             double convert = 2.*M_PI/Pmax;
@@ -1152,5 +1157,7 @@ void make_edge_adjust( struct domain * theDomain , double dt ){
 
       }
    }
+
+#endif
 }
 

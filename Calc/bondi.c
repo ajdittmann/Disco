@@ -18,7 +18,7 @@ int bondi_newt(double Mdot, double GM, double gam, double rho0,
     int i;
     for(i=0; i<N; i++)
     {
-        double ui = bondi_newt_solve(Mdot, GM, r[i], gam, rho0, a0, K);
+        double ui = bondi_newt_solve(Mdot, GM, r[i], gam, a0, K);
 
         rho[i] = -Mdot / (4*M_PI*r[i]*r[i] * ui);
         u[i] = ui;
@@ -29,7 +29,7 @@ int bondi_newt(double Mdot, double GM, double gam, double rho0,
 }
 
 double bondi_newt_solve(double Mdot, double GM, double r, double gam, 
-                        double rho0, double a0, double K)
+                        double a0, double K)
 {
     double u0, u, umin, umax, u1, du, f, df;
     double TOL = 1.0e-6;
@@ -56,7 +56,7 @@ double bondi_newt_solve(double Mdot, double GM, double r, double gam,
     }
 
     //printf("%.6lg %.6lg %.6lg %.6lg\n", Mdot, GM, r, gam);
-    //printf("%.6lg %.6lg %.6lg\n", rho0, a0, K);
+    //printf("%.6lg %.6lg %.6lg\n", a0, K);
 
     u1 = u0;
 

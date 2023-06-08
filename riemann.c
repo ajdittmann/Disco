@@ -94,45 +94,43 @@ void riemann_phi( struct cell * cL , struct cell * cR, double * x ,
                  x , n , hn*cL->wiph , dAdt , 0 , &Ez , &Br , &Er , &Bz );
     */
 
-   if( NUM_EDGES == 4 ){
-      cL->E[0] = .5*Ez;
-      cL->E[1] = .5*Ez;
+#if NUM_EDGES == 4
+    cL->E[0] = .5*Ez;
+    cL->E[1] = .5*Ez;
 
-      cR->E[2] = .5*Ez;
-      cR->E[3] = .5*Ez;
+    cR->E[2] = .5*Ez;
+    cR->E[3] = .5*Ez;
 
-      cL->B[0] = .5*Br;
-      cL->B[1] = .5*Br;
+    cL->B[0] = .5*Br;
+    cL->B[1] = .5*Br;
 
-      cR->B[2] = .5*Br;
-      cR->B[3] = .5*Br;
-   }
-   if( NUM_EDGES == 8 ){
+    cR->B[2] = .5*Br;
+    cR->B[3] = .5*Br;
+#elif NUM_EDGES == 8
+    cL->E[0] = .5*Ez;
+    cL->E[1] = .5*Ez;
 
-      cL->E[0] = .5*Ez;
-      cL->E[1] = .5*Ez;
+    cR->E[2] = .5*Ez;
+    cR->E[3] = .5*Ez;
 
-      cR->E[2] = .5*Ez;
-      cR->E[3] = .5*Ez;
+    cL->B[0] = .5*Br;
+    cL->B[1] = .5*Br;
 
-      cL->B[0] = .5*Br;
-      cL->B[1] = .5*Br;
+    cR->B[2] = .5*Br;
+    cR->B[3] = .5*Br;
 
-      cR->B[2] = .5*Br;
-      cR->B[3] = .5*Br;
+    cL->E[4] = .5*Er;
+    cL->E[5] = .5*Er;
 
-      cL->E[4] = .5*Er;
-      cL->E[5] = .5*Er;
+    cR->E[6] = .5*Er;
+    cR->E[7] = .5*Er;
 
-      cR->E[6] = .5*Er;
-      cR->E[7] = .5*Er;
+    cL->B[4] = .5*Bz;
+    cL->B[5] = .5*Bz;
 
-      cL->B[4] = .5*Bz;
-      cL->B[5] = .5*Bz;
-
-      cR->B[6] = .5*Bz;
-      cR->B[7] = .5*Bz;
-   }
+    cR->B[6] = .5*Bz;
+    cR->B[7] = .5*Bz;
+#endif
 }
 
 void riemann_trans( struct face * F , double dt , int dim , double rp,
@@ -243,10 +241,11 @@ void riemann_trans( struct face * F , double dt , int dim , double rp,
                     &Erz , &Brz , &Ephi, NULL,
                     fdAdt_hydro, fdAdt_visc);
  
+
+#if NUM_EDGES >= 4
    double fracL = F->dphi / cL->dphi;
    double fracR = F->dphi / cR->dphi;
-
-   if( NUM_EDGES >= 4 && dim==1 ){ 
+   if(dim == 1) {
       cL->E[1] += .5*Erz*fracL;
       cL->E[3] += .5*Erz*fracL;
 
@@ -259,13 +258,8 @@ void riemann_trans( struct face * F , double dt , int dim , double rp,
       cR->B[0] += .5*Brz*fracR;
       cR->B[2] += .5*Brz*fracR;
    }
-   if( NUM_AZ_EDGES == 4 && dim==1 ){
-      if(F->LRtype==0)
-         cL->E_phi[1] = Ephi;
-      else
-         cR->E_phi[0] = Ephi;
-   }
-   if( NUM_EDGES == 8 && dim==2){
+#if NUM_EDGES == 8
+   if(dim==2){
       cL->E[5] += .5*Erz*fracL;
       cL->E[7] += .5*Erz*fracL;
 
@@ -278,12 +272,22 @@ void riemann_trans( struct face * F , double dt , int dim , double rp,
       cR->B[4] += .5*Brz*fracR;
       cR->B[6] += .5*Brz*fracR;
    }
-   if( NUM_AZ_EDGES == 4 && dim==2 ){
+#endif
+#endif
+#if NUM_AZ_EDGES == 4
+   if(dim==1 ){
+      if(F->LRtype==0)
+         cL->E_phi[1] = Ephi;
+      else
+         cR->E_phi[0] = Ephi;
+   }
+   else if( dim==2 ){
       if(F->LRtype==0)
          cL->E_phi[3] = Ephi;
       else
          cR->E_phi[2] = Ephi;
    }
+#endif
 }
 
 

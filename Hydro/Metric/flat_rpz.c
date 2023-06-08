@@ -10,11 +10,13 @@ void setMetricParams(struct domain *theDomain)
 
 double metric_lapse(const double x[3])
 {
+    UNUSED(x);
     return 1.0;
 }
 
 void metric_shift(const double x[3], double b[3])
 {
+    UNUSED(x);
     b[0] = 0.0;
     b[1] = om;
     b[2] = 0.0;
@@ -70,6 +72,7 @@ void metric_der_g(const double x[3], int i, double dg[16])
 
 void metric_der_lapse(const double x[3], double da[4])
 {
+    UNUSED(x);
     int i;
     for(i=0; i<4; i++)
         da[i] = 0.0;
@@ -77,6 +80,7 @@ void metric_der_lapse(const double x[3], double da[4])
 
 void metric_der_shift(const double x[3], double db[12])
 {
+    UNUSED(x);
     int i;
     for(i=0; i<12; i++)
         db[i] = 0.0;

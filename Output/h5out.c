@@ -53,12 +53,12 @@ void writePatch( char * file , char * group , char * dset , void * data , hid_t 
    
    int d;
    for( d=0 ; d<dim ; ++d ){
-      mdims[d] = loc_size[d];
-      fdims[d] = glo_size[d];
+      mdims[d] = (hsize_t) loc_size[d];
+      fdims[d] = (hsize_t) glo_size[d];
 
-      fstart[d]  = start[d];
+      fstart[d]  = (hsize_t) start[d];
       fstride[d] = 1;
-      fcount[d]  = loc_size[d];
+      fcount[d]  = (hsize_t) loc_size[d];
       fblock[d]  = 1;
    }
    hid_t mspace = H5Screate_simple(dim,mdims,NULL);
@@ -79,7 +79,9 @@ int Cell2Doub( struct cell * c , double * Q , int mode ){
    if( mode==0 ) return(NUM_Q+NUM_FACES+1); else{
       int q;
       for( q=0 ; q<NUM_Q ; ++q ) Q[q] = c->prim[q];
+#if NUM_FACES > 0
       for( q=0 ; q<NUM_FACES ; ++q ) Q[NUM_Q+q] = c->Phi[q];
+#endif
       Q[NUM_Q+NUM_FACES] = c->piph;
       return(0);
    }
@@ -96,6 +98,8 @@ void dumpVal(char *filename, char *group, char *dset, void *val,
 
 void writeOpts(struct domain *theDomain, char filename[])
 {
+    UNUSED(theDomain);
+
     char buf[256];
     char *buf2[1] = {buf};
 
@@ -373,7 +377,7 @@ void writePlanets(struct domain *theDomain, char filename[])
 {
     int Npl = theDomain->Npl;
 
-    int NpDat = 7 + NUM_PL_KIN;
+    int NpDat = 9 + NUM_PL_KIN;
 
     double PlanetData[Npl*NpDat];
     int p;
@@ -387,15 +391,17 @@ void writePlanets(struct domain *theDomain, char filename[])
         PlanetData[NpDat*p + 4] = pl->phi;
         PlanetData[NpDat*p + 5] = pl->eps;
         PlanetData[NpDat*p + 6] = (double)pl->type;
+        PlanetData[NpDat*p + 7] = pl->vz;
+        PlanetData[NpDat*p + 8] = pl->z;
 
         int q;
         for(q=0; q<NUM_PL_KIN; q++)
-            PlanetData[NpDat*p + q + 7] = theDomain->pl_kin[p*NUM_PL_KIN + q];
+            PlanetData[NpDat*p + q + 9] = theDomain->pl_kin[p*NUM_PL_KIN + q];
     }
 
     hsize_t fdims2[2];
-    fdims2[0] = Npl;
-    fdims2[1] = NpDat;
+    fdims2[0] = (hsize_t) Npl;
+    fdims2[1] = (hsize_t) NpDat;
     createDataset(filename, "Data", "Planets", 2, fdims2, H5T_NATIVE_DOUBLE);
 
     writeSimple(filename, "Data", "Planets", PlanetData, H5T_NATIVE_DOUBLE);
@@ -469,41 +475,45 @@ void output( struct domain * theDomain , char * filestart ){
 
       fdims1[0] = 1;
       createDataset(filename,"Grid","T",1,fdims1,H5T_NATIVE_DOUBLE);
-      fdims1[0] = Nr_Tot+1;
+      fdims1[0] = (hsize_t) Nr_Tot + 1;
       createDataset(filename,"Grid","r_jph",1,fdims1,H5T_NATIVE_DOUBLE);
-      fdims1[0] = Nz_Tot+1;
+      fdims1[0] = (hsize_t) Nz_Tot+1;
       createDataset(filename,"Grid","z_kph",1,fdims1,H5T_NATIVE_DOUBLE);
-      fdims2[0] = Nz_Tot;
-      fdims2[1] = Nr_Tot;
+      fdims2[0] = (hsize_t) Nz_Tot;
+      fdims2[1] = (hsize_t) Nr_Tot;
       createDataset(filename,"Grid","Index",2,fdims2,H5T_NATIVE_INT);
       createDataset(filename,"Grid","Np",2,fdims2,H5T_NATIVE_INT);
       createDataset(filename,"Grid","Id_phi0",2,fdims2,H5T_NATIVE_INT);
 
       createGroup(filename,"Data");
 
-      fdims2[0] = Ntot;
-      fdims2[1] = Ndoub;
+      fdims2[0] = (hsize_t) Ntot;
+      fdims2[1] = (hsize_t) Ndoub;
       createDataset(filename,"Data","Cells",2,fdims2,H5T_NATIVE_DOUBLE);
       
       fdims1[0] = 1;
       createDataset(filename,"Data","Diagnostics_DT", 1, fdims1,
                     H5T_NATIVE_DOUBLE);
       
-      hsize_t fdims3[3] = {Nz_Tot, Nr_Tot, Ntools};
+      hsize_t fdims3[3] = {(hsize_t) Nz_Tot, (hsize_t) Nr_Tot,
+                           (hsize_t) Ntools};
       createDataset(filename,"Data","Diagnostics",3,fdims3,H5T_NATIVE_DOUBLE);
       
-      hsize_t fdims3_fr[3] = {Nz_Tot, Nr_Tot-1, NUM_Q};
+      hsize_t fdims3_fr[3] = {(hsize_t) Nz_Tot, (hsize_t) Nr_Tot-1,
+                              (hsize_t) NUM_Q};
       createDataset(filename, "Data", "FluxHydroAvgR", 3, fdims3_fr,
                     H5T_NATIVE_DOUBLE);
       createDataset(filename, "Data", "FluxViscAvgR", 3, fdims3_fr,
                     H5T_NATIVE_DOUBLE);
-      hsize_t fdims3_fz[3] = {Nz_Tot-1, Nr_Tot, NUM_Q};
+      hsize_t fdims3_fz[3] = {(hsize_t) Nz_Tot-1, (hsize_t) Nr_Tot,
+                              (hsize_t) NUM_Q};
       createDataset(filename, "Data", "FluxHydroAvgZ", 3, fdims3_fz,
                     H5T_NATIVE_DOUBLE);
       createDataset(filename, "Data", "FluxViscAvgZ", 3, fdims3_fz,
                     H5T_NATIVE_DOUBLE);
 
-      hsize_t fdims3_src[3] = {Nz_Tot, Nr_Tot, NUM_Q};
+      hsize_t fdims3_src[3] = {(hsize_t) Nz_Tot, (hsize_t) Nr_Tot,
+                               (hsize_t) NUM_Q};
       createDataset(filename, "Data", "SourceHydroAvg", 3, fdims3_src,
                     H5T_NATIVE_DOUBLE);
       createDataset(filename, "Data", "SourceGravAvg", 3, fdims3_src,
@@ -570,32 +580,44 @@ void output( struct domain * theDomain , char * filestart ){
    int kFzSize = kFzMax-kFzMin;
 
 
-   int * Index   = (int *) malloc( jSize*kSize*sizeof(int) );
-   int * Size    = (int *) malloc( jSize*kSize*sizeof(int) );
-   int * Id_phi0 = (int *) malloc( jSize*kSize*sizeof(int) );
-   double * diagRZwrite = (double *) malloc( jSize*kSize*Ntools*sizeof(double) );
+   int * Index   = (int *) malloc( ((size_t) (jSize*kSize)) * sizeof(int) );
+   int * Size    = (int *) malloc( ((size_t) (jSize*kSize)) * sizeof(int) );
+   int * Id_phi0 = (int *) malloc( ((size_t) (jSize*kSize)) * sizeof(int) );
+   double * diagRZwrite = (double *) malloc( ((size_t) (jSize*kSize*Ntools))
+                                            * sizeof(double) );
    double *fluxRwrite = NULL; 
    double *fluxViscRwrite = NULL;
    double *fluxZwrite = NULL; 
    double *fluxViscZwrite = NULL;
    if(jFrSize > 0)
    {
-       fluxRwrite = (double *)malloc(jFrSize*kSize*NUM_Q*sizeof(double));
-       fluxViscRwrite = (double *)malloc(jFrSize*kSize*NUM_Q*sizeof(double));
+       fluxRwrite = (double *)malloc(((size_t) (jFrSize*kSize*NUM_Q))
+                                        * sizeof(double));
+       fluxViscRwrite = (double *)malloc(((size_t) (jFrSize*kSize*NUM_Q))
+                                        * sizeof(double));
    }
    if(kFzSize > 0)
    {
-       fluxZwrite = (double *)malloc(jSize*kFzSize*NUM_Q*sizeof(double));
-       fluxViscZwrite = (double *)malloc(jSize*kFzSize*NUM_Q*sizeof(double));
+       fluxZwrite = (double *)malloc(((size_t) (jSize*kFzSize*NUM_Q))
+                                        * sizeof(double));
+       fluxViscZwrite = (double *)malloc(((size_t) (jSize*kFzSize*NUM_Q))
+                                        * sizeof(double));
    }
-   double *srcHydroWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
-   double *srcGravWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
-   double *srcViscWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
-   double *srcSinkWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
-   double *srcCoolWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
-   double *srcDampWrite = (double *)malloc(jSize*kSize*NUM_Q*sizeof(double));
+   double *srcHydroWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
+   double *srcGravWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
+   double *srcViscWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
+   double *srcSinkWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
+   double *srcCoolWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
+   double *srcDampWrite = (double *)malloc(((size_t) (jSize*kSize*NUM_Q))
+                                        * sizeof(double));
 
-   double * Qwrite = (double *) malloc( myNtot*Ndoub*sizeof(double) );
+   double * Qwrite = (double *) malloc( ((size_t) (myNtot*Ndoub))
+                                        * sizeof(double) );
 
    double *Qrz = theDomain->theTools.Qrz;
    double *F_r = theDomain->theTools.F_r;
@@ -855,9 +877,9 @@ void writeSnapshot(struct domain *theDomain, char filestart[])
 
         fdims1[0] = 1;
         createDataset(filename, "Grid", "T", 1, fdims1, H5T_NATIVE_DOUBLE);
-        fdims1[0] = Nr_Tot+1;
+        fdims1[0] = (hsize_t) Nr_Tot+1;
         createDataset(filename, "Grid", "r_jph", 1,fdims1,H5T_NATIVE_DOUBLE);
-        fdims1[0] = Nz_Tot+1;
+        fdims1[0] = (hsize_t) Nz_Tot+1;
         createDataset(filename, "Grid", "z_kph", 1,fdims1,H5T_NATIVE_DOUBLE);
         
         writeSimple(filename, "Grid", "T", &(theDomain->t), H5T_NATIVE_DOUBLE);
@@ -865,13 +887,13 @@ void writeSnapshot(struct domain *theDomain, char filestart[])
         writeOpts(theDomain, filename);
         writePlanets(theDomain, filename);
 
-        fdims3[0] = Nz_Tot;
-        fdims3[1] = Nr_Tot;
-        fdims3[2] = num_Qrz;
+        fdims3[0] = (hsize_t) Nz_Tot;
+        fdims3[1] = (hsize_t) Nr_Tot;
+        fdims3[2] = (hsize_t) num_Qrz;
         createDataset(filename, "Snapshot", "Qrz", 3, fdims3,
                       H5T_NATIVE_DOUBLE);
         
-        fdims1[0] = num_Qarr;
+        fdims1[0] = (hsize_t) num_Qarr;
         createDataset(filename, "Snapshot", "Qarr", 1, fdims1,
                       H5T_NATIVE_DOUBLE);
         writeSimple(filename, "Snapshot", "Qarr", theSnap->Qarr,
@@ -900,7 +922,7 @@ void writeSnapshot(struct domain *theDomain, char filestart[])
     int Qrz_size_loc[3] = {k1-k0, j1-j0, num_Qrz};
     int Qrz_start_glob[3] = {N0z-N0z_glob + k0, N0r-N0r_glob + j0, 0};
 
-    double *QrzWrite = (double *)malloc((k1-k0) * (j1-j0) * num_Qrz
+    double *QrzWrite = (double *)malloc(((size_t) ((k1-k0) * (j1-j0) * num_Qrz))
                                         * sizeof(double));
 
     int k;
@@ -910,7 +932,7 @@ void writeSnapshot(struct domain *theDomain, char filestart[])
         int idxWrite0 = (j1-j0) * (k-k0) * num_Qrz;
 
         memcpy(QrzWrite + idxWrite0, theSnap->Qrz + idx0,
-               (j1-j0) * num_Qrz * sizeof(double));
+               ((size_t) ((j1-j0) * num_Qrz)) * sizeof(double));
     }
 
     int nrk;

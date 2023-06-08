@@ -13,8 +13,14 @@ int num_diagnostics(void){
    return(8);
 }
 
-int num_inst_diagnostics(void){
-   return(0);
+int num_snapshot_rz(void)
+{
+    return 0;
+}
+
+int num_snapshot_arr(void)
+{
+    return 0;
 }
 
 /* Generic Diagnostics for Euler*/
@@ -51,6 +57,18 @@ void get_diagnostics( double * x , double * prim , double * Qrz,
 
 
 void get_inst_diagnostics( double * x , double * prim , double * Qrz, 
+                        struct domain * theDomain )
+{
+    //Silence is golden.
+}
+
+void get_snapshot_rz(const double *x, const double *prim, double *Qrz, 
+                        struct domain * theDomain )
+{
+    //Silence is golden.
+}
+
+void get_snapshot_arr(const double *x, const double *prim, double *Qarr, 
                         struct domain * theDomain )
 {
     //Silence is golden.

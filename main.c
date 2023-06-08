@@ -6,7 +6,7 @@ int mpiSetup( struct domain * , int , char *[] );
 void setupGrid( struct domain * );
 void timestep( struct domain * , double );
 void setupCells( struct domain * );
-void regrid( struct domain * );
+//void regrid( struct domain * );
 void boundary_trans( struct domain * , int );
 void exchangeData( struct domain * , int );
 double getmindt( struct domain * );

@@ -32,16 +32,20 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].M     = 1.0; 
    thePlanets[0].vr    = 0.0; 
    thePlanets[0].omega = 0.0; 
+   thePlanets[0].vz    = 0.0; 
    thePlanets[0].r     = 0.0; 
    thePlanets[0].phi   = 0.0; 
+   thePlanets[0].z     = 0.0; 
    thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPOINTMASS;
 
    thePlanets[1].M     = q; 
    thePlanets[1].vr    = 0.0; 
    thePlanets[1].omega = pow(r,-1.5); 
+   thePlanets[1].vz    = 0.0; 
    thePlanets[1].r     = r; 
    thePlanets[1].phi   = 0.0; 
+   thePlanets[1].z     = 0.0; 
    thePlanets[1].eps   = 0.025;
    thePlanets[1].type  = PLPOINTMASS;
 

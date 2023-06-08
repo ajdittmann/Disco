@@ -357,10 +357,10 @@ void planet_init_kin(struct planet *pl, double *pl_kin)
     pl_kin[PL_M] = pl->M;
     pl_kin[PL_R] = pl->r;
     pl_kin[PL_PHI] = pl->phi;
-    pl_kin[PL_Z] = 0.0;
+    pl_kin[PL_Z] = pl->z;
     pl_kin[PL_PR] = pl->M * pl->vr;
     pl_kin[PL_LL] = pl->M * pl->r * pl->r * pl->omega;
-    pl_kin[PL_PZ] = 0.0;
+    pl_kin[PL_PZ] = pl->M * pl->vz;
     pl_kin[PL_SZ] = 0.0;
     pl_kin[PL_EINT] = 0.0;
 }
@@ -400,7 +400,7 @@ void setPlanetsXYZ(struct domain *theDomain)
         struct planet *pl = theDomain->thePlanets + p;
         pl->xyz[0] = pl->r * cos(pl->phi);
         pl->xyz[1] = pl->r * sin(pl->phi);
-        pl->xyz[2] = 0.0;
+        pl->xyz[2] = pl->z;
     }
 }
 
@@ -426,8 +426,10 @@ void movePlanetsLive(struct domain *theDomain)
         pl->M = M;
         pl->r = r;
         pl->phi = pl_kin[PL_PHI];
+        pl->z = pl_kin[PL_Z];
         pl->vr = pl_kin[PL_PR] / M;
         pl->omega = pl_kin[PL_LL] / (M * r * r);
+        pl->vz = pl_kin[PL_PZ] / M;
     }
 }
 
@@ -472,9 +474,10 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         
         double x = r * cosp;
         double y = r * sinp;
+        double z = pl->z;
         double vx = pl->vr * cosp - r * pl->omega * sinp;
         double vy = pl->vr * sinp + r * pl->omega * cosp;
-        double vz = 0.0;
+        double vz = pl->vz;
 
         double v2 = vx*vx + vy*vy + vz*vz;
 
@@ -500,15 +503,16 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
             double sinp2 = sin(pl2->phi);
             double x2 = r2*cosp2;
             double y2 = r2*sinp2;
+            double z2 = pl2->z;
 
-            double rsep = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2));
+            double rsep = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) * (z-z2)*(z-z2));
 
             Phi_ext += -phigrav(pl2->M, rsep, pl2->eps, pl2->type);
             double g = fgrav(pl2->M, rsep, pl2->eps, pl2->type);
 
             gx_ext += g * (x2-x) / rsep;
             gy_ext += g * (y2-y) / rsep;
-            gz_ext += 0;
+            gz_ext += g * (z2-z) / rsep;
         }
 
         // These "*_pl" values are only set if the planet is live.

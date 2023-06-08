@@ -37,6 +37,7 @@ int set_B_flag(void){
 }
 
 double get_omega( const double * prim , const double * x ){
+    UNUSED(x);
    return( prim[UPP] );
 }
 
@@ -87,6 +88,8 @@ void prim2cons(const double * prim, double * cons, const double * x,
 
 void getUstar( const double * prim , double * Ustar , const double * x ,
               double Sk , double Ss , const double * n , const double * Bpack ){
+
+    UNUSED(Bpack);
 
    double r = x[0];
    double rho = prim[RHO];
@@ -397,11 +400,22 @@ void flux_to_E( const double * Flux , const double * Ustr , const double * x,
 
    //Silence is Golden.
 
+    UNUSED(Flux);
+    UNUSED(Ustr);
+    UNUSED(x);
+    UNUSED(E1_riemann);
+    UNUSED(B1_riemann);
+    UNUSED(E2_riemann);
+    UNUSED(B2_riemann);
+    UNUSED(dim);
+
 }
 
 void vel( const double * prim1 , const double * prim2 , 
          double * Sl , double * Sr , double * Ss , 
          const double * n , const double * x , double * Bpack ){
+
+    UNUSED(Bpack);
 
    double r = x[0];
    double P1   = prim1[PPP];
@@ -492,6 +506,8 @@ double getReynolds( double * prim , double w , double * x , double dx ){
 
 void reflect_prims(double * prim, const double * x, int dim)
 {
+    UNUSED(x);
+
     //dim == 0: r, dim == 1: p, dim == 2: z
     if(dim == 0)
         prim[URR] = -prim[URR];
@@ -506,6 +522,9 @@ double bfield_scale_factor(double x, int dim)
     // Returns the factor used to scale B_cons.
     // x is coordinate location in direction dim.
     // dim == 0: r, dim == 1: p, dim == 2: z
+    
+    UNUSED(x);
+    UNUSED(dim);
     
     return 1.0;
 }
