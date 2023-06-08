@@ -1,4 +1,3 @@
-
 #include "paul.h"
 #include "omega.h"
 #include "planet.h"
@@ -184,8 +183,7 @@ double get_cs2( const double *x ){
     else if(cs2Choice == 4)
     {
         double r = x[0];
-        r = sqrt(r*r + eps*eps);
-        double v2 = M/r;
+        double v2 = 1.0/r;
         cs2 = v2/(Mach*Mach);
     }
     else if(cs2Choice == 5) 
