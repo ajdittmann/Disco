@@ -105,7 +105,6 @@ void setupGrid( struct domain * theDomain ){
          theDomain->r_jph[j] = Rmin*pow(Rmax/Rmin,x);
       }else if( LogZoning == 2 ){
          theDomain->r_jph[j] = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
-      }
       }else{
          double x1 = 1.0/(1.0 - R0*log(R0/Rmax)/(R0-Rmin));
          double b = exp((1-Rmin/R0)/x1);
