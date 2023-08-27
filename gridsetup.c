@@ -103,8 +103,18 @@ void setupGrid( struct domain * theDomain ){
          theDomain->r_jph[j] = Rmin + x*(Rmax-Rmin);
       }else if( LogZoning == 1 ){
          theDomain->r_jph[j] = Rmin*pow(Rmax/Rmin,x);
-      }else{
+      }else if( LogZoning == 2 ){
          theDomain->r_jph[j] = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
+      }else{
+         double x1 = 1.0/(1.0 - R0*log(R0/Rmax)/(R0-Rmin));
+         double b = exp((1-Rmin/R0)/x1);
+         double a = log(b)*Rmax/b;
+         if( x>x1 ){
+            theDomain->r_jph[j] = a*pow(b, x)/log(b);
+         }
+         else{
+            theDomain->r_jph[j] = a*pow(b, x1)*x + Rmin;
+         }
       }
    }
    double dz = (Zmax-Zmin)/(double)Num_Z;
@@ -112,16 +122,6 @@ void setupGrid( struct domain * theDomain ){
    for( k=-1 ; k<Nz ; ++k ){
       theDomain->z_kph[k] = z0 + ((double)k+1.)*dz;
    }
-
-   double dr0;
-   if(LogZoning == 0)
-       dr0 = (Rmax-Rmin) / (double) Num_R;
-   else if(LogZoning == 1)
-       dr0 = Rmin * (pow(Rmax/Rmin, 1.0/Num_R) - 1.0);
-   else
-       dr0 = R0*(pow(Rmax/R0,1.0/Num_R)-1) + (R0-Rmin)/Num_R;
-   theDomain->dr0 = dr0;
-      
 
    theDomain->phi_max = theDomain->theParList.phimax;
    setGeometryParams( theDomain );
