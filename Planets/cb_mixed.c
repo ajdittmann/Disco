@@ -2,13 +2,18 @@
 #include "../paul.h"
 
 static double q_planet = 1.0;
+static double Mach = 1.0;
 static double eps = 0.0;
+static double nu = 1.0;
+static double tau = 2.0;
 
 void setPlanetParams( struct domain * theDomain ){
 
-   theDomain->Npl = 2; 
+   theDomain->Npl = 2;
    q_planet = theDomain->theParList.Mass_Ratio;
+   Mach = theDomain->theParList.Disk_Mach;
    eps = theDomain->theParList.grav_eps;
+   nu = theDomain->theParList.viscosity;
 }
 
 int planet_motion_analytic( void ){
@@ -18,7 +23,7 @@ int planet_motion_analytic( void ){
 void initializePlanets( struct planet * thePlanets ){
 
    double a  = 1.0;
-
+ 
    double q = q_planet;
    double mu = q/(1.+q);
 
@@ -32,8 +37,7 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].phi   = M_PI;
    thePlanets[0].z     = 0.0;
    thePlanets[0].eps   = eps;
-   thePlanets[0].type  = PLPOINTMASS;
-
+   thePlanets[0].type  = PLSPLINE;
 
    thePlanets[1].M     = mu;
    thePlanets[1].vr    = 0.0;
@@ -47,7 +51,7 @@ void initializePlanets( struct planet * thePlanets ){
 }
 
 void movePlanets( struct planet * thePlanets , double t , double dt ){
-   UNUSED(t);
    thePlanets[0].phi += thePlanets[0].omega*dt;
    thePlanets[1].phi += thePlanets[1].omega*dt;
 }
+
