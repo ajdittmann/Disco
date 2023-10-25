@@ -64,8 +64,8 @@ int read_par_file( struct domain * theDomain ){
 
    int err=0;  
 
-   int tTimes_2pi;
-   int pTimes_2pi;
+   int tTimes_2pi = 0;
+   int pTimes_2pi = 0;
    int zTimes_pi = 0;
 
    int nrank;
