@@ -117,6 +117,7 @@ struct param_list{
 
    int restart_flag;
    int CT;
+   int CT_Solver;
 
    int metricPar0;
    double metricPar1;

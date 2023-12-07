@@ -199,6 +199,20 @@ double get_cs2( const double *x ){
 
         cs2 = fabs(phip)/(Mach*Mach);        
     }
+    else if(cs2Choice == 6) 
+    {
+        double xyz[3];
+        get_xyz(x, xyz);
+
+        int pi;
+        double phip = 0.0;
+        xyz[2] = 0.0;
+ 
+        for(pi = 0; pi < Npl; pi++)
+            phip -= planetaryPotential(thePlanets+pi, xyz);
+
+        cs2 = fabs(phip)/(Mach*Mach);        
+    }
     else
         cs2 = 1.0;
 
