@@ -156,6 +156,7 @@ struct param_list{
    double coolPar3;
    double coolPar4;
 
+   int dampType;
    int dampInnerType;
    int dampOuterType;
    int dampUpperType;

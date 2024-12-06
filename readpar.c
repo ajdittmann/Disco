@@ -167,6 +167,7 @@ int read_par_file( struct domain * theDomain ){
          err += readvar(pfile, "Cool_Par2", VAR_DOUB, &(theList->coolPar2));
          err += readvar(pfile, "Cool_Par3", VAR_DOUB, &(theList->coolPar3));
          err += readvar(pfile, "Cool_Par4", VAR_DOUB, &(theList->coolPar4));
+         err += readvar(pfile, "Damp_Type", VAR_INT , &(theList->dampType));
          err += readvar(pfile, "DampInner_Type", VAR_INT , &(theList->dampInnerType));
          err += readvar(pfile, "DampInner_Time", VAR_DOUB, &(theList->dampTimeInner));
          err += readvar(pfile, "DampInner_Len", VAR_DOUB, &(theList->dampLenInner));

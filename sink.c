@@ -37,6 +37,7 @@ static double rmin;
 static double zmax;
 static double zmin;
 
+static int dampType = 0;
 static int DAMP_OUTER = 0;
 static int DAMP_INNER = 0;
 static int DAMP_LOWER = 0;
@@ -87,6 +88,7 @@ void setSinkParams(struct domain *theDomain)
     thePlanets = theDomain->thePlanets;
     Npl = theDomain->Npl;
 
+    dampType = theDomain->theParList.dampType;
     DAMP_INNER = theDomain->theParList.dampInnerType;
     DAMP_OUTER = theDomain->theParList.dampOuterType;
     DAMP_UPPER = theDomain->theParList.dampUpperType;
@@ -396,26 +398,26 @@ void damping(const double *prim, double *cons, const double *xp,
 
     double omtot = 1.0;
     if (DAMP_INNER==2 || DAMP_OUTER==2 || DAMP_LOWER==2 || DAMP_UPPER==2){
-      double gx = xyz[0];
-      double gy = xyz[1];
+      //double gx = xyz[0];
+      //double gy = xyz[1];
 
-      int pi;
-      omtot = 0.0;
-      double px, py, dx, dy, mag;
-      double Fxyz[3];
-      for (pi=0; pi<Npl; pi++)
-      {
-        px = thePlanets[pi].xyz[0];
-        py = thePlanets[pi].xyz[1];
+      //int pi;
+      //omtot = 0.0;
+      //double px, py, dx, dy, mag;
+      //double Fxyz[3];
+      //for (pi=0; pi<Npl; pi++)
+      //{
+      //  px = thePlanets[pi].xyz[0];
+      // py = thePlanets[pi].xyz[1];
 
-        dx = gx-px;
-        dy = gy-py;
-        mag = dx*dx + dy*dy;
-        mag = sqrt(mag);
-        planetaryForce( thePlanets + pi, xyz, Fxyz);
-        omtot += sqrt(Fxyz[0]*Fxyz[0] + Fxyz[1]*Fxyz[1] + Fxyz[2]*Fxyz[2])/mag;
-      }
-      omtot = sqrt(omtot);
+      //  dx = gx-px;
+      //  dy = gy-py;
+      //  mag = dx*dx + dy*dy;
+      //  mag = sqrt(mag);
+      //  planetaryForce( thePlanets + pi, xyz, Fxyz);
+      //  omtot += sqrt(Fxyz[0]*Fxyz[0] + Fxyz[1]*Fxyz[1] + Fxyz[2]*Fxyz[2])/mag;
+      //}
+      omtot = sqrt(intpow(x[0], -3));
     }
     double ratetot = 0.0;
     double count = 0.0;
@@ -473,10 +475,15 @@ void damping(const double *prim, double *cons, const double *xp,
     initial(prims0, x);
     prim2cons(prims0, cons0, x, dV, xp, xm);
     prim2cons(prim, cons1, x, dV, xp, xm);
-    cons[DDD] += (cons1[DDD] - cons0[DDD])*dampFactor;
-    cons[SRR] += (cons1[SRR] - cons0[SRR])*dampFactor;
-    cons[LLL] += (cons1[LLL] - cons0[LLL])*dampFactor;
-    cons[SZZ] += (cons1[SZZ] - cons0[SZZ])*dampFactor;
-    cons[TAU] += (cons1[TAU] - cons0[TAU])*dampFactor;
+    if (dampType == 1){
+      cons[SRR] += (cons1[SRR] - cons0[SRR])*dampFactor;
+    }
+    else {
+      cons[DDD] += (cons1[DDD] - cons0[DDD])*dampFactor;
+      cons[SRR] += (cons1[SRR] - cons0[SRR])*dampFactor;
+      cons[LLL] += (cons1[LLL] - cons0[LLL])*dampFactor;
+      cons[SZZ] += (cons1[SZZ] - cons0[SZZ])*dampFactor;
+      cons[TAU] += (cons1[TAU] - cons0[TAU])*dampFactor;
+    }
   }
 }
