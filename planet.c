@@ -505,7 +505,7 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
             double y2 = r2*sinp2;
             double z2 = pl2->z;
 
-            double rsep = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) * (z-z2)*(z-z2));
+            double rsep = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2));
 
             Phi_ext += -phigrav(pl2->M, rsep, pl2->eps, pl2->type);
             double g = fgrav(pl2->M, rsep, pl2->eps, pl2->type);
