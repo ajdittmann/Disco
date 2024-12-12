@@ -338,8 +338,6 @@ struct planet{
 
    double eps;
 
-   double Uf;
-
    int type;
 
    double xyz[3];

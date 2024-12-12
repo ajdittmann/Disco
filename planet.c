@@ -302,14 +302,11 @@ void planet_src( struct planet * pl, const double * prim, double * cons,
 
    double rFp = pl->xyz[0] * Fxyz[1] - pl->xyz[1] * Fxyz[0];
 
-   double Phi = planetaryPotential(pl, xyz);
-
    pl_gas_track[PL_GRV_PX] -= rho*Fxyz[0]*dVdt;
    pl_gas_track[PL_GRV_PY] -= rho*Fxyz[1]*dVdt;
    pl_gas_track[PL_GRV_PZ] -= rho*Fxyz[2]*dVdt;
    pl_gas_track[PL_GRV_JZ] -= rho*rFp*dVdt;
    pl_gas_track[PL_GRV_EGAS] -= rho*(F[0]*vr + F[1]*omega + F[2]*vz)*dVdt;
-   pl->Uf += rho*Phi*dV;
 }
 
 void copyPlanetsRK( struct domain * theDomain ){
@@ -436,10 +433,7 @@ void movePlanetsLive(struct domain *theDomain)
 void initializePlanetTracking(struct domain *theDomain)
 {
     int Npl = theDomain->Npl;
-    int p, pq;
-    
-    for(p=0; p<Npl; p++)
-        theDomain->thePlanets[p].Uf = 0.0;
+    int pq;
     
     for(pq=0; pq<Npl * NUM_PL_INTEGRALS; pq++)
         theDomain->pl_gas_track[pq] = 0.0;
@@ -572,10 +566,9 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         double dEf_grv = pl_gas_track[PL_GRV_EGAS];
         double dEf_snk = pl_gas_track[PL_SNK_EGAS];
 
-        //Potential energy btw gas & planet lost during accretion
+        //Potential energy btw gas & planets lost during accretion
+        //onto this planet.
         double dUpot_snk = pl_gas_track[PL_SNK_UGAS];
-
-        double Uf = pl->Uf;
 
         /*
          * Calculating some things from the integrals
@@ -615,10 +608,15 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
 
         // Gas-planet potential energy change due to sinks.
         //This is likely not correct unless planets have been synced.
-        double dUf_snk = - dUpot_snk + (Uf/M) * dM
-                        - (dPx_grv/M) * dMx_snk
-                        - (dPy_grv/M) * dMy_snk
-                        - (dPz_grv/M) * dMz_snk;
+        double dUf_snk = -dUpot_snk;
+                        // These terms are obsensibly part of the energy
+                        // balance but in fact originate from the self-gravity
+                        // of the fluid and should be neglected unless the
+                        // fluid is self-gravitating (and the binary is live)
+                        //+ (Uf/M) * dM
+                        //- (dPx_grv/M) * dMx_snk
+                        //- (dPy_grv/M) * dMy_snk
+                        //- (dPz_grv/M) * dMz_snk;
 
 
 
