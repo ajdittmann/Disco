@@ -71,7 +71,7 @@ void initial( double * prim , double * x )
 
     if(isothermal_flag)
     {
-        double cs2 = get_cs2(x);
+        double cs2 = get_cs2(x, rho);
         P = rho * cs2 / gam;
     }
 

@@ -1,4 +1,4 @@
-
+#include "../omega.h"
 #include "../paul.h"
 
 static double gam  = 0.0;
@@ -11,15 +11,13 @@ void setICparams( struct domain * theDomain ){
    Mach = theDomain->theParList.Disk_Mach;
 }
 
-double get_cs2( double );
-
 void initial( double * prim , double * x ){
 
    double r = x[0];
    double z = x[2];
 
    double sint = z/sqrt(r*r+z*z);
-   double cs2 = get_cs2( r );
+   double cs2 = get_cs2( x );
 
    double rho = 1.0*exp(-sint*sint*Mach*Mach);
    double Pp  = rho*cs2/gam;

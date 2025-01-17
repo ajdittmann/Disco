@@ -165,7 +165,7 @@ double get_height_om( const double *x){
     return sqrt(omtot2);
 }
 
-double get_cs2( const double *x ){
+double get_cs2( const double *x, double rho ){
     double cs2;
 
     if(cs2Choice == 1)
@@ -204,6 +204,10 @@ double get_cs2( const double *x ){
         double r = x[0];
         double scaling = pow(r, -cs2Par); //
         cs2 = scaling/(Mach*Mach);
+    }
+    else if(cs2Choice == 7)
+    {
+        cs2 = pow(rho, cs2Par - 1.0)/(Mach*Mach);
     }
     else
         cs2 = 1.0;

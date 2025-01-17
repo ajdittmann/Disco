@@ -26,7 +26,7 @@ void initial( double * prim , double * x ){
    nu *= pow(fmax(x[0],1e-10), p);
 
    double rho = 1.0*pow(x[0], -p);
-   double Pp = rho*get_cs2(x)/gam;
+   double Pp = rho*get_cs2(x, rho)/gam;
 
    double omega2 = (1.0/(r*r*r))*(1.0 - 1.0/(Mach*Mach)*(p+q)*pow(r, 1-q)  );
    double omega = sqrt(omega2);

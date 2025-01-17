@@ -36,7 +36,6 @@ void initial(double *prim, double *x)
     double R = r + 0.05;
     double phi = x[1];
 
-    double cs2 = get_cs2(x);
 
     double rho, efact;
 
@@ -60,6 +59,8 @@ void initial(double *prim, double *x)
     efact = exp(-pow((R/redge),-xi));
     rho = sig0*efact + epsfl;
     double drho = sig0*efact*xi*pow((R/redge),-xi)/R;
+
+    double cs2 = get_cs2(x, rho);
 
     double v = -1.5*nu/(R);
     double P = rho*cs2/gam;

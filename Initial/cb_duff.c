@@ -12,9 +12,6 @@ static struct planet *thePlanets = NULL;
 static double Mach = 0.0;
 static int Npl = 0;
 
-double get_cs2(double *);
-double get_nu(double *, double *);
-
 void setICparams( struct domain * theDomain )
 {
     gam = theDomain->theParList.Adiabatic_Index;
@@ -35,7 +32,6 @@ void initial(double *prim, double *x)
     double R = r/R0;
     double phi = x[1];
 
-    double cs2 = get_cs2(x);
 
     double rho, fact;
 
@@ -47,6 +43,7 @@ void initial(double *prim, double *x)
       om = pow(r,-1.5);
     }
 
+    double cs2 = get_cs2(x, rho);
     double v = -1.5*nu/(r+0.0001);
     double P = rho*cs2/gam;
  

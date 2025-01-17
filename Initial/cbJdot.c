@@ -35,8 +35,6 @@ void initial(double *prim, double *x)
     double R = r + 0.001;
     double phi = x[1];
 
-    double cs2 = get_cs2(x);
-
     double rho, efact, fth, dfth;
 
     //double om = 1.0;

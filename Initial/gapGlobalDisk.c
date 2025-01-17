@@ -17,8 +17,6 @@ static int cs2choice = 0;
 static double a = 1.0;
 static double om_bary = 0.0;
 
-double get_cs2(double *);
-double get_nu(double *, double *);
 double phigrav( double , double , double , int); //int here is type
 double fgrav( double , double , double , int);
 
@@ -65,7 +63,7 @@ void initial(double *prim, double *x)
    //homtot +=  fgrav( thePlanets[1].M, d1p , thePlanets[1].eps, thePlanets[1].type)/fmax(d1p, thePlanets[1].eps*0.01);
    //homtot +=  fgrav( thePlanets[2].M, d2p , thePlanets[2].eps, thePlanets[2].type)/fmax(d2p, thePlanets[2].eps*0.01);
 
-   double cs2 = get_cs2(x);
+   double cs2 = get_cs2(x, 1.0);
 
    double alpha = get_nu(x, prim);
    alpha = alpha*sqrt(homtot)/cs2;

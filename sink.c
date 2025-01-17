@@ -352,7 +352,7 @@ void cooling(const double *prim, double *cons,
     double beta = coolPar1;
     double x[3];
     get_centroid_arr(xp, xm, x);
-    double enTarget = get_cs2(x)/(gamma_law*gm1);
+    double enTarget = get_cs2(x, rho)/(gamma_law*gm1);
     double enCurrent = press/(rho*gm1);
     double omtot = 0.0;
 

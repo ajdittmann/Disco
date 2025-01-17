@@ -29,7 +29,7 @@ void initial( double * prim , double * x ){
    double nu = get_nu(x, prim);
 
    double rho = 1.0;
-   double Pp = rho*(get_cs2(x)/gam + (gam-1)*9*nu*beta*omega/4);
+   double Pp = rho*(get_cs2(x, rho)/gam + (gam-1)*9*nu*beta*omega/4);
 
 
    double Vrpz[3] = {-1.5*nu/r, r*omega, 0.0};

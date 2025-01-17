@@ -38,7 +38,7 @@ void initial(double *prim, double *x)
     double r = rpz[0];
     double phi = rpz[1];
 
-    double cs2 = get_cs2(x);
+    double cs2 = get_cs2(x, 1.0);
 
     double f = 1.0;
     if(Rout > 0.0)

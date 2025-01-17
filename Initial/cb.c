@@ -7,9 +7,6 @@ static double Mdot = 0.0;
 static double R0 = 0.0;
 static double rho0 = 0.0;
 
-double get_cs2(double *);
-double get_nu(double *, double *);
-
 void setICparams( struct domain * theDomain )
 {
     gam = theDomain->theParList.Adiabatic_Index;
@@ -24,7 +21,6 @@ void initial(double *prim, double *x)
     double r = x[0];
     double phi = x[1];
 
-    double cs2 = get_cs2(x);
     double om;
     if(r>1.0)
         om = pow(r, -1.5);
@@ -34,6 +30,7 @@ void initial(double *prim, double *x)
     double nu = get_nu(x, prim);
 
     double rho = Mdot/(3*M_PI*nu);
+    double cs2 = get_cs2(x, rho);
     if(nu == 0.0)
         rho = Mdot/(3*M_PI * 0.1*cs2/om);
     double v = -1.5*nu/r;

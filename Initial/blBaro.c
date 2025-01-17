@@ -9,6 +9,7 @@ static double Mach = 0.0;
 static double rbl = 0.0;
 static double dbl = 0.0;
 static double om0 = 0.0;
+static double n = 0.0;
 
 void setICparams( struct domain * theDomain ){
    gam  = theDomain->theParList.Adiabatic_Index;
@@ -16,6 +17,7 @@ void setICparams( struct domain * theDomain ){
    rbl = theDomain->theParList.initPar1;
    dbl = theDomain->theParList.initPar2;
    om0 = theDomain->theParList.initPar3;
+   n = theDomain->theParList.Cs2_Par;
 }
 
 void initial( double * prim , double * x ){
@@ -37,11 +39,13 @@ void initial( double * prim , double * x ){
 
    if (r <= rbl + 0.5*dbl) {
      omega = C + r*B;
-     rho = exp(gam*Mach*Mach*(1./r + C*C*0.5*r*r + 2.0*C*B*r*r*r/3.0 + B*B*0.25*r*r*r*r - off1));
+     //rho = exp(gam*Mach*Mach*(1./r + C*C*0.5*r*r + 2.0*C*B*r*r*r/3.0 + B*B*0.25*r*r*r*r - off1));
+     rho = 1.0 + pow(gam*Mach*Mach*(1-1/n)*(1./r + C*C*0.5*r*r + 2.0*C*B*r*r*r/3.0 + B*B*0.25*r*r*r*r - off1), 1/(n-1) );
    }
    if (r < rbl - 0.5*dbl) {
      omega = om0;
-     rho = exp(gam*Mach*Mach*(1./r + om0*om0*0.5*r*r + off2 - off1 - off3));
+     rho = 1.0 + pow(gam*Mach*Mach*(1-1/n)*(1./r + om0*om0*0.5*r*r + off2 - off1 - off3), 1/(n-1));
+     //rho = exp(gam*Mach*Mach*(1./r + om0*om0*0.5*r*r + off2 - off1 - off3));
    }
 
    double cs2 = get_cs2(x, rho);

@@ -652,7 +652,7 @@ void cons2prim_solve_isothermal(const double *cons, double *prim, const double *
     double s2 = 0.0;
     double Us = 0.0;
 
-    double cs2N = get_cs2(x);
+    double cs2N = get_cs2(x, 0.0);
     double P_o_rho = cs2N / gamma_law;
     double h = 1.0 + gamma_law * P_o_rho / (gamma_law-1.0);
     //double P_o_rhoh = cs2N / gamma_law;
