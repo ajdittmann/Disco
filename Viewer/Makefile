@@ -29,7 +29,7 @@ endif
 INCL = -I$(GLUT)/include -I$(HDF5)/include
 LIBS += -lhdf5 -lm
 
-CC = gcc
+# CC = gcc
 
 default: $(ALL)
 

@@ -1,6 +1,12 @@
+#!/usr/bin/env python3
+import site
 from setuptools import setup, Extension
 import numpy as np
 import imp
+
+
+# PEP 517 Workaround for edittable user installs
+site.ENABLE_USER_SITE = True
 
 version = imp.load_source('discopy.version', 'version.py')
 
@@ -29,6 +35,6 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: C",
         "Intended Audience :: Science/Research"],
-    install_requires=['numpy>=1.10','h5py>=2.7'],
+    install_requires=['numpy>=1.11','h5py>=2.7'],
     extras_require={'docs': ['numpydoc']}
 )

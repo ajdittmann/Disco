@@ -325,17 +325,16 @@ void sink_src(const double *prim, double *cons, const double *xp,
                   - 0.5*((vxg-vxg1)*(vxg-vxg1) + (vyg-vyg1)*(vyg-vyg1)));
 
           int pi2;
+
+          //Total change in fluid-planet potential energy due to accretion onto
+          // this planet.
+          double Phi_all_pl = 0.0;
           for(pi2=0; pi2<Npl; pi2++)
-          {
-              double Phi = planetaryPotential(thePlanets+pi2, xyz);
-              pl_gas_track[NUM_PL_INTEGRALS*pi2 + PL_SNK_UGAS] += dM * Phi;
-          }
+              Phi_all_pl += planetaryPotential(thePlanets+pi2, xyz);
+          my_gas_track[PL_SNK_UGAS] += dM * Phi_all_pl;
       }
     }
 }
-
-
-
 
 void cooling(const double *prim, double *cons,
              const double *xp, const double *xm, const double *xyz,

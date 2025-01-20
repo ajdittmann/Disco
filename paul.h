@@ -22,7 +22,8 @@ enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
      PL_SNK_MX, PL_SNK_MY, PL_SNK_MZ, PL_GRV_EGAS, PL_SNK_EGAS, PL_SNK_UGAS,
      //Up to here are all integrals
      // Everything past here are computed from the integrals above
-     PL_GRV_LZ, PL_SNK_LZ, PL_GRV_K, PL_SNK_K, PL_GRV_U, PL_SNK_U, PL_SNK_EINT,
+     PL_GRV_LZ, PL_SNK_LZ, PL_GRV_K, PL_SNK_K, PL_GRV_UGAS, PL_SNK_U,
+     PL_SNK_UTOT, PL_SNK_EINT,
      PL_EXT_PX, PL_EXT_PY, PL_EXT_PZ, PL_EXT_JZ, PL_EXT_K, PL_EXT_U};
 
 #if USE_MPI
@@ -42,7 +43,7 @@ enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
 
 #define NUM_PL_KIN  9
 #define NUM_PL_INTEGRALS 16
-#define NUM_PL_AUX (NUM_PL_INTEGRALS + 13)
+#define NUM_PL_AUX (NUM_PL_INTEGRALS + 14)
 
 //Magnetic field tracking things.  Can be set to zero if there is no MHD.
 #if CT_MODE == 0        //No CT
@@ -117,6 +118,7 @@ struct param_list{
 
    int restart_flag;
    int CT;
+   int CT_Solver;
 
    int metricPar0;
    double metricPar1;
@@ -334,8 +336,6 @@ struct planet{
    double vz;
 
    double eps;
-
-   double Uf;
 
    int type;
 
