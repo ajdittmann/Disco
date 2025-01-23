@@ -302,14 +302,11 @@ void planet_src( struct planet * pl, const double * prim, double * cons,
 
    double rFp = pl->xyz[0] * Fxyz[1] - pl->xyz[1] * Fxyz[0];
 
-   double Phi = planetaryPotential(pl, xyz);
-
    pl_gas_track[PL_GRV_PX] -= rho*Fxyz[0]*dVdt;
    pl_gas_track[PL_GRV_PY] -= rho*Fxyz[1]*dVdt;
    pl_gas_track[PL_GRV_PZ] -= rho*Fxyz[2]*dVdt;
    pl_gas_track[PL_GRV_JZ] -= rho*rFp*dVdt;
    pl_gas_track[PL_GRV_EGAS] -= rho*(F[0]*vr + F[1]*omega + F[2]*vz)*dVdt;
-   pl->Uf += rho*Phi*dV;
 }
 
 void copyPlanetsRK( struct domain * theDomain ){
@@ -436,10 +433,7 @@ void movePlanetsLive(struct domain *theDomain)
 void initializePlanetTracking(struct domain *theDomain)
 {
     int Npl = theDomain->Npl;
-    int p, pq;
-    
-    for(p=0; p<Npl; p++)
-        theDomain->thePlanets[p].Uf = 0.0;
+    int pq;
     
     for(pq=0; pq<Npl * NUM_PL_INTEGRALS; pq++)
         theDomain->pl_gas_track[pq] = 0.0;
@@ -490,6 +484,8 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         double gy_ext = 0;
         double gz_ext = 0;
 
+        double xyz[3] = {x, y, z};
+
         int p2;
 
         for(p2=0; p2<Npl; p2++)
@@ -498,21 +494,15 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
                 continue;
         
             struct planet *pl2 = theDomain->thePlanets + p2;
-            double r2 = pl2->r;
-            double cosp2 = cos(pl2->phi);
-            double sinp2 = sin(pl2->phi);
-            double x2 = r2*cosp2;
-            double y2 = r2*sinp2;
-            double z2 = pl2->z;
 
-            double rsep = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) * (z-z2)*(z-z2));
+            double gxyz[3];
 
-            Phi_ext += -phigrav(pl2->M, rsep, pl2->eps, pl2->type);
-            double g = fgrav(pl2->M, rsep, pl2->eps, pl2->type);
-
-            gx_ext += g * (x2-x) / rsep;
-            gy_ext += g * (y2-y) / rsep;
-            gz_ext += g * (z2-z) / rsep;
+            Phi_ext += planetaryPotential(pl2, xyz);
+            planetaryForce(pl2, xyz, gxyz);
+            
+            gx_ext += gxyz[0];
+            gy_ext += gxyz[1];
+            gz_ext += gxyz[2];
         }
 
         // These "*_pl" values are only set if the planet is live.
@@ -576,10 +566,9 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         double dEf_grv = pl_gas_track[PL_GRV_EGAS];
         double dEf_snk = pl_gas_track[PL_SNK_EGAS];
 
-        //Potential energy btw gas & planet lost during accretion
+        //Potential energy btw gas & planets lost during accretion
+        //onto this planet.
         double dUpot_snk = pl_gas_track[PL_SNK_UGAS];
-
-        double Uf = pl->Uf;
 
         /*
          * Calculating some things from the integrals
@@ -608,23 +597,35 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         double dK_snk = vx * dPx_snk + vy * dPy_snk + vz * dPz_snk 
                             - 0.5*v2 * dM;
 
-        // Potential energy added to planet
-        double dU_grv = dEf_grv - dK_grv;
+        // Gas-planet potential energy change
+        double dUf_grv = dEf_grv - dK_grv;
 
-        double dUf_snk = - dUpot_snk + (Uf/M) * dM
-                        - (dPx_grv/M) * dMx_snk
-                        - (dPy_grv/M) * dMy_snk
-                        - (dPz_grv/M) * dMz_snk;
-        double dUext_snk = Phi_ext * dM
+        // Planet-planet potential energy change
+        double dUpl_snk = Phi_ext * dM
                         - gx_ext * dMx_snk
                         - gy_ext * dMy_snk
                         - gz_ext * dMz_snk;
 
+        // Gas-planet potential energy change due to sinks.
+        //This is likely not correct unless planets have been synced.
+        double dUf_snk = -dUpot_snk;
+                        // These terms are obsensibly part of the energy
+                        // balance but in fact originate from the self-gravity
+                        // of the fluid and should be neglected unless the
+                        // fluid is self-gravitating (and the binary is live)
+                        //+ (Uf/M) * dM
+                        //- (dPx_grv/M) * dMx_snk
+                        //- (dPy_grv/M) * dMy_snk
+                        //- (dPz_grv/M) * dMz_snk;
 
-        double dU_snk = dUf_snk + dUext_snk;
+
+
+        // Total potential energy change due to sinks
+        // Likely not correct unless planets have been synced.
+        double dUtot_snk = dUf_snk + dUpl_snk;
         
         // Internal energy added to planet
-        double dEint_snk = dEf_snk - dK_snk - dU_snk;
+        double dEint_snk = dEf_snk - dK_snk - dUtot_snk;
 
         double *pl_kin = theDomain->pl_kin + p*NUM_PL_KIN;
         double *pl_aux = theDomain->pl_aux + p*NUM_PL_AUX;
@@ -659,7 +660,9 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         pl_aux[PL_SNK_MZ] += dMz_snk;
         pl_aux[PL_GRV_EGAS] += dEf_grv;
         pl_aux[PL_SNK_EGAS] += dEf_snk;
-        pl_aux[PL_SNK_UGAS] += dUf_snk;
+
+        //This is likely not correct unless planets have been synced.
+        pl_aux[PL_SNK_UGAS] += dUf_snk; 
         
 
         // Some more complicated things.
@@ -669,8 +672,10 @@ void updatePlanetsKinAux(struct domain *theDomain, double dt)
         pl_aux[PL_GRV_K] += dK_grv;
         pl_aux[PL_SNK_K] += dK_snk;
         
-        pl_aux[PL_GRV_U] += dU_grv;
-        pl_aux[PL_SNK_U] += dU_snk;
+        pl_aux[PL_GRV_UGAS] += dUf_grv;
+        pl_aux[PL_SNK_U] += dUpl_snk;
+
+        pl_aux[PL_SNK_UTOT] += dUtot_snk;
 
         pl_aux[PL_SNK_EINT] += dEint_snk;
 

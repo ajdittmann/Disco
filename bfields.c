@@ -937,6 +937,8 @@ void make_edge_adjust( struct domain * theDomain , double dt ){
          int i;
          for( i=0 ; i<Np[jk] && !found ; ++i ){
             struct cell * c = theCells[jk]+i;
+            //TODO
+            // Make this coordinate independent.
             double convert = 2.*M_PI/Pmax;
             double sn = sin(c->piph*convert);
             double cs = cos(c->piph*convert);
