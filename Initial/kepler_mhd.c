@@ -1,4 +1,4 @@
-
+#include "../omega.h"
 #include "../paul.h"
 
 /*
@@ -33,7 +33,6 @@ void get_rpz(double *x, double *rpz);
 void get_coords_from_rpz(double *rpz, double *x);
 void get_vec_from_rpz(double *x, double *Vrpz, double *V);
 void get_vec_contravariant(double *x, double *V, double *Vc);
-double get_cs2(double *x);
 
 void initial( double * prim , double * X )
 {
@@ -125,8 +124,8 @@ void initial( double * prim , double * X )
         double x0[3];
         get_coords_from_rpz(rpz0, x0);
 
-        cs20 = get_cs2(x0);
-        cs2 = get_cs2(X);
+        cs20 = get_cs2(x0, 1.0);
+        cs2 = get_cs2(X, 1.0);
         rho = rho_atm0 * exp(h/cs2);
         rho0 = rho_atm0 * exp(h0/cs20);
 

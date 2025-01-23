@@ -24,7 +24,7 @@ void initial( double * prim , double * x ){
    double Pp;
    if(isothermal_flag)
    {
-       double cs2 = get_cs2(x);
+       double cs2 = get_cs2(x, rho);
        Pp = rho*cs2/gam;
    }
    else

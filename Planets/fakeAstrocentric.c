@@ -35,13 +35,13 @@ void initializePlanets( struct planet * thePlanets ){
    double q = q_planet;
    double mu = q/(1.+q);
 
-   thePlanets[0].M     = 1.0 - mu;
-   thePlanets[0].vr    = 0.0;
-   thePlanets[0].omega = om;
-   thePlanets[0].vz    = 0.0;
-   thePlanets[0].r     = R*mu;
-   thePlanets[0].phi   = M_PI;
-   thePlanets[0].z     = 0.0;
+   thePlanets[0].M     = 1.0 - mu; 
+   thePlanets[0].vr    = 0.0; 
+   thePlanets[0].omega = 0.0;
+   thePlanets[0].vz    = 0.0; 
+   thePlanets[0].r     = 0.0; 
+   thePlanets[0].phi   = M_PI; 
+   thePlanets[0].z    = 0.0; 
    thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPOINTMASS;
   
@@ -49,9 +49,9 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[1].vr    = 0.0;
    thePlanets[1].omega = om;
    thePlanets[1].vz    = 0.0;
-   thePlanets[1].r     = R*(1.0-mu);
+   thePlanets[1].r     = R;
    thePlanets[1].phi   = 0.0;
-   thePlanets[1].z     = 0.0;
+   thePlanets[1].z   = 0.0;
    thePlanets[1].eps   = eps;
    thePlanets[1].type  = PLPOINTMASS;
 
@@ -102,15 +102,15 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
 
    double mu = q_planet/(1.+q_planet);
 
-   thePlanets[1].r   = R*(1.-mu);
+   thePlanets[1].r   = R;
    thePlanets[1].phi = phi;
-   thePlanets[1].omega = l/R/R; 
-   thePlanets[1].vr = vr*(1.-mu);
+   thePlanets[1].omega = l/R/R;
+   thePlanets[1].vr = vr;
 
-   thePlanets[0].r   = R*mu;
-   thePlanets[0].phi = phi+M_PI;
-   thePlanets[0].omega = l/R/R;
-   thePlanets[0].vr  = vr*mu;
+   thePlanets[0].r   = 0.0;
+   thePlanets[0].phi = 0.0;
+   thePlanets[0].omega = 0.0;
+   thePlanets[0].vr  = 0.0;
 
 }
 

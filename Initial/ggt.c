@@ -1,4 +1,4 @@
-
+#include "../omega.h"
 #include "../paul.h"
 
 static double gam  = 0.0;
@@ -13,20 +13,18 @@ void setICparams( struct domain * theDomain ){
    rho_floor = theDomain->theParList.Density_Floor;
 }
 
-double get_cs2( double );
-
 void initial( double * prim , double * x ){
 
    double r = x[0];
 //   double z = x[2];
 
 //   double sint = z/sqrt(r*r+z*z);
-   double cs2 = get_cs2( r );
 
 //   double rho = 1.0*exp(-sint*sint*Mach*Mach);
    double rho = pow(r,-1.5);
 //   rho *= exp(-pow(r/10.,8.));
    if( rho < rho_floor ) rho = rho_floor;
+   double cs2 = get_cs2( x, rho );
    double Pp  = rho*cs2/gam;
    //double n = 1.5;
    //double omega = ( pow( r , n-1.5 ) + 1. )/( pow( r , n ) + 1. );

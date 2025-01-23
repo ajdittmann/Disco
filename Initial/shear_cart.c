@@ -1,4 +1,4 @@
-
+#include "../omega.h"
 #include "../paul.h"
 
 static double nu = 0.0;
@@ -20,7 +20,6 @@ void get_xyz(double *, double *);
 void get_vec_from_xyz(double *, double *, double *);
 void get_vec_contravariant(double *, double *, double *);
 
-double get_cs2(double *x);
 
 void setICparams( struct domain * theDomain )
 {
@@ -55,7 +54,7 @@ void initial(double *prim, double *x)
     rho = exp(-rho_kappa * X);
 
     if(isothermal_flag)
-        P = get_cs2(x) * rho / gam;
+        P = get_cs2(x, rho) * rho / gam;
     else
         P = cs0*cs0 * rho / gam;
 

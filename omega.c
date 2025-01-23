@@ -165,7 +165,7 @@ double get_height_om( const double *x){
     return sqrt(omtot2);
 }
 
-double get_cs2( const double *x ){
+double get_cs2( const double *x, double rho ){
     double cs2;
 
     if(cs2Choice == 1)
@@ -193,25 +193,21 @@ double get_cs2( const double *x ){
 
         int pi;
         double phip = 0.0;
- 
+
         for(pi = 0; pi < Npl; pi++)
             phip -= planetaryPotential(thePlanets+pi, xyz);
 
         cs2 = fabs(phip)/(Mach*Mach);        
     }
-    else if(cs2Choice == 6) 
+    else if(cs2Choice == 6)
     {
-        double xyz[3];
-        get_xyz(x, xyz);
-
-        int pi;
-        double phip = 0.0;
-        xyz[2] = 0.0;
- 
-        for(pi = 0; pi < Npl; pi++)
-            phip -= planetaryPotential(thePlanets+pi, xyz);
-
-        cs2 = fabs(phip)/(Mach*Mach);        
+        double r = x[0];
+        double scaling = pow(r, -cs2Par); //
+        cs2 = scaling/(Mach*Mach);
+    }
+    else if(cs2Choice == 7)
+    {
+        cs2 = pow(rho, cs2Par - 1.0)/(Mach*Mach);
     }
     else
         cs2 = 1.0;
@@ -226,7 +222,7 @@ double get_nu(const double x[], const double prim[]){
     double c2 = gamma_law*prim[PPP]/prim[RHO];
     nu *= c2/get_height_om(x);
   }
-  //generic power law w.r.t. r=0
+  //generic power law w.r.t. r=1
   if (viscChoice == 2){
     nu *= pow(fmax(x[0],1e-10), viscPar);
   }

@@ -17,8 +17,6 @@ static int cs2choice = 0;
 static double a = 1.0;
 static double om_bary = 0.0;
 
-double get_cs2(double *);
-double get_nu(double *, double *);
 double phigrav( double , double , double , int); //int here is type
 double fgrav( double , double , double , int);
 
@@ -64,10 +62,6 @@ void initial(double *prim, double *x)
 
    double homtot = 0.0;
    homtot +=  fgrav( thePlanets[0].M, R , thePlanets[0].eps, thePlanets[0].type)/R;
-   double cs2 = get_cs2(x);
-
-   double alpha = get_nu(x,prim);
-   alpha = alpha*sqrt(homtot)/cs2;
 
    double dphi = 0.0;
    if (cs2choice == 5){
@@ -81,8 +75,9 @@ void initial(double *prim, double *x)
    double dSigma = -xi*exp(-pow(r/rin,xi))*pow(r/rin, xi-1.0)/rin;
 
    double rho = Sigma;
-   double P = rho*cs2/gam;
+   double cs2 = get_cs2(x, rho);
 
+   double P = rho*cs2/gam;
    double vr	= -1.5*nu/r;
    double vp = sqrt(fabs((massq/(1.0+massq))/(r*r*r) + (cs2*dSigma/gam + Sigma*dphi/gam)/(r*Sigma)))+om_bary;
 

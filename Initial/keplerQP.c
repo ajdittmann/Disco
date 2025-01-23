@@ -3,34 +3,33 @@
 #include "../geometry.h"
 
 static double gam  = 0.0;
-static double beta  = 0.0;
+static double nu  = 1.0;
 static double Mach = 0.0;
 static double eps = 0.0;
-static int isothermal_flag = 0;
-
-//double get_nu( const double *, const double *);
-//double get_cs2( const double *, const double *);
-
+static double p = 0.0;
+static double q = 0.0;
 
 void setICparams( struct domain * theDomain ){
    gam  = theDomain->theParList.Adiabatic_Index;
    Mach = theDomain->theParList.Disk_Mach;
-   isothermal_flag = theDomain->theParList.isothermal_flag;
    eps = theDomain->theParList.grav_eps;
-   beta = theDomain->theParList.coolPar1;
+
+   q = theDomain->theParList.Cs2_Par;  //q
+   p = theDomain->theParList.visc_par; //p
+   nu = theDomain->theParList.viscosity;
 }
 
 void initial( double * prim , double * x ){
 
    double r = x[0];
 
-   double omega2 = 1.0/(r*r*r);
+   nu *= pow(fmax(x[0],1e-10), p);
+
+   double rho = 1.0*pow(x[0], -p);
+   double Pp = rho*get_cs2(x, rho)/gam;
+
+   double omega2 = (1.0/(r*r*r))*(1.0 - 1.0/(Mach*Mach)*(p+q)*pow(r, 1-q)  );
    double omega = sqrt(omega2);
-   double nu = get_nu(x, prim);
-
-   double rho = 1.0;
-   double Pp = rho*(get_cs2(x, rho)/gam + (gam-1)*9*nu*beta*omega/4);
-
 
    double Vrpz[3] = {-1.5*nu/r, r*omega, 0.0};
    double V[3];
