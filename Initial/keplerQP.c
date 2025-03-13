@@ -21,17 +21,17 @@ void setICparams( struct domain * theDomain ){
 
 void initial( double * prim , double * x ){
 
-   double r = x[0];
+   double R = x[0];
 
-   nu *= pow(fmax(x[0],1e-10), p);
+   double Nu = nu*pow(fmax(x[0],1e-10), p);
 
-   double rho = 1.0*pow(x[0], -p);
+   double rho = 1.0*pow(R, -p);
    double Pp = rho*get_cs2(x)/gam;
 
-   double omega2 = (1.0/(r*r*r))*(1.0 - 1.0/(Mach*Mach)*(p+q)*pow(r, 1-q)  );
+   double omega2 = (1.0/(R*R*R))*(1.0 - 1.0/(Mach*Mach*gam)*(p+q)*pow(R, 1-q)  );
    double omega = sqrt(omega2);
 
-   double Vrpz[3] = {-1.5*nu/r, r*omega, 0.0};
+   double Vrpz[3] = {-1.5*Nu/R, R*omega, 0.0};
    double V[3];
    get_vec_from_rpz(x, Vrpz, V);
    get_vec_contravariant(x, V, V);

@@ -4,6 +4,7 @@
 static double q_planet = 1.0; 
 static double Mach = 1.0;
 static double e_planet = 0.0;
+static double eps = 0.0;
 
 void setPlanetParams( struct domain * theDomain ){
 
@@ -11,7 +12,7 @@ void setPlanetParams( struct domain * theDomain ){
    q_planet = theDomain->theParList.Mass_Ratio;
    Mach = theDomain->theParList.Disk_Mach;
    e_planet = theDomain->theParList.Eccentricity;
-
+   eps = theDomain->theParList.grav_eps;
 }
 
 double root0( double E , double e ){ 
@@ -53,14 +54,14 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[1].r     = R*(1.0-mu); 
    thePlanets[1].phi   = 0.0; 
    thePlanets[1].z     = 0.0; 
-   thePlanets[1].eps   = 0.5/Mach;
+   thePlanets[1].eps   = eps;
    thePlanets[1].type  = PLPOINTMASS;
 
 }
 
 void movePlanets( struct planet * thePlanets , double t , double dt ){
 
-   double TOL = 1e-8;
+   double TOL = 1e-12;
 
    double r0   = thePlanets[0].r + thePlanets[1].r; 
    double phi0 = thePlanets[1].phi;
