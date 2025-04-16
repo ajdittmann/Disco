@@ -100,8 +100,6 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    vr = sqrt( fabs( 2.*en + 2./R - l*l/R/R ) );
    if( y<0.0 ) vr *= -1.;
 
-   double mu = q_planet/(1.+q_planet);
-
    thePlanets[1].r   = R;
    thePlanets[1].phi = phi;
    thePlanets[1].omega = l/R/R;
