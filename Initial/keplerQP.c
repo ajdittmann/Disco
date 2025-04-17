@@ -8,6 +8,7 @@ static double Mach = 0.0;
 static double eps = 0.0;
 static double p = 0.0;
 static double q = 0.0;
+static double qp = 0.0;
 
 void setICparams( struct domain * theDomain ){
    gam  = theDomain->theParList.Adiabatic_Index;

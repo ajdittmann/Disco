@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static double q_planet = 1.0; 

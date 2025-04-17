@@ -467,8 +467,8 @@ void damping(const double *prim, double *cons, const double *xp,
         count = count + 1.0;
       }
     }
-    dampFactor = expm1(-dt*ratetot);
-    //dampFactor = -1.0*dt*dampFactor;
+    //dampFactor = expm1(-dt*ratetot);
+    dampFactor = -1.0*dt*dampFactor;
     double prims0[NUM_Q];
     double cons0[NUM_Q];
     double cons1[NUM_Q];
