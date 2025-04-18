@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static double q_planet = 1.0; 
@@ -60,7 +59,7 @@ void initializePlanets( struct planet * thePlanets ){
 
 void movePlanets( struct planet * thePlanets , double t , double dt ){
 
-   double TOL = 1e-8;
+   double TOL = 1e-12;
 
    double r0   = thePlanets[0].r + thePlanets[1].r; 
    double phi0 = thePlanets[1].phi;
