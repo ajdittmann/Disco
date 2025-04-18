@@ -274,7 +274,7 @@ def integrate(f, dat, opts, pars, dV=None):
     nphi = dat[7]
     index = dat[8]
 
-    mask = np.empty(f.shape, dtype=np.bool)
+    mask = np.empty(f.shape, dtype=bool)
     mask[:] = True
 
     nz = nphi.shape[0]
@@ -675,7 +675,7 @@ def integrateTrans1(x1, f, dat, opts, pars, dA=None):
     if dA is None:
         dA = getDA1(x1, dat[3], dat[1], dat, opts, pars)
 
-    mask = np.empty(f.shape, dtype=np.bool)
+    mask = np.empty(f.shape, dtype=bool)
     mask[:] = True
     x1ph = dat[0]
     index = dat[8]

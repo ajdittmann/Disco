@@ -656,6 +656,10 @@ class CBDiscoReport(DiscoReport):
         return self.dist_aux[22:24]
 
     @property
+    def dUsnk_Pl(self):
+        return self.dist_aux[24:26]
+
+    @property
     def Jdot_grv_exc_Gas(self):
         return self.dist_int[0:2]
 

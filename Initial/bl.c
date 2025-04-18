@@ -1,4 +1,5 @@
 #include "../paul.h"
+#include "../omega.h"
 
 static double M = 0.0;
 static double as = 0.0;
@@ -9,8 +10,6 @@ static double sig0 = 0.0;
 static double sig_atm = 0.0;
 static double mach = 0.0;
 static int isothermal = 0;
-
-double get_cs2(double r);
 
 double x_func_sin2(double x, void *args);
 double r_func_schw_sc(double r, void *args);
@@ -45,7 +44,7 @@ void initial( double * prim , double * x ){
 
    double cs20;
    if(isothermal)
-      cs20 = get_cs2(r);
+      cs20 = get_cs2(x);
    else
       cs20 = M/(r0 * mach*mach);
 

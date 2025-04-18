@@ -21,7 +21,7 @@ void initial( double * prim , double * x ){
    int m = 4;
    rho += 0.1 * sin(m*(phi-omega*(*t))) * exp(-(r-0.5)*(r-0.5)/(2*0.1*0.1));
    
-   double Pp  = 0.01; //get_cs2(x) * rho; // 0.01;
+   double Pp  = 0.01;
 
 
    double X = 0.0; 

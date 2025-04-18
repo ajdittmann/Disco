@@ -297,6 +297,8 @@ void writePars(struct domain *theDomain, char filename[])
     
     dumpVal(filename, "Pars", "Constrained_Transport", &(pars->CT),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "CT_Solver", &(pars->CT_Solver),
+                    H5T_NATIVE_INT);
     
     dumpVal(filename, "Pars", "Metric_Par0", &(pars->metricPar0),
                     H5T_NATIVE_INT);

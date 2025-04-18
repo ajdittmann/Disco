@@ -1,4 +1,4 @@
-
+#include "../omega.h"
 #include "../paul.h"
 
 static double gam  = 0.0;
@@ -27,7 +27,6 @@ void setICparams( struct domain * theDomain ){
 struct Gap_Vals gap_density(double r, double d, double M, double alpha, double q, double rho_0);
 //double gap_density(double r, double d, double M, double alpha, double q, double rho_0);
 //double d_gap_density(double r, double d, double M, double alpha, double q, double rho_0);
-double get_cs2(double *);
 /*
 double gap_density(double r, double a, double Mach, double alpha, double q, double rho_0){
 
@@ -126,9 +125,9 @@ void initial( double * prim , double * x ){
    double d_rho = vals.d_r_rho;
    //double rho = gap_density(R, a, mach_csd, alpha_csd, q_planet, rho_0);
    //double d_rho = d_gap_density(R, a, mach_csd, alpha_csd, q_planet, rho_0);
-   double Pp = rho * get_cs2(x) / gam;
+   double Pp = rho * get_cs2(x, rho) / gam;
 
-   double omega2 = (1./(R*R*R)) - (1/(R*gam*rho))*get_cs2(x)*d_rho;
+   double omega2 = (1./(R*R*R)) - (1/(R*gam*rho))*get_cs2(x, rho)*d_rho;
 
    double X = 0.0; 
    if( r*cos(x[1]) > 0.0 ) X = 1.0; 

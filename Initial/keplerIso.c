@@ -30,7 +30,7 @@ void initial( double * prim , double * x ){
 
    //double nu = get_nu(x, prim);
    double rho = 1.0; ///nu;
-   double Pp = rho*get_cs2(x)/gam;
+   double Pp = rho*get_cs2(x,rho)/gam;
 
    double dlogrho = 0.0;
    if (viscChoice == 1) dlogrho = -0.5;

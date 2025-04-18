@@ -37,8 +37,9 @@ void initial(double *prim, double *x)
     get_rpz(x, rpz);
     double r = rpz[0];
     double phi = rpz[1];
+    double z = rpz[2];
 
-    double cs2 = get_cs2(x, 1.0);
+    double cs2 = get_cs2(x);
 
     double f = 1.0;
     if(Rout > 0.0)
@@ -55,7 +56,6 @@ void initial(double *prim, double *x)
 
     if(threeD)
     {
-        double z = rpz[2];
         double H = r / Mach;
         double rho0 = Sig / (sqrt(2*M_PI) * H);
 

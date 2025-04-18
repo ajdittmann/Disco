@@ -137,7 +137,7 @@ void cons2prim(const double *cons, double *prim, const double *x, double dV,
         Pp = PRE_FLOOR*rho;
 
     if( isothermal ){
-        double cs2 = get_cs2( x );
+        double cs2 = get_cs2( x, rho );
         Pp = cs2*rho/gamma_law;
     }
 

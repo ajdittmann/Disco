@@ -2,7 +2,7 @@
 #include "../geometry.h"
 #include "../planet.h"
 
-#define N_AUX_PER_PLANET 17
+#define N_AUX_PER_PLANET 16
 
 static double gamma_law = 0.0;
 int Npl = 0;
@@ -47,7 +47,7 @@ void get_distributed_aux_reports(double *Q, struct domain *theDomain)
                 PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ,
                 PL_SNK_PX, PL_SNK_PY, PL_SNK_PZ,
                 PL_SNK_MX, PL_SNK_MY, PL_SNK_MZ,
-                PL_GRV_K, PL_GRV_U, PL_SNK_K, PL_SNK_U};
+                PL_GRV_K, PL_SNK_K, PL_SNK_U};
 
     int p, q;
     for(p = 0; p < theDomain->Npl; p++)

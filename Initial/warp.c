@@ -47,9 +47,9 @@ void initial( double * prim , double * x ){
   double dz = z0-z;
   double xi = sqrt(ds*ds+dz*dz);
 
-  double cs2 = get_cs2(x);
   double visc = get_nu(x, prim);
   double sigma = 1.0/visc;
+  double cs2 = get_cs2(x, sigma);
   double h = sqrt(2.0*cs2)/omega
 
   double rho = sigma*exp(-xi*xi/(h*h));
