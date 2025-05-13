@@ -3,6 +3,8 @@
 
 static double gam = 0.0;
 static double visc = 0.0;
+static double viscPar = 0.0;
+static int viscProf = 0.0;
 static struct planet *thePlanets = NULL;
 static double Mach = 0.0;
 static int Npl = 0;
@@ -18,6 +20,8 @@ void setICparams( struct domain * theDomain )
 {
     gam = theDomain->theParList.Adiabatic_Index;
     visc = theDomain->theParList.viscosity;
+    viscPar = theDomain->theParList.visc_par;
+    viscProf = theDomain->theParList.visc_profile;
     Mach = theDomain->theParList.Disk_Mach;
     massq = theDomain->theParList.Mass_Ratio;
     thePlanets = theDomain->thePlanets;
@@ -35,13 +39,12 @@ void initial(double *prim, double *x)
     double R = r + 0.001;
     double phi = x[1];
 
-    double rho, efact, fth, dfth;
+    double rho, efact;
 
-    //double om = 1.0;
     double om = pow(R,-1.5);
     if (R<0.1) om = pow(0.1, -1.5);
     int np;
-    double nu = get_nu(x, prim);
+
 
     double phitot = 0.0;
     double dphitot = 0.0;
@@ -53,6 +56,9 @@ void initial(double *prim, double *x)
       dphitot += thePlanets[np].M*(r - thePlanets[np].r*cos(phi - thePlanets[np].phi))/(denom*sqdenom);
     }
 
+    double nu = visc;
+    if (viscProf == 1) nu *= sqrt(r)/(Mach*Mach);
+    if (viscProf >= 2) nu *= pow(R, viscPar);
     double sig0 = 1.0/(3.0*M_PI*nu);
     efact = exp(-pow((R/redge),-xi));
 

@@ -20,8 +20,8 @@ void setICparams( struct domain * theDomain )
 {
     gam = theDomain->theParList.Adiabatic_Index;
     visc = theDomain->theParList.viscosity;
-    viscPar = theDomain->theParList.viscosity_par;
-    viscProf = theDomain->theParList.viscosity_profile;
+    viscPar = theDomain->theParList.visc_par;
+    viscProf = theDomain->theParList.visc_profile;
     Mach = theDomain->theParList.Disk_Mach;
     massq = theDomain->theParList.Mass_Ratio;
     thePlanets = theDomain->thePlanets;
