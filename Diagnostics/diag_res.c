@@ -20,7 +20,7 @@ void setDiagParams( struct domain * theDomain )
 
 int num_diagnostics(void)
 {
-    return(17 + (2*n_off+1)*n_mode_max*2*3);
+    return(17 + (2*n_off+1)*(1+n_mode_max)*2*4);
 }
 
 int num_snapshot_rz(void)
@@ -96,13 +96,15 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     Qrz[16] = rho * r*r * sin2p;
 
 
-    double time = theDomain.t;
+    double time = theDomain->t;
 
-    double sinlt[n_max_mode + n_off], coslt[n_max_mode + n_off + 1], sinnp[n_mode_max + 1], cosnp[n_mode_max + 1]
-    double qs[3];
+    double sinlt[n_mode_max + n_off + 1], coslt[n_mode_max + n_off + 1];
+    double sinnp[n_mode_max + 1],     cosnp[n_mode_max + 1];
+    double qs[4];
     qs[0] = rho;
-    qs[1] = Qrz[9]+Qrz[11];
-    qs[2] = Qrz[10]+Qrz[12];
+    qs[1] = vr; //Qrz[9]+Qrz[11];
+    qs[2] = vp; //Qrz[10]+Qrz[12];
+    qs[3] = planetaryPotential(theDomain->thePlanets + 0, xyz) + planetaryPotential(theDomain->thePlanets + 1, xyz);
 
     sinlt[0] = 0.0;
     coslt[0] = 1.0;
@@ -114,18 +116,18 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     sinnp[1] = sin(phi);
     cosnp[1] = cos(phi);
 
-    for(int n=2; n<n_off+n_max_mode+1; n++){
-      sinlt[n] = 2*sinlt[n-1]*coslt[1] - sinlt[n-2]
-      coslt[n] = 2*coslt[n-1]*coslt[1] - coslt[n-2]
+    for(int n=2; n<n_off+n_mode_max+1; n++){
+      sinlt[n] = 2*sinlt[n-1]*coslt[1] - sinlt[n-2];
+      coslt[n] = 2*coslt[n-1]*coslt[1] - coslt[n-2];
     }
     for(int n=2; n<n_mode_max+1; n++){
-      sinnp[n] = 2*sinnp[n-1]*cosnp[1] - sinnp[n-2]
-      cosnp[n] = 2*cosnp[n-1]*cosnp[1] - cosnp[n-2]
+      sinnp[n] = 2*sinnp[n-1]*cosnp[1] - sinnp[n-2];
+      cosnp[n] = 2*cosnp[n-1]*cosnp[1] - cosnp[n-2];
     }
 
     int baseInd = 17;
     double costh, sinth;
-    for(int n=0; n<n_max_mode+1; n++){
+    for(int n=0; n<n_mode_max+1; n++){
       for(int l=n-n_off; l<n+n_off+1; l++){
         if(l<0){
           sinth =-sinlt[-l]*cosnp[n] - coslt[-l]*sinnp[n];
@@ -135,11 +137,11 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
           sinth = sinlt[l]*cosnp[n] - coslt[l]*sinnp[n];
           costh = coslt[l]*cosnp[n] + sinlt[l]*sinnp[n];
         }
-        for(int i=0; i<3; i++){
-          Qrz[baseInd + 2*i + 0)] = sinth*qs[i];
-          Qrz[baseInd + 2*i + 1)] = costh*qs[i];
+        for(int i=0; i<4; i++){
+          Qrz[baseInd + 2*i + 0] = costh*qs[i];
+          Qrz[baseInd + 2*i + 1] = sinth*qs[i];
         }
-        baseInd += 6;
+        baseInd += 8;
       }
     }
 
