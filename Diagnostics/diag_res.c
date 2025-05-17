@@ -130,8 +130,8 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     for(int n=0; n<n_mode_max+1; n++){
       for(int l=n-n_off; l<n+n_off+1; l++){
         if(l<0){
-          sinth = sinnp[n]*coslt[-l] + cosnp[n]*sinlt[-1];
-          costh = cosnp[n]*coslt[-l] - sinnp[n]*sinlt[-1];
+          sinth = sinnp[n]*coslt[-l] + cosnp[n]*sinlt[-l];
+          costh = cosnp[n]*coslt[-l] - sinnp[n]*sinlt[-l];
         }
         else{
           sinth = sinnp[n]*coslt[l] - cosnp[n]*sinlt[l];
