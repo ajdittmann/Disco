@@ -87,6 +87,10 @@ double phigrav( double M , double r , double eps , int type)
     {
         return 0.0;
     }
+    if(type == PLDONG)
+    {
+        return( M*(r*r + 1.5*eps*eps)*pow(r*r + eps*eps, -1.5) ) ;
+    }
     return 0.0;
 }
 
@@ -142,6 +146,10 @@ double fgrav( double M , double r , double eps , int type)
     else if(type == PLLINEARX)
     {
         return M*r;
+    }
+    if(type == PLDONG)
+    {
+        return( r*M*(2.5*eps*eps + r*r)*pow(r*r + eps*eps, -2.5) );
     }
     return 0.0;
     
