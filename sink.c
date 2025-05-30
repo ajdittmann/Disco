@@ -427,6 +427,7 @@ void damping(const double *prim, double *cons, const double *xp,
     if (DAMP_INNER > 0){
       dampTime = dampTimeInner;
       if (DAMP_INNER == 2) dampTime = dampTime/omtot;
+      dampTime = fmax(dampTime, 0.1*dt);
       dampLen = dampLenInner;
       theta = (x[0]-rmin)/dampLen;
       if (theta > 1.0) dampFactor = 0.0;
@@ -437,6 +438,7 @@ void damping(const double *prim, double *cons, const double *xp,
     if (DAMP_OUTER > 0){
       dampTime = dampTimeOuter;
       if (DAMP_OUTER == 2) dampTime = dampTime/omtot;
+      dampTime = fmax(dampTime, 0.1*dt);
       dampLen = dampLenOuter;
       theta = (rmax-x[0])/dampLen;
       if (theta > 1.0) dampFactor = 0.0;
@@ -448,6 +450,7 @@ void damping(const double *prim, double *cons, const double *xp,
       if (DAMP_UPPER > 0){
         dampTime = dampTimeUpper;
         if (DAMP_UPPER == 2) dampTime = dampTime/omtot;
+        dampTime = fmax(dampTime, 0.1*dt);
         dampLen = dampLenUpper;
         theta = (zmax-x[2])/dampLen;
         if (theta > 1.0) dampFactor = 0.0;
@@ -458,6 +461,7 @@ void damping(const double *prim, double *cons, const double *xp,
       if (DAMP_LOWER > 0){
         dampTime = dampTimeLower;
         if (DAMP_LOWER == 2) dampTime = dampTime/omtot;
+        dampTime = fmax(dampTime, 0.1*dt);
         dampLen = dampLenLower;
         theta = (zmax-x[2])/dampLen;
         if (theta > 1.0) dampFactor = 0.0;
@@ -467,7 +471,7 @@ void damping(const double *prim, double *cons, const double *xp,
       }
     }
     //dampFactor = expm1(-dt*ratetot);
-    dampFactor = -1.0*dt*dampFactor;
+    dampFactor = -1.0*dt*ratetot;
     double prims0[NUM_Q];
     double cons0[NUM_Q];
     double cons1[NUM_Q];
