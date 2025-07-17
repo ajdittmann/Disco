@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 #include "../geometry.h"
 #include "../planet.h"
@@ -16,7 +15,7 @@ void setDiagParams( struct domain * theDomain )
 
 int num_diagnostics(void)
 {
-    return(17);
+    return(19);
 }
 
 int num_snapshot_rz(void)
@@ -75,21 +74,42 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     double Fxyz[3];
     double Fp;
 
+    double r_p1 = theDomain->thePlanets[0].r;
+    double p_p1 = theDomain->thePlanets[0].phi;
+    double vr_p1 = theDomain->thePlanets[0].vr;
+    double vp_p1 = theDomain->thePlanets[0].omega*r_p1;
+    double cp1 = cos(p_p1);
+    double sp1 = sin(p_p1);
+    double vx_p1 = vr_p1*cp1 - vp_p1*sp1;
+    double vy_p1 = vr_p1*sp1 + vp_p1*cp1;
+
+    double r_p2 = theDomain->thePlanets[1].r;
+    double p_p2 = theDomain->thePlanets[1].phi;
+    double vr_p2 = theDomain->thePlanets[1].vr;
+    double vp_p2 = theDomain->thePlanets[1].omega*r_p2;
+    double cp2 = cos(p_p2);
+    double sp2 = sin(p_p2);
+    double vx_p2 = vr_p2*cp2 - vp_p2*sp2;
+    double vy_p2 = vr_p2*sp2 + vp_p2*cp2;
+
     planetaryForce( theDomain->thePlanets + 0, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
     Qrz[9] = rho * r * Fp;				//Torque density from pl 0
-    Qrz[10] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+    Qrz[10] = rho*(vx_p1*Fxyz[0] + vy_p1*Fxyz[1]);
+    Qrz[11] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+
     planetaryForce( theDomain->thePlanets + 1, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
-    Qrz[11] = rho * r * Fp;				//Torque density from pl 1
-    Qrz[12] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+    Qrz[12] = rho * r * Fp;				//Torque density from pl 1
+    Qrz[13] = rho*(vx_p2*Fxyz[0] + vy_p2*Fxyz[1]);
+    Qrz[14] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
 
     double cos2p = (cosp - sinp) * (cosp + sinp);
     double sin2p = 2*sinp*cosp;
-    Qrz[13]  = rho * r * cosp;
-    Qrz[14]  = rho * r * sinp;
-    Qrz[15]  = rho * r*r * cos2p;
-    Qrz[16] = rho * r*r * sin2p;
+    Qrz[15]  = rho * r * cosp;
+    Qrz[16]  = rho * r * sinp;
+    Qrz[17]  = rho * r*r * cos2p;
+    Qrz[18] = rho * r*r * sin2p;
 }
 
 
