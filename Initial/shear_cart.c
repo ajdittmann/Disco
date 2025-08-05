@@ -11,15 +11,13 @@ static double vx0 = 0.0;
 static double vy0 = 0.0;
 static double phi0_o_pi = 0.0;
 static double rho_kappa = 0.0;
-static int prof_choice = 0;
 static int isothermal_flag = 0;
 static int visc_flag = 0;
 static double *t = NULL;
-    
+
 void get_xyz(double *, double *);
 void get_vec_from_xyz(double *, double *, double *);
 void get_vec_contravariant(double *, double *, double *);
-
 
 void setICparams( struct domain * theDomain )
 {
@@ -27,7 +25,6 @@ void setICparams( struct domain * theDomain )
     nu = theDomain->theParList.viscosity;
     isothermal_flag = theDomain->theParList.isothermal_flag;
     visc_flag = theDomain->theParList.visc_flag;
-    prof_choice = theDomain->theParList.initPar0;
     x0 = theDomain->theParList.initPar1;
     cs0 = theDomain->theParList.initPar2;
     sig0 = theDomain->theParList.initPar3;

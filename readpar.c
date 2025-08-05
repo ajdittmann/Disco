@@ -120,8 +120,8 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Restart"               , VAR_INT  , &(theList->restart_flag)    );
          err += readvar( pfile , "Use_Viscosity"         , VAR_INT  , &(theList->visc_flag)       );
          err += readvar( pfile , "Viscosity"             , VAR_DOUB , &(theList->viscosity)       );
-         err += readvar( pfile , "Viscosity_Profile"          , VAR_INT  , &(theList->visc_profile)      );
-         err += readvar( pfile , "Viscosity_Par"          , VAR_DOUB  , &(theList->visc_par)      );
+         err += readvar( pfile , "Viscosity_Profile"     , VAR_INT  , &(theList->visc_profile)      );
+         err += readvar( pfile , "Viscosity_Par"         , VAR_DOUB  , &(theList->visc_par)      );
          err += readvar( pfile , "Include_Atmos"         , VAR_INT  , &(theList->include_atmos)   );
          err += readvar( pfile , "T_Times_2pi"           , VAR_INT  , &tTimes_2pi );
          err += readvar( pfile , "P_Times_2pi"           , VAR_INT  , &pTimes_2pi );
