@@ -218,15 +218,27 @@ void visc_flux(const double * prim, const double * gradr, const double * gradp,
    double vr  = prim[URR];
    double om  = prim[UPP];
    double om_off = om - get_om(x);
-   double vz  = prim[UZZ];
+   //double vz  = prim[UZZ];
 
-   double dnvr = n[0]*gradr[URR] + n[1]*gradp[URR] + n[2]*gradz[URR];
-   double dnom = n[0]*gradr[UPP] + n[1]*gradp[UPP] + n[2]*gradz[UPP];
-   double dnvz = n[0]*gradr[UZZ] + n[1]*gradp[UZZ] + n[2]*gradz[UZZ];
-   flux[SRR] = -nu*rho*( dnvr - n[1]*2.*om );
-   flux[LLL] = -nu*rho*( r*r*dnom + n[1]*2.*vr );
-   flux[SZZ] = -nu*rho*dnvz;
-   flux[TAU] = -nu*rho*( vr*dnvr+r*r*om_off*dnom+vz*dnvz );
+   //double dnvr = n[0]*gradr[URR] + n[1]*gradp[URR] + n[2]*gradz[URR];
+   //double dnom = n[0]*gradr[UPP] + n[1]*gradp[UPP] + n[2]*gradz[UPP];
+   //double dnvz = n[0]*gradr[UZZ] + n[1]*gradp[UZZ] + n[2]*gradz[UZZ];
+   //flux[SRR] = -nu*rho*( dnvr - n[1]*2.*om );
+   //flux[LLL] = -nu*rho*( r*r*dnom + n[1]*2.*vr );
+   //flux[SZZ] = -nu*rho*dnvz;
+   //flux[TAU] = -nu*rho*( vr*dnvr+r*r*om_off*dnom+vz*dnvz );
+
+   double srr = gradr[URR];
+   double spp = r*r*gradp[UPP] + 2*r*vr;
+   double srp = r*r*gradr[UPP] + gradp[URR];
+   double nc[3] = {n[0], n[1]/r, n[2]};
+   double srn = srr*nc[0] + srp*nc[1];
+   double spn = srp*nc[0] + spp*nc[1];
+
+   flux[SRR] = -nu*rho*( srn );
+   flux[LLL] = -nu*rho*( spn );
+   flux[SZZ] = 0.0;
+   flux[TAU] = -nu*rho*( vr*srn + om_off*spn );
 
 }
 
@@ -234,19 +246,17 @@ void visc_source(const double * prim, const double * gradr, const double *gradp,
                  const double * gradz, double * cons, const double *xp,
                  const double *xm, double dVdt)
 {
+   double x[3];
+   get_centroid_arr(xp, xm, x);
+   double r = x[0];
+   double nu = get_nu(x, prim);
 
-   double rp = xp[0];
-   double rm = xm[0];
    double rho = prim[RHO];
-   double r_1  = .5*(rp+rm);
    double vr  = prim[URR];
 
-   if( include_viscosity ){
-      double x[3];
-      get_centroid_arr(xp, xm, x);
-      double nu = get_nu(x, prim);
-      cons[SRR] += -dVdt*nu*rho*vr/(r_1*r_1);
-   }
+   // Contravariant -phi-phi component of shear tensor.
+   double spp = vr/(r*r);
+   cons[SRR] += (-rho * nu * spp) * dVdt;
 }
 
 void flux_to_E( const double * Flux , const double * Ustr , const double * x, 
