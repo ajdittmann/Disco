@@ -1,22 +1,22 @@
 #include "../paul.h"
 
-static double q_planet = 1.0; 
+static double q_planet = 1.0;
 static double e_planet = 0.0;
 static double eps = 0.05;
 
 void setPlanetParams( struct domain * theDomain ){
 
-   theDomain->Npl = 2; 
+   theDomain->Npl = 2;
    q_planet = theDomain->theParList.Mass_Ratio;
    e_planet = theDomain->theParList.Eccentricity;
    eps = theDomain->theParList.grav_eps;
 }
 
-double root0( double E , double e ){ 
+double root0( double E , double e ){
    return( E  - e*sin(E) );
 }
 
-double root1( double E , double e ){ 
+double root1( double E , double e ){
    return( 1. - e*cos(E) );
 }
 
@@ -43,7 +43,7 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].z     = 0.0;
    thePlanets[0].eps   = 0.0;
    thePlanets[0].type  = PLPOINTMASS;
-  
+
    thePlanets[1].M     = mu;
    thePlanets[1].vr    = 0.0;
    thePlanets[1].omega = om;
@@ -59,13 +59,13 @@ void initializePlanets( struct planet * thePlanets ){
 
 void movePlanets( struct planet * thePlanets , double t , double dt ){
 
-   double TOL = 1e-12;
+   double TOL = 1e-13;
 
-   double r0   = thePlanets[0].r + thePlanets[1].r; 
+   double r0   = thePlanets[0].r + thePlanets[1].r;
    double phi0 = thePlanets[1].phi;
 
-   double vr = thePlanets[0].vr + thePlanets[1].vr; 
-   double omega = thePlanets[1].omega; 
+   double vr = thePlanets[0].vr + thePlanets[1].vr;
+   double omega = thePlanets[1].omega;
 
    double l = r0*r0*omega;
    double en = 0.5*vr*vr - 1./r0 + 0.5*l*l/r0/r0;
@@ -73,7 +73,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    double a = 1./2./fabs(en);
    double b = l/sqrt(2.*fabs(en));
    double f = sqrt(fabs(a*a-b*b));
-   double e = f/a; 
+   double e = f/a;
 
    double x0 = r0*cos(phi0);
    double y0 = r0*sin(phi0);
@@ -84,13 +84,13 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
 
 //Newton-Rapheson to solve M = E - e*sin(E)
       double E = M;  //Guess value for E is M.
-      double ff = root0( E , e ) - M; 
+      double ff = root0( E , e ) - M;
       while( fabs(ff) > TOL ){
-         double dfdE = root1( E , e ); 
+         double dfdE = root1( E , e );
          double dE = -ff/dfdE;
          E += dE;
-         ff = root0( E , e ) - M; 
-      } 
+         ff = root0( E , e ) - M;
+      }
       double x = a*cos(E)-f;
       double y = b*sin(E);
       double R   = sqrt(x*x+y*y);
@@ -103,7 +103,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
 
    thePlanets[1].r   = R*(1.-mu);
    thePlanets[1].phi = phi;
-   thePlanets[1].omega = l/R/R; 
+   thePlanets[1].omega = l/R/R;
    thePlanets[1].vr = vr*(1.-mu);
 
    thePlanets[0].r   = R*mu;
