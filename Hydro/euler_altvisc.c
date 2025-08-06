@@ -218,27 +218,30 @@ void visc_flux(const double * prim, const double * gradr, const double * gradp,
    double vr  = prim[URR];
    double om  = prim[UPP];
    double om_off = om - get_om(x);
-   //double vz  = prim[UZZ];
-
-   //double dnvr = n[0]*gradr[URR] + n[1]*gradp[URR] + n[2]*gradz[URR];
-   //double dnom = n[0]*gradr[UPP] + n[1]*gradp[UPP] + n[2]*gradz[UPP];
-   //double dnvz = n[0]*gradr[UZZ] + n[1]*gradp[UZZ] + n[2]*gradz[UZZ];
-   //flux[SRR] = -nu*rho*( dnvr - n[1]*2.*om );
-   //flux[LLL] = -nu*rho*( r*r*dnom + n[1]*2.*vr );
-   //flux[SZZ] = -nu*rho*dnvz;
-   //flux[TAU] = -nu*rho*( vr*dnvr+r*r*om_off*dnom+vz*dnvz );
+   double vz  = prim[UZZ];
 
    double srr = gradr[URR];
-   double spp = r*r*gradp[UPP] + 2*r*vr;
-   double srp = r*r*gradr[UPP] + gradp[URR];
-   double nc[3] = {n[0], n[1]/r, n[2]};
-   double srn = srr*nc[0] + srp*nc[1];
-   double spn = srp*nc[0] + spp*nc[1];
+   double spp = r*r*gradp[UPP] + 2*vr*r ;
 
-   flux[SRR] = -nu*rho*( srn );
-   flux[LLL] = -nu*rho*( spn );
-   flux[SZZ] = 0.0;
-   flux[TAU] = -nu*rho*( vr*srn + om_off*spn );
+   double srp = r*r*gradr[UPP];
+   double spr = gradp[URR] - 2*om*r;
+
+   // Filler, I have not actually tried to reproduce the v1 z viscosity
+   double szz = gradz[UZZ];
+   double srz = gradr[UZZ] + gradz[URR];
+   double spz = gradp[UZZ] + r*r*gradz[UPP];
+
+   // Covariant components of shear normal to face, shear_{ij} * n^{j}.
+   // Given n is in orthonormal basis, 1/r factor corrects to coordinate basis
+   double nc[3] = {n[0], n[1]/r, n[2]};
+   double srn = srr*nc[0] + spr*nc[1] + srz*nc[2];
+   double spn = srp*nc[0] + spp*nc[1] + spz*nc[2];
+   double szn = srz*nc[0] + spz*nc[1] + szz*nc[2];
+
+   flux[SRR] = -nu * rho * srn;
+   flux[LLL] = -nu * rho * spn;
+   flux[SZZ] = -nu * rho * szn;
+   flux[TAU] = -nu * rho * ( vr*srn + om_off*spn + vz*szn);
 
 }
 
