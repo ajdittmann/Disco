@@ -20,7 +20,7 @@ void setDiagParams( struct domain * theDomain )
 
 int num_diagnostics(void)
 {
-    return(17 + (2*n_off+1)*(1+n_mode_max)*2*4);
+    return(19 + (2*n_off+1)*(1+n_mode_max)*2*4);
 }
 
 int num_snapshot_rz(void)
@@ -81,19 +81,22 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
 
     planetaryForce( theDomain->thePlanets + 0, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
-    Qrz[9] = rho * r * Fp;				//Torque density from pl 0
-    Qrz[10] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+    Qrz[9] = rho * r * Fp;                              //Torque density from pl 0
+    Qrz[10] = rho*(vx_p1*Fxyz[0] + vy_p1*Fxyz[1]);
+    Qrz[11] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+
     planetaryForce( theDomain->thePlanets + 1, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
-    Qrz[11] = rho * r * Fp;				//Torque density from pl 1
-    Qrz[12] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
+    Qrz[12] = rho * r * Fp;                             //Torque density from pl 1
+    Qrz[13] = rho*(vx_p2*Fxyz[0] + vy_p2*Fxyz[1]);
+    Qrz[14] = rho*(vx*Fxyz[0] + vy*Fxyz[1]);
 
     double cos2p = (cosp - sinp) * (cosp + sinp);
     double sin2p = 2*sinp*cosp;
-    Qrz[13]  = rho * r * cosp;
-    Qrz[14]  = rho * r * sinp;
-    Qrz[15]  = rho * r*r * cos2p;
-    Qrz[16] = rho * r*r * sin2p;
+    Qrz[16]  = rho * r * cosp;
+    Qrz[17]  = rho * r * sinp;
+    Qrz[18]  = rho * r*r * cos2p;
+    Qrz[19] = rho * r*r * sin2p;
 
 
     double time = theDomain->t;
@@ -125,7 +128,7 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
       cosnp[n] = 2*cosnp[n-1]*cosnp[1] - cosnp[n-2];
     }
 
-    int baseInd = 17;
+    int baseInd = 19;
     double costh, sinth;
     for(int n=0; n<n_mode_max+1; n++){
       for(int l=n-n_off; l<n+n_off+1; l++){
