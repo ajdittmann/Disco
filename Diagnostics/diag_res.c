@@ -93,11 +93,10 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
 
     double cos2p = (cosp - sinp) * (cosp + sinp);
     double sin2p = 2*sinp*cosp;
-    Qrz[16]  = rho * r * cosp;
-    Qrz[17]  = rho * r * sinp;
-    Qrz[18]  = rho * r*r * cos2p;
-    Qrz[19] = rho * r*r * sin2p;
-
+    Qrz[15]  = rho * r * cosp;
+    Qrz[16]  = rho * r * sinp;
+    Qrz[17]  = rho * r*r * cos2p;
+    Qrz[18] = rho * r*r * sin2p;
 
     double time = theDomain->t;
 
