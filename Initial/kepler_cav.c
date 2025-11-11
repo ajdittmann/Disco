@@ -43,7 +43,7 @@ void initial( double * prim , double * x ){
    double rho = efact*(1-epsfl) + epsfl;
    double drho = (1-epsfl)*efact*xi*pow((R/redge),-xi)/R;
 
-   double P = rho*get_cs2(x, rho)/gam;
+   double P = rho*get_cs2(x)/gam;
 
    double addom = rho*dphitot + phitot*drho;
    addom *= 1.0/(Mach*Mach*r*rho);

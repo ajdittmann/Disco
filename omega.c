@@ -169,7 +169,7 @@ double get_height_om( const double *x){
     return sqrt(omtot2);
 }
 
-double get_cs2( const double *x, double rho ){
+double get_cs2( const double *x){
     double cs2;
 
     if(cs2Choice == 1)

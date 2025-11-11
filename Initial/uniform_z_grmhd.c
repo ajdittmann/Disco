@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 void setICparams( struct domain * theDomain ){

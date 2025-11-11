@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static int visc_flag = 0;

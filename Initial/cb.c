@@ -30,7 +30,7 @@ void initial(double *prim, double *x)
     double nu = get_nu(x, prim);
 
     double rho = Mdot/(3*M_PI*nu);
-    double cs2 = get_cs2(x, rho);
+    double cs2 = get_cs2(x);
     if(nu == 0.0)
         rho = Mdot/(3*M_PI * 0.1*cs2/om);
     double v = -1.5*nu/r;

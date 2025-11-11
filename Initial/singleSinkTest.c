@@ -115,7 +115,7 @@ void initial( double * prim , double * x )
 
     double gr = grpz[0];
 
-    double cs2 = get_cs2(x, sig);
+    double cs2 = get_cs2(x);
     double Pp = sig * cs2 / gam;
 
     double vr = 0.0;

@@ -125,9 +125,9 @@ void initial( double * prim , double * x ){
    double d_rho = vals.d_r_rho;
    //double rho = gap_density(R, a, mach_csd, alpha_csd, q_planet, rho_0);
    //double d_rho = d_gap_density(R, a, mach_csd, alpha_csd, q_planet, rho_0);
-   double Pp = rho * get_cs2(x, rho) / gam;
+   double Pp = rho * get_cs2(x) / gam;
 
-   double omega2 = (1./(R*R*R)) - (1/(R*gam*rho))*get_cs2(x, rho)*d_rho;
+   double omega2 = (1./(R*R*R)) - (1/(R*gam*rho))*get_cs2(x)*d_rho;
 
    double X = 0.0; 
    if( r*cos(x[1]) > 0.0 ) X = 1.0; 

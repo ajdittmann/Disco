@@ -1252,7 +1252,6 @@ double cons2prim_isothermal_hlld(double *U, double *p)
     double tau = U[EN];
     double B[3] = {U[BX], U[BY], U[BZ]};
 
-    //TODO: pass proper argument to get_cs2()
     double cs2N = get_cs2(1.0);
     double P_o_rhoh = cs2N / gamma_law;
     double h = 1.0 / (1.0 - gamma_law * P_o_rhoh / (gamma_law-1.0));

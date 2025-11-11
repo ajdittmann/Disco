@@ -24,7 +24,7 @@ void initial( double * prim , double * x ){
    double rho = pow(r,-1.5);
 //   rho *= exp(-pow(r/10.,8.));
    if( rho < rho_floor ) rho = rho_floor;
-   double cs2 = get_cs2( x, rho );
+   double cs2 = get_cs2( x );
    double Pp  = rho*cs2/gam;
    //double n = 1.5;
    //double omega = ( pow( r , n-1.5 ) + 1. )/( pow( r , n ) + 1. );

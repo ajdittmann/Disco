@@ -48,7 +48,7 @@ void initial( double * prim , double * x ){
      //rho = exp(gam*Mach*Mach*(1./r + om0*om0*0.5*r*r + off2 - off1 - off3));
    }
 
-   double cs2 = get_cs2(x, rho);
+   double cs2 = get_cs2(x);
    double Pp = rho*cs2/gam;
 
    double X = 0.0;

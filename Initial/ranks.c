@@ -1,4 +1,3 @@
-
 #include "../paul.h"
  
 static int ranky=0;

@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 void get_xyz(double *x, double *xyz);

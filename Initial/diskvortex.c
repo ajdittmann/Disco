@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static double gam  = 0.0;

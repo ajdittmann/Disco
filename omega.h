@@ -12,7 +12,7 @@ double get_om1( const double *x);
 double get_om2( const double *x);
 double get_height_om( const double *x);
 
-double get_cs2( const double *x, double rho );
+double get_cs2( const double *x );
 double get_nu( const double *x , const double *prim);
 
 #endif

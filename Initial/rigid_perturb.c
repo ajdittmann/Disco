@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 #include "../omega.h"
 

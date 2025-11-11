@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 #include "../Calc/calc.h"
 

@@ -75,7 +75,7 @@ void initial(double *prim, double *x)
    double dSigma = -xi*exp(-pow(r/rin,xi))*pow(r/rin, xi-1.0)/rin;
 
    double rho = Sigma;
-   double cs2 = get_cs2(x, rho);
+   double cs2 = get_cs2(x);
 
    double P = rho*cs2/gam;
    double vr	= -1.5*nu/r;

@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 // Taken directly from Lubow & Shu 1975

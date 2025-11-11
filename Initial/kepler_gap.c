@@ -69,7 +69,7 @@ void initial( double * prim , double * x ){
 
    //double Pp		= rho/(gam*Mach*Mach);
    //double Pp		= rho/(gam*mach_csd*mach_csd);
-   double  Pp = rho * get_cs2(x, rho) / gam;
+   double  Pp = rho * get_cs2(x) / gam;
 
    double X = 0.0; 
    if( r*cos(x[1]) > 0.0 ) X = 1.0; 

@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 #include "../omega.h"
 
@@ -24,7 +23,7 @@ void initial( double * prim , double * x ){
    double Pp;
    if(isothermal_flag)
    {
-       double cs2 = get_cs2(x, rho);
+       double cs2 = get_cs2(x);
        Pp = rho*cs2/gam;
    }
    else

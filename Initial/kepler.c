@@ -33,7 +33,7 @@ void initial( double * prim , double * x ){
    double rho = 1.0;
    double Pp = rho/(gam * Mach * Mach);
    if(isothermal_flag)
-       Pp = rho * get_cs2(x, rho);
+       Pp = rho * get_cs2(x);
 
    double visc = 0.0; //get_nu(x, prim);
    //if (nu > 0.0) rho = rho/nu;

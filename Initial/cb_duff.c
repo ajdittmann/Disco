@@ -43,7 +43,7 @@ void initial(double *prim, double *x)
       om = pow(r,-1.5);
     }
 
-    double cs2 = get_cs2(x, rho);
+    double cs2 = get_cs2(x);
     double v = -1.5*nu/(r+0.0001);
     double P = rho*cs2/gam;
  

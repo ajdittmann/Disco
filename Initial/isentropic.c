@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static double gamma_law = 0.0;

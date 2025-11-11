@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 // Cylindrical relativistic blast wave in a uniform magnetic field,

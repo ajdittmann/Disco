@@ -51,7 +51,7 @@ void initial(double *prim, double *x)
     rho = exp(-rho_kappa * X);
 
     if(isothermal_flag)
-        P = get_cs2(x, rho) * rho / gam;
+        P = get_cs2(x) * rho / gam;
     else
         P = cs0*cs0 * rho / gam;
 

@@ -1,4 +1,3 @@
-
 #include "../paul.h"
 
 static double nu = 0.0;
