@@ -113,6 +113,7 @@ struct param_list{
    double Disk_Mach;
    double Mass_Ratio;
    double Eccentricity;
+   double Inclination;
    double Drift_Rate,Drift_Exp;
    int grav2D;
 

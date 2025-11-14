@@ -129,6 +129,7 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Mach_Number"           , VAR_DOUB , &(theList->Disk_Mach)       );
          err += readvar( pfile , "Mass_Ratio"            , VAR_DOUB , &(theList->Mass_Ratio)      );
          err += readvar( pfile , "Eccentricity"          , VAR_DOUB , &(theList->Eccentricity)    );
+         err += readvar( pfile , "Inclination"           , VAR_DOUB , &(theList->Inclination)     );
          err += readvar( pfile , "Drift_Rate"            , VAR_DOUB , &(theList->Drift_Rate)      );
          err += readvar( pfile , "Drift_Exp"             , VAR_DOUB , &(theList->Drift_Exp)       );
          err += readvar( pfile , "Grav2D"                , VAR_INT  , &(theList->grav2D)       );

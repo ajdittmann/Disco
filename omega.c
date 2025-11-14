@@ -209,10 +209,6 @@ double get_cs2( const double *x){
         double scaling = pow(r, -cs2Par); //
         cs2 = scaling/(Mach*Mach);
     }
-    else if(cs2Choice == 7)
-    {
-        cs2 = pow(rho, cs2Par - 1.0)/(Mach*Mach);
-    }
     else
         cs2 = 1.0;
 

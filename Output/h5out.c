@@ -288,6 +288,8 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Eccentricity", &(pars->Eccentricity),
                     H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Inclination", &(pars->Inclination),
+                    H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Drift_Rate", &(pars->Drift_Rate),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Drift_Exp", &(pars->Drift_Exp),
