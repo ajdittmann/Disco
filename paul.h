@@ -44,6 +44,8 @@ enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
 #define NUM_PL_KIN  9
 #define NUM_PL_INTEGRALS 16
 #define NUM_PL_AUX (NUM_PL_INTEGRALS + 14)
+#define SQR(x) ( (x)*(x) )
+
 
 //Magnetic field tracking things.  Can be set to zero if there is no MHD.
 #if CT_MODE == 0        //No CT
