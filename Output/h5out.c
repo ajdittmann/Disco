@@ -288,14 +288,24 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Eccentricity", &(pars->Eccentricity),
                     H5T_NATIVE_DOUBLE);
-    dumpVal(filename, "Pars", "Inclination", &(pars->Inclination),
-                    H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Drift_Rate", &(pars->Drift_Rate),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Drift_Exp", &(pars->Drift_Exp),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Grav2D", &(pars->grav2D),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Planet_Par0", &(pars->planetPar0),
+                    H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Planet_Par1", &(pars->planetPar1),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par2", &(pars->planetPar2),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par3", &(pars->planetPar3),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par4", &(pars->planetPar4),
+                    H5T_NATIVE_DOUBLE);
+
+
     
     dumpVal(filename, "Pars", "Constrained_Transport", &(pars->CT),
                     H5T_NATIVE_INT);

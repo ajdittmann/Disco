@@ -115,9 +115,13 @@ struct param_list{
    double Disk_Mach;
    double Mass_Ratio;
    double Eccentricity;
-   double Inclination;
    double Drift_Rate,Drift_Exp;
    int grav2D;
+   double planetPar0;
+   double planetPar1;
+   double planetPar2;
+   double planetPar3;
+   double planetPar4;
 
    int restart_flag;
    int CT;

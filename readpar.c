@@ -129,10 +129,14 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Mach_Number"           , VAR_DOUB , &(theList->Disk_Mach)       );
          err += readvar( pfile , "Mass_Ratio"            , VAR_DOUB , &(theList->Mass_Ratio)      );
          err += readvar( pfile , "Eccentricity"          , VAR_DOUB , &(theList->Eccentricity)    );
-         err += readvar( pfile , "Inclination"           , VAR_DOUB , &(theList->Inclination)     );
          err += readvar( pfile , "Drift_Rate"            , VAR_DOUB , &(theList->Drift_Rate)      );
          err += readvar( pfile , "Drift_Exp"             , VAR_DOUB , &(theList->Drift_Exp)       );
          err += readvar( pfile , "Grav2D"                , VAR_INT  , &(theList->grav2D)       );
+         err += readvar( pfile , "Planet_Par0" , VAR_INT  , &(theList->planetPar0));
+         err += readvar( pfile , "Planet_Par1" , VAR_DOUB  , &(theList->planetPar1));
+         err += readvar( pfile , "Planet_Par2" , VAR_DOUB  , &(theList->planetPar2));
+         err += readvar( pfile , "Planet_Par3" , VAR_DOUB  , &(theList->planetPar3));
+         err += readvar( pfile , "Planet_Par4" , VAR_DOUB  , &(theList->planetPar4));
          err += readvar( pfile , "Constrained_Transport" , VAR_INT  , &(theList->CT)              );
          err += readvar( pfile , "CT_Solver"        , VAR_INT  , &(theList->CT_Solver)  );
          err += readvar( pfile , "Metric_Par0" , VAR_INT  , &(theList->metricPar0));
