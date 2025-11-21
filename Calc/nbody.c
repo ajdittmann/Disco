@@ -114,56 +114,56 @@ void rk8(int N, double dt, double *input, double *output){
   for (i=0; i<N*7; i++) xn[i] = input[i];
 
   double *k1 = calloc(N*7, sizeof(double));
-  double *k23512 = calloc(N*7, sizeof(double));
-  //double *k3 = calloc(N*7, sizeof(double));
+  double *k2 = calloc(N*7, sizeof(double));
+  double *k3 = calloc(N*7, sizeof(double));
   double *k4 = calloc(N*7, sizeof(double));
-  //double *k5 = calloc(N*7, sizeof(double));
+  double *k5 = calloc(N*7, sizeof(double));
   double *k6 = calloc(N*7, sizeof(double));
   double *k7 = calloc(N*7, sizeof(double));
   double *k8 = calloc(N*7, sizeof(double));
   double *k9 = calloc(N*7, sizeof(double));
   double *k10 = calloc(N*7, sizeof(double));
   double *k11 = calloc(N*7, sizeof(double));
-  //double *k12 = calloc(N*7, sizeof(double));
+  double *k12 = calloc(N*7, sizeof(double));
 
   rhs(N, 0.0, xn, k1);
   for (i=0; i<N*7; i++) xn[i] = input[i] + dt*a2_0*k1[i];
-  rhs(N, 0.0, xn, k23512); //k23512 = k2
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a3_0*k1[i] + a3_1*k23512[i]);
-  rhs(N, 0.0, xn, k23512); //k23512 = k3
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a4_0*k1[i] + a4_2*k23512[i]);
+  rhs(N, 0.0, xn, k2);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a3_0*k1[i] + a3_1*k2[i]);
+  rhs(N, 0.0, xn, k3);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a4_0*k1[i] + a4_2*k3[i]);
   rhs(N, 0.0, xn, k4);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a5_0*k1[i] + a5_2*k23512[i] + a5_3*k4[i]);
-  rhs(N, 0.0, xn, k23512); //k23512 = k5
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a6_0*k1[i] + a6_3*k4[i] + a6_4*k23512[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a5_0*k1[i] + a5_2*k3[i] + a5_3*k4[i]);
+  rhs(N, 0.0, xn, k5);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a6_0*k1[i] + a6_3*k4[i] + a6_4*k5[i]);
   rhs(N, 0.0, xn, k6);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a7_0*k1[i] + a7_3*k4[i] + a7_4*k23512[i] + a7_5*k6[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a7_0*k1[i] + a7_3*k4[i] + a7_4*k5[i] + a7_5*k6[i]);
   rhs(N, 0.0, xn, k7);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a8_0*k1[i] + a8_4*k23512[i] + a8_5*k6[i] + a8_6*k7[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a8_0*k1[i] + a8_4*k5[i] + a8_5*k6[i] + a8_6*k7[i]);
   rhs(N, 0.0, xn, k8);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a9_0*k1[i] + a9_3*k4[i] + a9_4*k23512[i] + a9_5*k6[i] + a9_6*k7[i] + a9_7*k8[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a9_0*k1[i] + a9_3*k4[i] + a9_4*k5[i] + a9_5*k6[i] + a9_6*k7[i] + a9_7*k8[i]);
   rhs(N, 0.0, xn, k9);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a10_0*k1[i] + a10_3*k4[i] + a10_4*k23512[i] + a10_5*k6[i] + a10_6*k7[i] + a10_7*k8[i] + a10_8*k9[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a10_0*k1[i] + a10_3*k4[i] + a10_4*k5[i] + a10_5*k6[i] + a10_6*k7[i] + a10_7*k8[i] + a10_8*k9[i]);
   rhs(N, 0.0, xn, k10);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a11_0*k1[i] + a11_3*k4[i] + a11_4*k23512[i] + a11_5*k6[i] + a11_6*k7[i] + a11_7*k8[i] + a11_8*k9[i] + a11_9*k10[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a11_0*k1[i] + a11_3*k4[i] + a11_4*k5[i] + a11_5*k6[i] + a11_6*k7[i] + a11_7*k8[i] + a11_8*k9[i] + a11_9*k10[i]);
   rhs(N, 0.0, xn, k11);
-  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a12_0*k1[i] + a12_3*k4[i] + a12_4*k23512[i] + a12_5*k6[i] + a12_6*k7[i] + a12_7*k8[i] + a12_8*k9[i] + a12_9*k10[i] + a12_10*k11[i]);
-  rhs(N, 0.0, xn, k23512); //k23512 = k12
-  for (i=0; i<N*7; i++) output[i] = input[i] + dt*(b0*k1[i] + b5*k6[i] + b6*k7[i] + b7*k8[i] + b8*k9[i] + b9*k10[i] + b10*k11[i] + b11*k23512[i]);
+  for (i=0; i<N*7; i++) xn[i] = input[i] + dt*(a12_0*k1[i] + a12_3*k4[i] + a12_4*k5[i] + a12_5*k6[i] + a12_6*k7[i] + a12_7*k8[i] + a12_8*k9[i] + a12_9*k10[i] + a12_10*k11[i]);
+  rhs(N, 0.0, xn, k12);
+  for (i=0; i<N*7; i++) output[i] = input[i] + dt*(b0*k1[i] + b5*k6[i] + b6*k7[i] + b7*k8[i] + b8*k9[i] + b9*k10[i] + b10*k11[i] + b11*k12[i]);
 
   free(xn);
   free(k1);
-  free(k23512);
-  //free(k3);
+  free(k2);
+  free(k3);
   free(k4);
-  //free(k5);
+  free(k5);
   free(k6);
   free(k7);
   free(k8);
   free(k9);
   free(k10);
   free(k11);
-  //free(k12);
+  free(k12);
 
 }
 
