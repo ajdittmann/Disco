@@ -66,7 +66,7 @@ LIB = -L$(H55)/lib -lhdf5 -lm
 
 OBJ = main.o readpar.o timestep.o onestep.o riemann.o mpisetup.o gridsetup.o domain.o misc.o $(GEOMETRY).o faces_alt.o exchange.o plm.o report.o profiler.o planet.o omega.o analysis.o $(HLLD).o rotframe.o boundary_functions.o geometry_functions.o $(INITIAL).o $(OUTPUT).o $(HYDRO).o $(BOUNDARY).o $(RESTART).o $(PLANETS).o $(METRIC).o $(FRAME).o calc.a $(ANALYSIS).o $(REPORT).o noise.o sink.o #snapshot.o
 
-CALC_OBJ = Calc/bondi.o Calc/integrate.o Calc/magnetosonic.o
+CALC_OBJ = Calc/bondi.o Calc/integrate.o Calc/magnetosonic.o Calc/nbody.o
 CT_OBJ = bfields.o
 
 ifneq ($(CT_MODE), 0)
