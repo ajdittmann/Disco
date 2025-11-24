@@ -6,7 +6,7 @@ enum{DDD,TAU,SRR,LLL,SZZ};
 
 enum{PROF_TOT, PROF_DT, PROF_TIMESTEP, PROF_OUTPUT, PROF_RECON, PROF_FLUX,
      PROF_CT, PROF_SOURCE, PROF_C2P, PROF_BOUND, PROF_EXCHANGE,
-     PROF_RECON_R, PROF_RECON_P, PROF_RECON_Z, 
+     PROF_RECON_R, PROF_RECON_P, PROF_RECON_Z,
      PROF_FLUX_R, PROF_FLUX_P, PROF_FLUX_Z,
      PROF_EXCH_NP_COUNT1, PROF_EXCH_NP_COMM1, PROF_EXCH_NP_COUNT2,
      PROF_EXCH_NP_COMM2, PROF_EXCH_NP_FIN,
@@ -49,21 +49,21 @@ enum{PL_SNK_M, PL_GRV_PX, PL_GRV_PY, PL_GRV_PZ, PL_GRV_JZ,
 
 //Magnetic field tracking things.  Can be set to zero if there is no MHD.
 #if CT_MODE == 0        //No CT
-    #define NUM_EDGES 0    
-    #define NUM_FACES 0    
-    #define NUM_AZ_EDGES 0 
+    #define NUM_EDGES 0
+    #define NUM_FACES 0
+    #define NUM_AZ_EDGES 0
 #elif CT_MODE == 1      //2D MHD, no E^phi
-    #define NUM_EDGES 4    
-    #define NUM_FACES 3    
-    #define NUM_AZ_EDGES 0 
+    #define NUM_EDGES 4
+    #define NUM_FACES 3
+    #define NUM_AZ_EDGES 0
 #elif CT_MODE == 2      //3D MHD
-    #define NUM_EDGES 8    
-    #define NUM_FACES 5    
-    #define NUM_AZ_EDGES 4 
+    #define NUM_EDGES 8
+    #define NUM_FACES 5
+    #define NUM_AZ_EDGES 4
 #else                   //default
-    #define NUM_EDGES 0    
-    #define NUM_FACES 0 
-    #define NUM_AZ_EDGES 0 
+    #define NUM_EDGES 0
+    #define NUM_FACES 0
+    #define NUM_AZ_EDGES 0
 #endif
 
 // Hack to touch a parameter if it is unused in a function.
@@ -132,7 +132,7 @@ struct param_list{
    double metricPar2;
    double metricPar3;
    double metricPar4;
-   
+
    int initPar0;
    double initPar1;
    double initPar2;
@@ -184,7 +184,7 @@ struct param_list{
 
 struct diagnostic_avg{
    double * Qrz;
-   
+
    double * F_r;
    double * F_z;
    double * Fvisc_r;
@@ -300,7 +300,7 @@ struct cell{
    double    Phi[NUM_FACES];
    double RK_Phi[NUM_FACES];
 #endif
-   
+
    double tempDoub;
 
    int real;
@@ -336,7 +336,7 @@ struct face{
 
 struct planet{
    double r;
-   double phi; 
+   double phi;
    double z;
    double M;
    double omega;
