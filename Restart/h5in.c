@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include <hdf5.h>
 #include <string.h>
 #include "../analysis.h"

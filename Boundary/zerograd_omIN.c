@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 #include <string.h>
 
 void boundary_fixed_rinn( struct domain *theDomain);

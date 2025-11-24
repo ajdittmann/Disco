@@ -1,7 +1,7 @@
 #ifndef DISCO_OMEGA_H
 #define DISCO_OMEGA_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setOmegaParams( struct domain * theDomain );
 

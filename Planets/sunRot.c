@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double q_binary = 1.0;
 static double q_bary = 1.0;

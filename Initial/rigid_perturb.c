@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../omega.h"
 
 double *t = NULL;

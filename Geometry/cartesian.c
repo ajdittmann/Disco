@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double y_max = 0.0;
 

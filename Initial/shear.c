@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 static double nu = 0.0;
 static double t = 0.0;

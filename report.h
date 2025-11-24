@@ -1,7 +1,7 @@
 #ifndef DISCO_REPORT_H
 #define DISCO_REPORT_H
 
-#include "paul.h"
+#include "disco.h"
 
 //These are defined in each report setup file
 void setReportParams(struct domain *theDomain);

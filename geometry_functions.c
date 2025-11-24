@@ -1,5 +1,5 @@
 
-#include "paul.h"
+#include "disco.h"
 #include "geometry.h"
 
 void get_centroid_arr(const double *xp, const double *xm, double *x)

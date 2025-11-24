@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 // To replicate Mignone, Journal of Computational Physics 270 (2014), 784-814
 

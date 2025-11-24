@@ -1,7 +1,7 @@
 #ifndef DISCO_PROFILER_H
 #define DISCO_PROFILER_H
 
-#include "paul.h"
+#include "disco.h"
 
 void start_clock( struct domain * theDomain );
 int count_cells( struct domain * theDomain );

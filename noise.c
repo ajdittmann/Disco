@@ -1,4 +1,4 @@
-#include "paul.h"
+#include "disco.h"
 #include "geometry.h"
 
 static int type = 0;

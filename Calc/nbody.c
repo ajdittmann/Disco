@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "calc.h"
-#include "../paul.h"
+#include "../disco.h"
 
 // RK8 coefficients
 #define a2_0 0.25

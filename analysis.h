@@ -1,7 +1,7 @@
 #ifndef DISCO_ANALYSIS_H
 #define DISCO_ANALYSIS_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setDiagParams(struct domain *theDomain);
 int num_diagnostics(void);

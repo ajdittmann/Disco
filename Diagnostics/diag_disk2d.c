@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double gamma_law = 0.0;
 

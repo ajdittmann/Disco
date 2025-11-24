@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 #include "../boundary.h"
 
 void boundary_trans( struct domain * theDomain , int dim )

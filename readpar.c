@@ -1,6 +1,6 @@
 enum{VAR_INT,VAR_DOUB,VAR_STR};
 
-#include "paul.h"
+#include "disco.h"
 #include <string.h>
 
 int readvar( char * filename , char * varname , int vartype , void * ptr ){

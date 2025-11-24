@@ -1,7 +1,7 @@
 // Fishbone & Moncrief 1976 Astrophysical Journal 207, 962-976
 // http://adsabs.harvard.edu/abs/1976ApJ...207..962F
 
-#include "../paul.h"
+#include "../disco.h"
 #include "../Hydro/frame.h"
 
 static double M = 0.0;

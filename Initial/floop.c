@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 void get_xyz(double *x, double *xyz);
 void get_rpz(double *x, double *rpz);

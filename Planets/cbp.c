@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../Calc/calc.h"
 
 static double q_planet = 1.0;

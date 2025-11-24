@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 static double gam = 0.0;
 static double rho_ref = 1.0;

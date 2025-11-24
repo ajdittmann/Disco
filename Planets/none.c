@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 void setPlanetParams( struct domain * theDomain ){
    theDomain->Npl = 1;

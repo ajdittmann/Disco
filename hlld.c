@@ -4,7 +4,7 @@ enum{DEN,TAX,SXX,SYY,SSZ};
 
 #include <stdio.h>
 #include <math.h>
-#include "paul.h"
+#include "disco.h"
 #include "geometry.h"
 #include "hydro.h"
 

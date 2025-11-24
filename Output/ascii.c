@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 double get_dV( double * , double * );
 void prim2cons( double * , double * , double * , double );

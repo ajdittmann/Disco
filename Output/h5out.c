@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 #include <hdf5.h>
 #include "../analysis.h"
 

@@ -1,7 +1,7 @@
 #ifndef DISCO_BOUNDARY_H
 #define DISCO_BOUNDARY_H
 
-#include "paul.h"
+#include "disco.h"
 
 // For initialization
 void setBCParams(struct domain *theDomain);

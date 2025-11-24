@@ -1,5 +1,5 @@
 
-#include "paul.h"
+#include "disco.h"
 
 int mpiSetup( struct domain * theDomain , int argc, char * argv[] ){
     

@@ -1,6 +1,6 @@
 #ifndef DISCO_CALC
 #define DISCO_CALC
-#include "../paul.h"
+#include "../disco.h"
 
 int bondi_newt(double Mdot, double GM, double gam, double rho0, 
                 double *r, double *rho, double *u, double *P, int N);

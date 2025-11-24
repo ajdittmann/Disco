@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double q_planet = 1.0; 
 static double e_planet = 0.0;
