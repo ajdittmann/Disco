@@ -342,6 +342,7 @@ struct planet{
    double omega;
    double vr;
    double vz;
+   double f;
 
    double eps;
 

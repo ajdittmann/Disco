@@ -357,6 +357,7 @@ void restart( struct domain * theDomain ){
          {
              pl->z = 0.0;
              pl->vz = 0.0;
+             pl->f = PlanetData[NpDat*p + 4];
 
              for(q=0; q<NUM_PL_KIN; q++)
                  theDomain->pl_kin[p*NUM_PL_KIN+q] = PlanetData[NpDat*p+q+7];
@@ -365,6 +366,16 @@ void restart( struct domain * theDomain ){
          {
              pl->vz = PlanetData[NpDat*p + 7];
              pl->z = PlanetData[NpDat*p + 8];
+             pl->f = PlanetData[NpDat*p + 4];
+             
+             for(q=0; q<NUM_PL_KIN; q++)
+                 theDomain->pl_kin[p*NUM_PL_KIN+q] = PlanetData[NpDat*p+q+9];
+         }
+         else if(NpDat == 10 + NUM_PL_KIN)
+         {
+             pl->vz = PlanetData[NpDat*p + 7];
+             pl->z = PlanetData[NpDat*p + 8];
+             pl->f = PlanetData[NpDat*p + 9];
              
              for(q=0; q<NUM_PL_KIN; q++)
                  theDomain->pl_kin[p*NUM_PL_KIN+q] = PlanetData[NpDat*p+q+9];
@@ -373,6 +384,7 @@ void restart( struct domain * theDomain ){
          {
              pl->z = 0.0;
              pl->vz = 0.0;
+             pl->f = PlanetData[NpDat*p + 4];
 
              planet_init_kin(theDomain->thePlanets + p,
                              theDomain->pl_kin + p*NUM_PL_KIN);

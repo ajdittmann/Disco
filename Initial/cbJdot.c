@@ -11,7 +11,6 @@ static int Npl = 0;
 static double massq = 0.0;
 static double xi = 0.0;
 static double rin = 0.0;
-static double redge = 0.0;
 static double l0 = 0.0;
 static double epsfl = 0.0;
 
@@ -28,8 +27,7 @@ void setICparams( struct domain * theDomain )
     Npl = theDomain->Npl;
     xi = theDomain->theParList.initPar1;
     rin = theDomain->theParList.initPar2;
-    redge = theDomain->theParList.initPar3;
-    l0 = theDomain->theParList.initPar4;
+    l0 = theDomain->theParList.initPar3;
     epsfl = theDomain->theParList.Density_Floor;
 }
 
@@ -60,13 +58,13 @@ void initial(double *prim, double *x)
     if (viscProf == 1) nu *= sqrt(r)/(Mach*Mach);
     if (viscProf >= 2) nu *= pow(R, viscPar);
     double sig0 = 1.0/(3.0*M_PI*nu);
-    efact = exp(-pow((R/redge),-xi));
+    efact = exp(-pow((R/rin),-xi));
 
     double lfact = fmax(epsfl, (1.0 - l0/sqrt(r)));
     double dlf = 0.5*l0/(r*sqrt(r));
 
     rho = sig0*efact*lfact + epsfl;
-    double drho = sig0*lfact*efact*xi*pow((R/redge),-xi)/R + sig0*efact*dlf;
+    double drho = sig0*lfact*efact*xi*pow((R/rin),-xi)/R + sig0*efact*dlf;
  
     double v = -1.5*nu/(R);
     double P = -rho*phitot/(Mach*Mach);

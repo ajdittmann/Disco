@@ -132,7 +132,7 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Drift_Rate"            , VAR_DOUB , &(theList->Drift_Rate)      );
          err += readvar( pfile , "Drift_Exp"             , VAR_DOUB , &(theList->Drift_Exp)       );
          err += readvar( pfile , "Grav2D"                , VAR_INT  , &(theList->grav2D)       );
-         err += readvar( pfile , "Planet_Par0" , VAR_INT  , &(theList->planetPar0));
+         err += readvar( pfile , "Planet_Par0" , VAR_INT   , &(theList->planetPar0));
          err += readvar( pfile , "Planet_Par1" , VAR_DOUB  , &(theList->planetPar1));
          err += readvar( pfile , "Planet_Par2" , VAR_DOUB  , &(theList->planetPar2));
          err += readvar( pfile , "Planet_Par3" , VAR_DOUB  , &(theList->planetPar3));

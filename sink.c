@@ -199,8 +199,9 @@ void sink_src(const double *prim, double *cons, const double *xp,
       double sing = xyz[1] * ir;
       double gx = xyz[0];
       double gy = xyz[1];
+      double gz = xyz[2];
 
-      double px, py, dx, dy, mag, eps, epsfactor;
+      double px, py, pz, dx, dy, dz, mag, eps, epsfactor;
       double rate, surfdiff;
       int pi;
       int numSinks = Npl;
@@ -221,10 +222,12 @@ void sink_src(const double *prim, double *cons, const double *xp,
           }
           px = thePlanets[pi].xyz[0];
           py = thePlanets[pi].xyz[1];
+          pz = thePlanets[pi].xyz[2];
 
           dx = gx-px;
           dy = gy-py;
-          mag = dx*dx + dy*dy;
+          dz = gz-pz;
+          mag = dx*dx + dy*dy + dz*dz;
           mag = sqrt(mag);
 
           //the part that depends on sinkType
@@ -250,7 +253,6 @@ void sink_src(const double *prim, double *cons, const double *xp,
               f_acc = 0.0;
             }
           }
-
           rate = sinkPar1 * f_acc * thePlanets[pi].omega;
           rate = -expm1(-rate*dt) / dt;  // replace instantaneous rate with
                                          // avg rate over timestep, useful
@@ -260,44 +262,40 @@ void sink_src(const double *prim, double *cons, const double *xp,
           if(rate == 0.0 || f_acc == 0.0)
               continue;
 
+          //need to adapt code from Athena++ Cartesian setup....
+
           //delta clamped to [0, 1]
           double delta = fmax(fmin(sinkPar2, 1.0), 0.0);
-          double rp, omp, vxp, vyp, vxg, vyg, vxr, vyr, vp_p, vp_r, vxn, vyn, cphi, sphi, vg_r, vg_p;
+          double rp, omp, vxp, vyp, vxg, vyg, vxr, vyr, vzr, vp_p, vp_r, vxn, vyn, vg_p;
           rp = thePlanets[pi].r;
           omp = thePlanets[pi].omega;
           vp_p = rp*omp;
           vp_r = thePlanets[pi].vr;
           vxp = vp_r*cosp - vp_p*sinp;
           vyp = vp_r*sinp + vp_p*cosp;
-
           double vxg1 = vr*cosg - vp*sing;
           double vyg1 = vr*sing + vp*cosg;
 
           // cartesian components of relative velocity
           vxr = vxg1 - vxp;
           vyr = vyg1 - vyp;
-
-          // cos & sin of angular position of gas relative to planet
-          cphi = dx/mag;
-          sphi = dy/mag;
+          vzr = vz - thePlanets[pi].vz;
 
           //Amount of mass to accrete
           double dM = dV*dt*surfdiff;
 
-          // Velocity of gas to accrete in planet frame
-          vxn = (cphi*cphi + (1.0-delta)*sphi*sphi)*vxr + delta*sphi*cphi*vyr;
-          vyn = delta*cphi*sphi*vxr + (sphi*sphi + (1.0-delta)*cphi*cphi)*vyr;
+          double dvdx = (vxr*dx + vyr*dy + vzr*dz)/mag;
+          double vs_x = vxp + delta*dvdx*dx/mag + (1.0 - delta)*vxr;
+          double vs_y = vyp + delta*dvdx*dy/mag + (1.0 - delta)*vyr;
+          double vs_z = thePlanets[pi].vz + delta*dvdx*dz/mag + (1.0 - delta)*vzr;
 
-          vxg = vxn + vxp;
-          vyg = vyn + vyp;
-          vg_r =  vxg*cosg + vyg*sing;
-          vg_p = -vxg*sing + vyg*cosg;
-
-          double Vs_rpz[3] = {vg_r, vg_p, vz};
+          //double Vs_rpz[3] = {vg_r, vg_p, vz};
           double Vs[3];
-          get_vec_from_rpz(x, Vs_rpz, Vs); //Vs is now in the orthonormal,
-                                           //native basis
-          get_vec_covariant(x, Vs, Vs);    //Vs is now in the covariant, 
+          //get_vec_from_rpz(x, Vs_rpz, Vs); //Vs is now in the orthonormal,
+          //                                 //native basis
+          double Vs_xyz[3] = {vs_x, vs_y, vs_z};
+          get_vec_from_xyz(x, Vs_xyz, Vs); //orthonormal now?
+          get_vec_covariant(x, Vs, Vs);    //Vs is now in the covariant,
                                            //native basis, appropriate for the
                                            //conserved momenta.
 

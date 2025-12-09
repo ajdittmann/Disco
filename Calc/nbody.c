@@ -103,7 +103,7 @@ void rhs(int N, double eps, double *sim, double *update){
   }
 }
 
-void rk8(int N, double dt, double *input, double *output){
+void rk8(int N, double dt, double *input, double *output ){
 /*  Taken from:
 #     J.H. Verner, SIAM NA 1978, 772-790,
 #     Explicit Runge--Kutta methods with estimates of the
@@ -178,10 +178,10 @@ void movePlanetsRK(int Npl,  struct planet * thePlanets, double dt ){
     cp = cos(thePlanets[k].phi); sp = sin(thePlanets[k].phi);
     planetData[k*7 + 1] = thePlanets[k].r*cp;
     planetData[k*7 + 2] = thePlanets[k].r*sp;
-    planetData[k*7 + 3] = 0.0;
+    planetData[k*7 + 3] = thePlanets[k].z;
     planetData[k*7 + 4] = thePlanets[k].vr*cp - thePlanets[k].omega*thePlanets[k].r*sp;
     planetData[k*7 + 5] = thePlanets[k].vr*sp + thePlanets[k].omega*thePlanets[k].r*cp;
-    planetData[k*7 + 6] = 0.0;
+    planetData[k*7 + 6] = thePlanets[k].vz;
   }
 
   rk8(Npl, dt, planetData, planetDataOut);
@@ -189,9 +189,11 @@ void movePlanetsRK(int Npl,  struct planet * thePlanets, double dt ){
   for (int k=0; k<Npl; k++){
     thePlanets[k].r = sqrt( SQR(planetDataOut[k*7+1]) + SQR(planetDataOut[k*7+2]));
     thePlanets[k].phi = atan2(planetDataOut[k*7+2], planetDataOut[k*7+1]);
+    thePlanets[k].z = planetDataOut[k*7+3];
     cp = cos(thePlanets[k].phi); sp = sin(thePlanets[k].phi);
     thePlanets[k].vr = planetDataOut[k*7+4]*cp + planetDataOut[k*7+5]*sp;
     thePlanets[k].omega = (-planetDataOut[k*7+4]*sp + planetDataOut[k*7+5]*cp)/thePlanets[k].r;
+    thePlanets[k].vz = planetDataOut[k*7+6];
   }
 
   free(planetData);
