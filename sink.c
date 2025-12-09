@@ -180,7 +180,6 @@ void sink_src(const double *prim, double *cons, const double *xp,
       double rpz[3];
       get_rpz(x, rpz);
       double r = rpz[0];
-      double z = rpz[2];
 
       double Vrpz[3];
       double V[3] = {prim[URR], prim[UPP], prim[UZZ]};
@@ -266,7 +265,7 @@ void sink_src(const double *prim, double *cons, const double *xp,
 
           //delta clamped to [0, 1]
           double delta = fmax(fmin(sinkPar2, 1.0), 0.0);
-          double rp, omp, vxp, vyp, vxg, vyg, vxr, vyr, vzr, vp_p, vp_r, vxn, vyn, vg_p;
+          double rp, omp, vxp, vyp, vxr, vyr, vzr, vp_p, vp_r;
           rp = thePlanets[pi].r;
           omp = thePlanets[pi].omega;
           vp_p = rp*omp;
@@ -289,7 +288,7 @@ void sink_src(const double *prim, double *cons, const double *xp,
           double vs_y = vyp + delta*dvdx*dy/mag + (1.0 - delta)*vyr;
           double vs_z = thePlanets[pi].vz + delta*dvdx*dz/mag + (1.0 - delta)*vzr;
 
-          //double Vs_rpz[3] = {vg_r, vg_p, vz};
+          double Vs_rpz[3];
           double Vs[3];
           //get_vec_from_rpz(x, Vs_rpz, Vs); //Vs is now in the orthonormal,
           //                                 //native basis
@@ -298,14 +297,16 @@ void sink_src(const double *prim, double *cons, const double *xp,
           get_vec_covariant(x, Vs, Vs);    //Vs is now in the covariant,
                                            //native basis, appropriate for the
                                            //conserved momenta.
+          get_vec_rpz(x, Vs, Vs_rpz);
+
 
           cons[DDD] -= dM;
           cons[SRR] -= Vs[0]*dM;
           cons[LLL] -= Vs[1]*dM;
           cons[SZZ] -= Vs[2]*dM;
-          double v2 = vxg*vxg + vyg*vyg + vz*vz;
+          double v2 = SQR(vs_x) + SQR(vs_y) + SQR(vs_z);
           cons[TAU] -= dM*(specenth + 0.5*v2
-                    - 0.5*((vxg-vxg1)*(vxg-vxg1) + (vyg-vyg1)*(vyg-vyg1)));
+                    - 0.5*(SQR(vs_x-vxg1) + SQR(vs_y-vyg1) + SQR(vs_z-vz) ) );
 
           int q;
           for(q=NUM_C; q<NUM_Q; q++)
@@ -313,16 +314,16 @@ void sink_src(const double *prim, double *cons, const double *xp,
 
           double *my_gas_track = pl_gas_track + pi*NUM_PL_INTEGRALS;
           my_gas_track[PL_SNK_M] += dM;
-          my_gas_track[PL_SNK_PX] += dM * vxg;
-          my_gas_track[PL_SNK_PY] += dM * vyg;
-          my_gas_track[PL_SNK_PZ] += dM * vz;
-          my_gas_track[PL_SNK_JZ] += dM * r*vg_p;
-          my_gas_track[PL_SNK_SZ] += dM * (dx * vyn - dy * vxn);
+          my_gas_track[PL_SNK_PX] += dM * vs_x;
+          my_gas_track[PL_SNK_PY] += dM * vs_y;
+          my_gas_track[PL_SNK_PZ] += dM * vs_z;
+          my_gas_track[PL_SNK_JZ] += dM * r*Vs_rpz[1];
+          my_gas_track[PL_SNK_SZ] += dM * (dx * vs_y - dy * vs_x);
           my_gas_track[PL_SNK_MX] += dM * dx;
           my_gas_track[PL_SNK_MY] += dM * dy;
-          my_gas_track[PL_SNK_MZ] += dM * z;
+          my_gas_track[PL_SNK_MZ] += dM * dz;
           my_gas_track[PL_SNK_EGAS] += dM * (specenth + 0.5*v2
-                  - 0.5*((vxg-vxg1)*(vxg-vxg1) + (vyg-vyg1)*(vyg-vyg1)));
+                  - 0.5*(SQR(vs_x-vxg1) + SQR(vs_y-vyg1) + SQR(vs_z-vz) ));
 
           int pi2;
 
