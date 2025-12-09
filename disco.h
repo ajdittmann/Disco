@@ -83,7 +83,7 @@ struct param_list{
 
    int NoBC_Rmin, NoBC_Rmax, NoBC_Zmin, NoBC_Zmax;
 
-   int LogZoning, R_Periodic, Z_Periodic;
+   int LogZoning, R_Periodic, Z_Periodic, VerticalZoning;
    double LogRadius;
    double MaxShort, MaxLong;
    int Mesh_Motion, Riemann_Solver, Timestep;

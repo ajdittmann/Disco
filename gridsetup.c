@@ -21,6 +21,7 @@ void setupGrid( struct domain * theDomain ){
    int Num_R = theDomain->theParList.Num_R;
    int Num_Z = theDomain->theParList.Num_Z;
    int LogZoning = theDomain->theParList.LogZoning;
+   int VerticalZoning = theDomain->theParList.VerticalZoning;
    double aspect = theDomain->theParList.aspect;
 
    double Rmin = theDomain->theParList.rmin;
@@ -117,10 +118,23 @@ void setupGrid( struct domain * theDomain ){
          }
       }
    }
-   double dz = (Zmax-Zmin)/(double)Num_Z;
-   double z0 = Zmin + (double)N0z*dz;
-   for( k=-1 ; k<Nz ; ++k ){
-      theDomain->z_kph[k] = z0 + ((double)k+1.)*dz;
+
+   if( VerticalZoning == 1 ){ // uniform in cosine
+      double cZmax = cos(Zmax);
+      double cZmin = cos(Zmin);
+      double dz = (cZmax-cZmin)/(double)Num_Z;
+      double z0 = cZmin + (double)N0z*dz;
+      for( k=-1 ; k<Nz ; ++k ){
+        theDomain->z_kph[k] = acos(z0 + ((double)k+1.)*dz);
+      }
+   }
+
+   else{
+      double dz = (Zmax-Zmin)/(double)Num_Z;
+      double z0 = Zmin + (double)N0z*dz;
+      for( k=-1 ; k<Nz ; ++k ){
+        theDomain->z_kph[k] = z0 + ((double)k+1.)*dz;
+      }
    }
 
    theDomain->phi_max = theDomain->theParList.phimax;

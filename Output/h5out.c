@@ -208,6 +208,8 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "Log_Zoning", &(pars->LogZoning),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Vertcal_Zoning", &(pars->VerticalZoning),
+                    H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "R_Periodic", &(pars->R_Periodic),
                     H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "Z_Periodic", &(pars->Z_Periodic),
