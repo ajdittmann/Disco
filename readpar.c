@@ -138,6 +138,7 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Planet_Par2" , VAR_DOUB  , &(theList->planetPar2));
          err += readvar( pfile , "Planet_Par3" , VAR_DOUB  , &(theList->planetPar3));
          err += readvar( pfile , "Planet_Par4" , VAR_DOUB  , &(theList->planetPar4));
+         err += readvar( pfile , "Planet_Par5" , VAR_DOUB  , &(theList->planetPar5));
          err += readvar( pfile , "Constrained_Transport" , VAR_INT  , &(theList->CT)              );
          err += readvar( pfile , "CT_Solver"        , VAR_INT  , &(theList->CT_Solver)  );
          err += readvar( pfile , "Metric_Par0" , VAR_INT  , &(theList->metricPar0));

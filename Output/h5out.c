@@ -306,6 +306,8 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Planet_Par4", &(pars->planetPar4),
                     H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par5", &(pars->planetPar5),
+                    H5T_NATIVE_DOUBLE);
 
 
     

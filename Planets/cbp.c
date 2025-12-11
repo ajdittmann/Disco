@@ -10,6 +10,7 @@ static double f_planet = 0.0;
 static double a_planet = 3.0;
 static double a_bin = 1.0;
 static double eps = 0.05;
+static double eps_planet = 0.05;
 
 void setPlanetParams( struct domain * theDomain ){
 
@@ -20,6 +21,8 @@ void setPlanetParams( struct domain * theDomain ){
    e_planet = theDomain->theParList.planetPar2;
    a_planet = theDomain->theParList.planetPar3;
    f_planet = theDomain->theParList.planetPar4*M_PI;
+   eps_planet = theDomain->theParList.planetPar5;
+   eps = theDomain->theParList.grav_eps;
 
 }
 
@@ -72,7 +75,7 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[2].omega = l/R/R;
    thePlanets[2].vr = vr*(1.-mu);
 
-   thePlanets[2].eps   = eps;
+   thePlanets[2].eps   = eps_planet;
    thePlanets[2].type  = PLPOINTMASS;
 
    double M_bin = 1.0 - mu;

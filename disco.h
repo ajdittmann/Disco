@@ -122,6 +122,7 @@ struct param_list{
    double planetPar2;
    double planetPar3;
    double planetPar4;
+   double planetPar5;
 
    int restart_flag;
    int CT;
