@@ -6,6 +6,7 @@ static double Mach = 1.0;
 static double e_planet = 0.0;
 static double eps = 0.05;
 static double edot = 0.0;
+static double wait = 0.0;
 
 void setPlanetParams( struct domain * theDomain ){
 
@@ -15,6 +16,7 @@ void setPlanetParams( struct domain * theDomain ){
    e_planet = theDomain->theParList.Eccentricity;
    eps = theDomain->theParList.grav_eps;
    edot = theDomain->theParList.planetPar1*(0.5/M_PI);
+   wait = theDomain->theParList.planetPar2*2.0*M_PI;
 
 }
 
@@ -97,10 +99,13 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
       E += dE;
       ff = root0( E , e ) - M;
    }
-   e = e_planet + edot*t;
-   f = e*a;
-   b = sqrt( fabs(a*a - f*f) );
-   l = b*sqrt(2*fabs(en));
+
+   if (t >= wait){
+      e = e_planet + edot*t;
+      f = e*a;
+      b = sqrt( fabs(a*a - f*f) );
+      l = b*sqrt(2*fabs(en));
+   }
 
    double x = a*cos(E)-f;
    double y = b*sin(E);

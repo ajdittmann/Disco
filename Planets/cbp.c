@@ -77,6 +77,8 @@ void initializePlanets( struct planet * thePlanets ){
 
    thePlanets[2].eps   = eps_planet;
    thePlanets[2].type  = PLPOINTMASS;
+   thePlanets[2].z = 0.0;
+   thePlanets[2].vz = 0.0;
 
    double M_bin = 1.0 - mu;
    double R_bin = R*mu;
