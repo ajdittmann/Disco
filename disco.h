@@ -108,6 +108,11 @@ struct param_list{
    double viscosity;
    double visc_par;
 
+   int bulk_visc_flag;
+   int bulk_visc_profile;
+   double bulk_viscosity;
+   double bulk_visc_par;
+
    int isothermal_flag;
    int Cs2_Profile;
    double Cs2_Par;

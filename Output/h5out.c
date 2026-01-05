@@ -281,9 +281,19 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Viscosity_Profile", &(pars->visc_profile),
                     H5T_NATIVE_INT);
+
+    dumpVal(filename, "Pars", "Use_Bulk_Viscosity", &(pars->bulk_visc_flag),
+                    H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Bulk_Viscosity", &(pars->bulk_viscosity),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Bulk_Viscosity_Par", &(pars->bulk_visc_par),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Bulk_Viscosity_Profile", &(pars->bulk_visc_profile),
+                    H5T_NATIVE_INT);
+
+
     dumpVal(filename, "Pars", "Include_Atmos", &(pars->include_atmos),
                     H5T_NATIVE_INT);
-    
     dumpVal(filename, "Pars", "Mach_Number", &(pars->Disk_Mach),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Mass_Ratio", &(pars->Mass_Ratio),

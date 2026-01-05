@@ -119,10 +119,17 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Riemann_Solver"        , VAR_INT  , &(theList->Riemann_Solver)  );
          err += readvar( pfile , "Initial_Regrid"        , VAR_INT  , &(theList->Initial_Regrid)  );
          err += readvar( pfile , "Restart"               , VAR_INT  , &(theList->restart_flag)    );
+
          err += readvar( pfile , "Use_Viscosity"         , VAR_INT  , &(theList->visc_flag)       );
          err += readvar( pfile , "Viscosity"             , VAR_DOUB , &(theList->viscosity)       );
          err += readvar( pfile , "Viscosity_Profile"     , VAR_INT  , &(theList->visc_profile)      );
          err += readvar( pfile , "Viscosity_Par"         , VAR_DOUB  , &(theList->visc_par)      );
+
+         err += readvar( pfile , "Use_Bulk_Viscosity"         , VAR_INT  , &(theList->bulk_visc_flag)       );
+         err += readvar( pfile , "Bulk_Viscosity"             , VAR_DOUB , &(theList->bulk_viscosity)       );
+         err += readvar( pfile , "Bulk_Viscosity_Profile"     , VAR_INT  , &(theList->bulk_visc_profile)      );
+         err += readvar( pfile , "Bulk_Viscosity_Par"         , VAR_DOUB  , &(theList->bulk_visc_par)      );
+
          err += readvar( pfile , "Include_Atmos"         , VAR_INT  , &(theList->include_atmos)   );
          err += readvar( pfile , "T_Times_2pi"           , VAR_INT  , &tTimes_2pi );
          err += readvar( pfile , "P_Times_2pi"           , VAR_INT  , &pTimes_2pi );

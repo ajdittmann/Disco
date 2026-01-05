@@ -3,10 +3,10 @@
 #include "../geometry.h"
 #include "../omega.h"
 
-static double gamma_law = 0.0; 
-static double mach = 1.0; 
-static double RHO_FLOOR = 0.0; 
-static double PRE_FLOOR = 0.0; 
+static double gamma_law = 0.0;
+static double mach = 1.0;
+static double RHO_FLOOR = 0.0;
+static double PRE_FLOOR = 0.0 
 static int include_viscosity = 0;
 static int bulk_viscosity = 0;
 static int isothermal = 0;
@@ -19,7 +19,7 @@ void setHydroParams( struct domain * theDomain ){
    PRE_FLOOR = theDomain->theParList.Pressure_Floor;
    mach = theDomain->theParList.Disk_Mach;
    include_viscosity = theDomain->theParList.visc_flag;
-   bulk_viscosity = theDomain->theParList.visc_flag_bulk;
+   bulk_viscosity = theDomain->theParList.bulk_visc_flag;
    if(theDomain->theParList.NoBC_Rmin == 1)
        polar_sources = 1;
 }
