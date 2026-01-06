@@ -1,4 +1,3 @@
-
 //Disco Parameter File//
 Restart			0	//Restart from input.h5
 
@@ -32,6 +31,7 @@ P_Times_2pi		0
 Z_Times_pi      0
 Log_Zoning		0	//0=Uniform, 1=Log, 2=Hybrid
 Log_Radius		0.1	//Only for option 2 of Log_Zoning
+Vertical_Zoning         0
 
 NoBC_Rmin       0   //0 = Regular boundary. Ghost zones added and
 NoBC_Rmax       0   //    boundary condition applied.
@@ -39,10 +39,10 @@ NoBC_Zmin       0   //1 = Coordinate boundary (like r=0 origin).
 NoBC_Zmax       0   //    No ghost zones or explicit BC applied.
 
 //Numerical Parameters
-Timestep                0   // 0=RK2, 1=FE
 CFL			            0.2
 PLM			            1.5
 Max_DT                  0.0 //If > 0.0, the maximum allowed time step.
+Timestep                0   // 0=RK2, 1=FE
 Riemann_Solver		    2	//0=HLL, 1=HLLC, 2=HLLD
 Mesh_Motion		        3	//0=Fixed, 1=By Cell, 2=Riemann, 3=Avg, 4=Exact
 Exact_Mesh_Omega        0   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep
@@ -52,6 +52,7 @@ Initial_Regrid		    0
 Density_Floor		    0.0 //1e-5
 Pressure_Floor		    1.0e-5 //1e-5
 Constrained_Transport   1
+CT_Solver               0
 Cartesian_Interp        0   // Fixes the pole at the cost of disks 0 off, 1 on  
 Cartesian_Interp_R0     0.1 // Radius within which Cartesian_Interp acts.
 
@@ -66,7 +67,10 @@ Use_Viscosity		0
 Viscosity		    0.0
 Viscosity_Profile   0   //0=Flat, 1=alpha, 2=powerlaw, 3=power law (binary)
 Viscosity_Par   0.0
-
+Use_Bulk_Viscosity           0
+Bulk_Viscosity               0.0 //2.5e-5 //.01
+Bulk_Viscosity_Profile   0   //0=Flat, 1=alpha, 2=powerlaw, 3=power law (binary)
+Bulk_Viscosity_Par   0.0
 
 //Planet Parameters	
 Mass_Ratio		0.0
@@ -75,6 +79,12 @@ Drift_Rate		0.0 //-2.5e-4
 Drift_Exp		0.66666667
 Grav2D          1
 Softening       0.05
+Planet_Par0     0     // int
+Planet_Par1     0.0   // doub
+Planet_Par2     0.0   // doub
+Planet_Par3     0.0   // doub
+Planet_Par4     0.0   // doub
+Planet_Par5     0.0   // doub
 
 //Rotating Frame
 RotFrame            0       //0=off, 1=on
@@ -100,6 +110,7 @@ Init_Par8       0.0   // phiB (transverse angle of B w.r.t v)
 Noise_Type      0       // 0: No Noise, 1: URR and UPP 
 Noise_Abs       0.0     // Amplitude of Absolute Noise
 Noise_Rel       0.0     // Amplitude of Relative Noise
+
 //Sink & Nozzle Parameters
 Sink_Type       0       //0: No Sink
 Sink_Number     0		//0: all planets have sinks. else: first N planets have sinks
@@ -115,6 +126,7 @@ Nozzle_Par3     0.0     //(double)
 Nozzle_Par4     0.0     //(double)
 
 //Damping parameters
+Damp_Type            0       //0: damp all, 1: damp only radial momentum                     
 DampInner_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
 DampInner_Time       1.e-2     //(double)
 DampInner_Len        1.0     //(double)
