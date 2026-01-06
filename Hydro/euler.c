@@ -6,7 +6,7 @@
 static double gamma_law = 0.0;
 static double mach = 1.0;
 static double RHO_FLOOR = 0.0;
-static double PRE_FLOOR = 0.0 
+static double PRE_FLOOR = 0.0;
 static int include_viscosity = 0;
 static int bulk_viscosity = 0;
 static int isothermal = 0;
