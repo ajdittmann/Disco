@@ -1,5 +1,5 @@
 
-#include "paul.h"
+#include "disco.h"
 #include "profiler.h"
 
 int mpiSetup( struct domain * , int , char *[] );

@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 static int n = 0;
 static double amp = 0.0;

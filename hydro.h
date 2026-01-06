@@ -1,7 +1,7 @@
 #ifndef DISCO_HYDRO_H
 #define DISCO_HYDRO_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setHydroParams( struct domain * theDomain );
 int set_B_flag();

@@ -1,7 +1,7 @@
 #ifndef DISCO_GEOMETRY_H
 #define DISCO_GEOMETRY_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setGeometryParams( struct domain * theDomain );
 

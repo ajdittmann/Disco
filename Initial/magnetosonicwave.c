@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../Calc/calc.h"
 
 static double gam = 0.0;

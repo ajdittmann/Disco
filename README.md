@@ -12,6 +12,7 @@ The license for this code is GPL.  The GPL license should be contained in this d
 ## Attribution
 
 If you use Disco in your work, please cite the code paper [Duffell 2016](https://ui.adsabs.harvard.edu/abs/2016ApJS..226....2D/abstract).
+If your work uses viscosity, please also cite [Dittmann & Ryan 2021](https://ui.adsabs.harvard.edu/abs/2021ApJ...921...71D/abstract).
 
 ## Setup
 

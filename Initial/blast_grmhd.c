@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 // Cylindrical relativistic blast wave in a uniform magnetic field,
 // cf. Del Zanna et al 2007

@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double rate = 0.0;
 static double dexp = 0.0;

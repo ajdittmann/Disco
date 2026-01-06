@@ -66,7 +66,7 @@ LIB = -L$(H55)/lib -lhdf5 -lm
 
 OBJ = main.o readpar.o timestep.o onestep.o riemann.o mpisetup.o gridsetup.o domain.o misc.o $(GEOMETRY).o faces_alt.o exchange.o plm.o report.o profiler.o planet.o omega.o analysis.o $(HLLD).o rotframe.o boundary_functions.o geometry_functions.o $(INITIAL).o $(OUTPUT).o $(HYDRO).o $(BOUNDARY).o $(RESTART).o $(PLANETS).o $(METRIC).o $(FRAME).o calc.a $(ANALYSIS).o $(REPORT).o noise.o sink.o #snapshot.o
 
-CALC_OBJ = Calc/bondi.o Calc/integrate.o Calc/magnetosonic.o
+CALC_OBJ = Calc/bondi.o Calc/integrate.o Calc/magnetosonic.o Calc/nbody.o
 CT_OBJ = bfields.o
 
 ifneq ($(CT_MODE), 0)
@@ -84,49 +84,49 @@ $(TEMPLATES):
 	make clean
 	make
 
-%.o: %.c paul.h
+%.o: %.c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c $< -o $@
 
 calc.a: $(CALC_OBJ)
 	ar rcs $@ $^
 
-$(TIMESTEP).o: Timestep/$(TIMESTEP).c paul.h
+$(TIMESTEP).o: Timestep/$(TIMESTEP).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Timestep/$(TIMESTEP).c
 
-$(INITIAL).o : Initial/$(INITIAL).c paul.h
+$(INITIAL).o : Initial/$(INITIAL).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Initial/$(INITIAL).c
 
-$(HYDRO).o : Hydro/$(HYDRO).c paul.h
+$(HYDRO).o : Hydro/$(HYDRO).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Hydro/$(HYDRO).c
 
-$(GEOMETRY).o : Geometry/$(GEOMETRY).c paul.h
+$(GEOMETRY).o : Geometry/$(GEOMETRY).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Geometry/$(GEOMETRY).c
 
-$(PLANETS).o : Planets/$(PLANETS).c paul.h
+$(PLANETS).o : Planets/$(PLANETS).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Planets/$(PLANETS).c
 
-$(BOUNDARY).o : Boundary/$(BOUNDARY).c paul.h
+$(BOUNDARY).o : Boundary/$(BOUNDARY).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Boundary/$(BOUNDARY).c
 
-$(OUTPUT).o : Output/$(OUTPUT).c paul.h
+$(OUTPUT).o : Output/$(OUTPUT).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Output/$(OUTPUT).c
 
-$(RESTART).o : Restart/$(RESTART).c paul.h
+$(RESTART).o : Restart/$(RESTART).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Restart/$(RESTART).c
 
-$(ANALYSIS).o : Diagnostics/$(ANALYSIS).c paul.h
+$(ANALYSIS).o : Diagnostics/$(ANALYSIS).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Diagnostics/$(ANALYSIS).c
 
-$(REPORT).o : Reports/$(REPORT).c paul.h
+$(REPORT).o : Reports/$(REPORT).c disco.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Reports/$(REPORT).c
 
-$(METRIC).o : Hydro/Metric/$(METRIC).c paul.h Hydro/metric.h
+$(METRIC).o : Hydro/Metric/$(METRIC).c disco.h Hydro/metric.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Hydro/Metric/$(METRIC).c
 
-$(FRAME).o : Hydro/Frame/$(FRAME).c paul.h Hydro/frame.h
+$(FRAME).o : Hydro/Frame/$(FRAME).c disco.h Hydro/frame.h
 	$(CC) $(FLAGS) $(LOCAL_CFLAGS) $(INC) -c Hydro/Frame/$(FRAME).c
 
-disco: $(OBJ) paul.h
+disco: $(OBJ) disco.h
 	$(CC) $(FLAGS) -o disco $(OBJ) $(LOCAL_LDFLAGS) $(LIB)
 
 clean:

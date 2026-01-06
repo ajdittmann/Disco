@@ -1,5 +1,5 @@
 
-#include "paul.h"
+#include "disco.h"
 #include "geometry.h"
 
 int get_num_rzFaces( int Nr , int Nz , int dim ){

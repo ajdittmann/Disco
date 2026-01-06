@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 #include <string.h>
 
 void initial( double * , double * );

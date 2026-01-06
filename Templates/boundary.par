@@ -31,6 +31,7 @@ P_Times_2pi		1
 Z_Times_pi      0
 Log_Zoning		1	//0=Uniform, 1=Log, 2=Hybrid
 Log_Radius		0.1	//Only for option 2 of Log_Zoning
+Vertical_Zoning         0
 
 NoBC_Rmin       0   //0 = Regular boundary. Ghost zones added and
 NoBC_Rmax       0   //    boundary condition applied.
@@ -46,10 +47,12 @@ Riemann_Solver		    1	//0=HLL, 1=HLLC, 2=HLLD, 3=HLLC damped center
 Mesh_Motion		        3	//0=Fixed, 1=By Cell, 2=Riemann, 3=Avg, 4=Exact
 Exact_Mesh_Omega        3   //0=Fixed, 1=Rigid, 2=Kep, 3=Rig2Kep
 Exact_Mesh_Omega_Par    0.0 //unused so far
+Absorbing_BC		0
 Initial_Regrid		    0
 Density_Floor		    1e-12
 Pressure_Floor		    1e-12
 Constrained_Transport   1
+CT_Solver               0
 Cartesian_Interp        0   // Fixes the pole at the cost of disks 0 off, 1 on  
 Cartesian_Interp_R0     0.1 // Radius within which Cartesian_Interp acts.
 
@@ -64,6 +67,10 @@ Use_Viscosity		0
 Viscosity		    0.0
 Viscosity_Profile   0   //0=Flat, 1=alpha, 2=powerlaw, 3=power law (binary)
 Viscosity_Par   0.0
+Use_Bulk_Viscosity           0
+Bulk_Viscosity               0.0 //2.5e-5 //.01
+Bulk_Viscosity_Profile   0   //0=Flat, 1=alpha, 2=powerlaw, 3=power law (binary)
+Bulk_Viscosity_Par   0.0
 
 //Planet Parameters	
 Mass_Ratio		0.0
@@ -72,6 +79,12 @@ Drift_Rate		0.0 //-2.5e-4
 Drift_Exp		0.66666667
 Grav2D          1
 Softening       0.00
+Planet_Par0     0     // int
+Planet_Par1     0.0   // doub
+Planet_Par2     0.0   // doub
+Planet_Par3     0.0   // doub
+Planet_Par4     0.0   // doub
+Planet_Par5     0.0   // doub
 
 //Rotating Frame
 RotFrame            0       //0=off, 1=on
@@ -122,19 +135,17 @@ Cool_Par2       0.0     //(double)
 Cool_Par3       0.0     //(double)
 Cool_Par4       0.0     //(double)
 
-//Cooling parameters
+//Damping parameters
+Damp_Type            0       //0: damp all, 1: damp only radial momentum                     
 DampInner_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
 DampInner_Time       0.0     //(double)
 DampInner_Len        0.0     //(double)
-
 DampOuter_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
 DampOuter_Time       0.0     //(double)
 DampOuter_Len        0.0     //(double)
-
 DampLower_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
 DampLower_Time       0.0     //(double)
 DampLower_Len        0.0     //(double)
-
 DampUpper_Type       0       //0: No damping, 1: "time" is actual time, 2: "time" is fraction of orbital time
 DampUpper_Time       0.0     //(double)
 DampUpper_Len        0.0     //(double)

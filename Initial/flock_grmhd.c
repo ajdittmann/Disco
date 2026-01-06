@@ -1,5 +1,5 @@
 //http://www.aanda.org/articles/aa/pdf/2010/08/aa12443-09.pdf
-#include "../paul.h"
+#include "../disco.h"
 
 static double M = 0.0;
 static double gam = 0.0;

@@ -1,20 +1,22 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
-static double q_planet = 1.0; 
+static double q_planet = 1.0;
 static double Mach = 1.0;
 static double e_planet = 0.0;
-static double i_planet = 0.0;
 static double eps = 0.05;
+static double edot = 0.0;
+static double wait = 0.0;
 
 void setPlanetParams( struct domain * theDomain ){
 
-   theDomain->Npl = 2; 
+   theDomain->Npl = 2;
    q_planet = theDomain->theParList.Mass_Ratio;
    Mach = theDomain->theParList.Disk_Mach;
    e_planet = theDomain->theParList.Eccentricity;
-   i_planet = theDomain->theParList.Inclination;
    eps = theDomain->theParList.grav_eps;
+   edot = theDomain->theParList.planetPar1*(0.5/M_PI);
+   wait = theDomain->theParList.planetPar2*2.0*M_PI;
 
 }
 
@@ -42,14 +44,14 @@ void initializePlanets( struct planet * thePlanets ){
 
    thePlanets[0].M     = 1.0 - mu; 
    thePlanets[0].vr    = 0.0; 
-   thePlanets[0].omega = 0.0; 
+   thePlanets[0].omega = om; 
    thePlanets[0].vz    = 0.0; 
    thePlanets[0].r     = R*mu; 
    thePlanets[0].phi   = M_PI; 
    thePlanets[0].z     = 0.0; 
    thePlanets[0].eps   = eps;
    thePlanets[0].type  = PLPOINTMASS;
-
+  
    thePlanets[1].M     = mu; 
    thePlanets[1].vr    = 0.0; 
    thePlanets[1].omega = om; 
@@ -67,11 +69,11 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
 
    double TOL = 1e-14;
 
-   double r0   = thePlanets[0].r + thePlanets[1].r; 
+   double r0   = thePlanets[0].r + thePlanets[1].r;
    double phi0 = thePlanets[1].phi;
 
-   double vr = thePlanets[0].vr + thePlanets[1].vr; 
-   double omega = thePlanets[1].omega; 
+   double vr = thePlanets[0].vr + thePlanets[1].vr;
+   double omega = thePlanets[1].omega;
 
    double l = r0*r0*omega;
    double en = 0.5*vr*vr - 1./r0 + 0.5*l*l/r0/r0;
@@ -79,7 +81,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    double a = 1./2./fabs(en);
    double b = l/sqrt(2.*fabs(en));
    double f = sqrt(fabs(a*a-b*b));
-   double e = f/a; 
+   double e = f/a;
 
    double x0 = r0*cos(phi0);
    double y0 = r0*sin(phi0);
@@ -89,18 +91,26 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    double M = M0 + l*dt/a/b;
 
 //Newton-Rapheson to solve M = E - e*sin(E)
-      double E = M;  //Guess value for E is M.
-      double ff = root0( E , e ) - M; 
-      while( fabs(ff) > TOL ){
-         double dfdE = root1( E , e ); 
-         double dE = -ff/dfdE;
-         E += dE;
-         ff = root0( E , e ) - M; 
-      } 
-      double x = a*cos(E)-f;
-      double y = b*sin(E);
-      double R   = sqrt(x*x+y*y);
-      double phi = atan2(y,x);
+   double E = M;  //Guess value for E is M.
+   double ff = root0( E , e ) - M;
+   while( fabs(ff) > TOL ){
+      double dfdE = root1( E , e );
+      double dE = -ff/dfdE;
+      E += dE;
+      ff = root0( E , e ) - M;
+   }
+
+   if (t >= wait){
+      e = e_planet + edot*t;
+      f = e*a;
+      b = sqrt( fabs(a*a - f*f) );
+      l = b*sqrt(2*fabs(en));
+   }
+
+   double x = a*cos(E)-f;
+   double y = b*sin(E);
+   double R   = sqrt(x*x+y*y);
+   double phi = atan2(y,x);
 
    vr = sqrt( fabs( 2.*en + 2./R - l*l/R/R ) );
    if( y<0.0 ) vr *= -1.;
@@ -109,7 +119,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
 
    thePlanets[1].r   = R*(1.-mu);
    thePlanets[1].phi = phi;
-   thePlanets[1].omega = l/R/R; 
+   thePlanets[1].omega = l/R/R;
    thePlanets[1].vr = vr*(1.-mu);
 
    thePlanets[0].r   = R*mu;

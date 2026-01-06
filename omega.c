@@ -1,4 +1,4 @@
-#include "paul.h"
+#include "disco.h"
 #include "omega.h"
 #include "planet.h"
 #include "geometry.h"
@@ -15,6 +15,10 @@ static double gamma_law = 0.0;
 static int viscChoice = 0;
 static double viscPar = 0.0;
 static double viscVal = 0.0;
+
+static int bulkViscChoice = 0;
+static double bulkViscPar = 0.0;
+static double bulkViscVal = 0.0;
 
 static double Omega0 = 0.0;
 static int Npl = 0;
@@ -42,6 +46,10 @@ void setOmegaParams( struct domain * theDomain ){
    viscChoice = theDomain->theParList.visc_profile;
    viscPar = theDomain->theParList.visc_par;
    viscVal = theDomain->theParList.viscosity;
+
+   bulkViscChoice = theDomain->theParList.bulk_visc_profile;
+   bulkViscPar = theDomain->theParList.bulk_visc_par;
+   bulkViscVal = theDomain->theParList.bulk_viscosity;
 
    Omega0 = theDomain->theParList.RotOmega;
 
@@ -209,6 +217,14 @@ double get_cs2( const double *x){
         double scaling = pow(r, -cs2Par); //
         cs2 = scaling/(Mach*Mach);
     }
+    else if(cs2Choice == 7)
+    {
+        double rpz[3];
+        get_rpz(x, rpz);
+        double r = rpz[0];
+        double scaling = pow(r, -cs2Par); //
+        cs2 = scaling/(Mach*Mach);
+    }
     else
         cs2 = 1.0;
 
@@ -242,7 +258,35 @@ double get_nu(const double x[], const double prim[]){
     }
     nu *= powsum;
   }
-
   return nu;
-  //return nu*pow(x[0], -1.0);
+}
+
+double get_zeta(const double x[], const double prim[]){
+  double zeta = bulkViscVal;
+  //alpha viscosity
+  if (bulkViscChoice == 1){
+    double c2 = gamma_law*prim[PPP]/prim[RHO];
+    zeta *= c2/get_height_om(x);
+  }
+  //generic power law w.r.t. r=1
+  if (bulkViscChoice == 2){
+    zeta *= pow(fmax(x[0],1e-10), viscPar);
+  }
+  //power law for overall potential (e.g. for binaries)
+  if (bulkViscChoice == 3){
+    double script_r;
+    int pi;
+    double gx = x[0]*cos(x[1]);
+    double gy = x[0]*sin(x[1]);
+    double powsum = 0.0;
+    for (pi=0; pi<Npl; pi++){
+      double px = thePlanets[pi].xyz[0];
+      double py = thePlanets[pi].xyz[1];
+      double pl_eps = thePlanets[pi].eps;
+      script_r = sqrt((px-gx)*(px-gx) + (py-gy)*(py-gy) + pl_eps*pl_eps);
+      powsum += thePlanets[pi].M*pow(script_r, viscPar);
+    }
+    zeta *= powsum;
+  }
+  return zeta;
 }

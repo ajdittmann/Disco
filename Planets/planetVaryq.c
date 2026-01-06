@@ -1,5 +1,4 @@
-
-#include "../paul.h"
+#include "../disco.h"
 
 static double q_planet = 1.0;
 static double Mach = 1.0;
@@ -37,7 +36,8 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].phi   = M_PI;
    thePlanets[0].z     = 0.0;
    thePlanets[0].eps   = eps;
-   thePlanets[0].type  = PLSPLINE;
+   thePlanets[0].type  = PLPOINTMASS;
+
 
    thePlanets[1].M     = mu;
    thePlanets[1].vr    = 0.0;
@@ -54,8 +54,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    thePlanets[0].phi += thePlanets[0].omega*dt;
    thePlanets[1].phi += thePlanets[1].omega*dt;
 
-   double T = tau*2.0*M_PI/nu;
-   double q = q_planet*(1.+pow(t/T, 2.));
+   double q = q_planet*(exp(8.0*nu*t));
    double mu = q/(1.+q);
 
    thePlanets[0].M = 1.-mu;
@@ -65,4 +64,6 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    thePlanets[1].r = 1.-mu;
 
 }
+
+
 

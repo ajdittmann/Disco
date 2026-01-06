@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 static int waveChoice = 0;
 static double gam = 0.0;

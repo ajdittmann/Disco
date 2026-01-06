@@ -1,10 +1,10 @@
 
-#include "../paul.h"
+#include "../disco.h"
 
 static double q_planet = 1.0; 
 static double Mach = 1.0;
 static double e_planet = 0.0;
-static double eps = 0.0;
+static double eps = 0.05;
 
 void setPlanetParams( struct domain * theDomain ){
 
@@ -13,6 +13,7 @@ void setPlanetParams( struct domain * theDomain ){
    Mach = theDomain->theParList.Disk_Mach;
    e_planet = theDomain->theParList.Eccentricity;
    eps = theDomain->theParList.grav_eps;
+
 }
 
 double root0( double E , double e ){ 
@@ -43,10 +44,10 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[0].vz    = 0.0; 
    thePlanets[0].r     = R*mu; 
    thePlanets[0].phi   = M_PI; 
-   thePlanets[0].z   = 0.0; 
-   thePlanets[0].eps   = 0.0;
+   thePlanets[0].z     = 0.0; 
+   thePlanets[0].eps   = eps;
    thePlanets[0].type  = PLPOINTMASS;
-
+  
    thePlanets[1].M     = mu; 
    thePlanets[1].vr    = 0.0; 
    thePlanets[1].omega = om; 
@@ -55,13 +56,14 @@ void initializePlanets( struct planet * thePlanets ){
    thePlanets[1].phi   = 0.0; 
    thePlanets[1].z     = 0.0; 
    thePlanets[1].eps   = eps;
-   thePlanets[1].type  = PLDONG;
+   thePlanets[1].type  = PLPOINTMASS;
+
 
 }
 
 void movePlanets( struct planet * thePlanets , double t , double dt ){
 
-   double TOL = 1e-12;
+   double TOL = 1e-14;
 
    double r0   = thePlanets[0].r + thePlanets[1].r; 
    double phi0 = thePlanets[1].phi;

@@ -1,6 +1,6 @@
 enum{_HLL_,_HLLC_,_HLLD_,_HLLC_DAMPCENTER_};
 
-#include "paul.h"
+#include "disco.h"
 #include "hydro.h"
 #include "geometry.h"
 #include "riemann.h"

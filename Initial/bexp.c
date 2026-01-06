@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 
 void setICparams( struct domain * theDomain ){
 }

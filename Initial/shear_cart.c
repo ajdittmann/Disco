@@ -1,5 +1,5 @@
 #include "../omega.h"
-#include "../paul.h"
+#include "../disco.h"
 
 static double nu = 0.0;
 static double gam = 0.0;

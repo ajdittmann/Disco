@@ -1,13 +1,14 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../hydro.h"
 #include "../geometry.h"
 #include "../omega.h"
 
-static double gamma_law = 0.0; 
-static double mach = 1.0; 
-static double RHO_FLOOR = 0.0; 
-static double PRE_FLOOR = 0.0; 
+static double gamma_law = 0.0;
+static double mach = 1.0;
+static double RHO_FLOOR = 0.0;
+static double PRE_FLOOR = 0.0;
 static int include_viscosity = 0;
+static int bulk_viscosity = 0;
 static int isothermal = 0;
 static int polar_sources = 0;
 
@@ -18,6 +19,7 @@ void setHydroParams( struct domain * theDomain ){
    PRE_FLOOR = theDomain->theParList.Pressure_Floor;
    mach = theDomain->theParList.Disk_Mach;
    include_viscosity = theDomain->theParList.visc_flag;
+   bulk_viscosity = theDomain->theParList.bulk_visc_flag;
    if(theDomain->theParList.NoBC_Rmin == 1)
        polar_sources = 1;
 }
@@ -284,6 +286,17 @@ void visc_flux(const double * prim, const double * gradr, const double * gradp,
    flux[LLL] = -2 * nu * rho * spn;
    flux[SZZ] = -2 * nu * rho * szn;
    flux[TAU] = -2 * nu * rho * ( vr*srn + om_off*spn + vz*szn);
+
+   if(bulk_viscosity)
+   {
+      double zeta = get_zeta(x, prim);
+      double brr = 3*nc[0]*divV_o_d;
+      double bpp = 3*nc[1]*r*r*divV_o_d;
+      double bzz = 3*nc[2]*divV_o_d;
+      flux[SRR] += -zeta * rho * brr;
+      flux[LLL] += -zeta * rho * bpp;
+      flux[SZZ] += -zeta * rho * bzz;
+   }
 }
 
 void visc_source(const double * prim, const double * gradr, const double *gradp,
@@ -303,7 +316,7 @@ void visc_source(const double * prim, const double * gradr, const double *gradp,
 
    // Contravariant -phi-phi component of shear tensor.
    double spp = (r*gradp[UPP] + vr - r*divV_o_d) / (r*r*r);
-   
+
    cons[SRR] += (-2 * r * rho * nu * spp) * dVdt;
 
    // Mixed ^r_phi and ^z_phi components of shear tensor
@@ -313,6 +326,13 @@ void visc_source(const double * prim, const double * gradr, const double *gradp,
    double om_z = get_om2( x );
 
    cons[TAU] += (2 * rho * nu * (srp * om_r + spz * om_z)) * dVdt;
+
+   if (bulk_viscosity)
+   {
+      double zeta = get_zeta(x, prim);
+      double bspp = 3*r*divV_o_d/(r*r*r);
+      cons[SRR] -= (r * rho * zeta * bspp) * dVdt;
+   }
 
    if(0 && NUM_N > 0)
    {
@@ -415,10 +435,16 @@ double mindt(const double * prim , double w ,
        if( dx>dL2 ) dx = dL2;
 
        double nu = get_nu(x, prim);
-
        double dt_visc = 0.5*dx*dx/nu;
        if( dt > dt_visc )
            dt = dt_visc;
+       if(bulk_viscosity)
+       {
+           nu = get_zeta(x, prim);
+           dt_visc  = 0.5*dx*dx/nu;
+           if( dt > dt_visc )
+               dt = dt_visc;
+       }
    }
 
    return( dt );

@@ -1,7 +1,7 @@
 #ifndef DISCO_OMEGA_H
 #define DISCO_OMEGA_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setOmegaParams( struct domain * theDomain );
 
@@ -14,5 +14,6 @@ double get_height_om( const double *x);
 
 double get_cs2( const double *x );
 double get_nu( const double *x , const double *prim);
+double get_zeta( const double *x , const double *prim);
 
 #endif

@@ -6,7 +6,7 @@ There is one rule when making new run-time parameters: the examples in `Template
 
 Currently new parameters (values read from an `in.par`) must be specified in three places in Disco.
 
-1. `paul.h`:  The `paul.h` header defines the `param_list` struct which contains all run-time parameters.  Add a line containing your new parameter to the struct definition.
+1. `disco.h`:  The `disco.h` header defines the `param_list` struct which contains all run-time parameters.  Add a line containing your new parameter to the struct definition.
 
 2. `readpar.c`: In the function `int read_par_file( struct domain *)` add a line inside the `for` loop over `nrank` to read in your parameter.  These lines look like:
 

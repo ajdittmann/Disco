@@ -1,6 +1,6 @@
 enum{VAR_INT,VAR_DOUB,VAR_STR};
 
-#include "paul.h"
+#include "disco.h"
 #include <string.h>
 
 int readvar( char * filename , char * varname , int vartype , void * ptr ){
@@ -86,6 +86,7 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Phi_Max"               , VAR_DOUB , &(theList->phimax)          );
          err += readvar( pfile , "Use_Logtime"           , VAR_INT  , &(theList->Out_LogTime)     );
          err += readvar( pfile , "Log_Zoning"            , VAR_INT  , &(theList->LogZoning)       );
+         err += readvar( pfile , "Vertical_Zoning"            , VAR_INT  , &(theList->VerticalZoning)       );
          err += readvar( pfile , "R_Periodic"            , VAR_INT  , &(theList->R_Periodic)      );
          err += readvar( pfile , "Z_Periodic"            , VAR_INT  , &(theList->Z_Periodic)      );
          err += readvar( pfile , "NoBC_Rmin"             , VAR_INT , &(theList->NoBC_Rmin)       );
@@ -118,10 +119,17 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Riemann_Solver"        , VAR_INT  , &(theList->Riemann_Solver)  );
          err += readvar( pfile , "Initial_Regrid"        , VAR_INT  , &(theList->Initial_Regrid)  );
          err += readvar( pfile , "Restart"               , VAR_INT  , &(theList->restart_flag)    );
+
          err += readvar( pfile , "Use_Viscosity"         , VAR_INT  , &(theList->visc_flag)       );
          err += readvar( pfile , "Viscosity"             , VAR_DOUB , &(theList->viscosity)       );
          err += readvar( pfile , "Viscosity_Profile"     , VAR_INT  , &(theList->visc_profile)      );
          err += readvar( pfile , "Viscosity_Par"         , VAR_DOUB  , &(theList->visc_par)      );
+
+         err += readvar( pfile , "Use_Bulk_Viscosity"         , VAR_INT  , &(theList->bulk_visc_flag)       );
+         err += readvar( pfile , "Bulk_Viscosity"             , VAR_DOUB , &(theList->bulk_viscosity)       );
+         err += readvar( pfile , "Bulk_Viscosity_Profile"     , VAR_INT  , &(theList->bulk_visc_profile)      );
+         err += readvar( pfile , "Bulk_Viscosity_Par"         , VAR_DOUB  , &(theList->bulk_visc_par)      );
+
          err += readvar( pfile , "Include_Atmos"         , VAR_INT  , &(theList->include_atmos)   );
          err += readvar( pfile , "T_Times_2pi"           , VAR_INT  , &tTimes_2pi );
          err += readvar( pfile , "P_Times_2pi"           , VAR_INT  , &pTimes_2pi );
@@ -129,10 +137,15 @@ int read_par_file( struct domain * theDomain ){
          err += readvar( pfile , "Mach_Number"           , VAR_DOUB , &(theList->Disk_Mach)       );
          err += readvar( pfile , "Mass_Ratio"            , VAR_DOUB , &(theList->Mass_Ratio)      );
          err += readvar( pfile , "Eccentricity"          , VAR_DOUB , &(theList->Eccentricity)    );
-         err += readvar( pfile , "Inclination"           , VAR_DOUB , &(theList->Inclination)     );
          err += readvar( pfile , "Drift_Rate"            , VAR_DOUB , &(theList->Drift_Rate)      );
          err += readvar( pfile , "Drift_Exp"             , VAR_DOUB , &(theList->Drift_Exp)       );
          err += readvar( pfile , "Grav2D"                , VAR_INT  , &(theList->grav2D)       );
+         err += readvar( pfile , "Planet_Par0" , VAR_INT   , &(theList->planetPar0));
+         err += readvar( pfile , "Planet_Par1" , VAR_DOUB  , &(theList->planetPar1));
+         err += readvar( pfile , "Planet_Par2" , VAR_DOUB  , &(theList->planetPar2));
+         err += readvar( pfile , "Planet_Par3" , VAR_DOUB  , &(theList->planetPar3));
+         err += readvar( pfile , "Planet_Par4" , VAR_DOUB  , &(theList->planetPar4));
+         err += readvar( pfile , "Planet_Par5" , VAR_DOUB  , &(theList->planetPar5));
          err += readvar( pfile , "Constrained_Transport" , VAR_INT  , &(theList->CT)              );
          err += readvar( pfile , "CT_Solver"        , VAR_INT  , &(theList->CT_Solver)  );
          err += readvar( pfile , "Metric_Par0" , VAR_INT  , &(theList->metricPar0));

@@ -1,7 +1,7 @@
 #ifndef DISCO_PLANET_H
 #define DISCO_PLANET_H
 
-#include "paul.h"
+#include "disco.h"
 
 void setGravParams( struct domain * theDomain );
 

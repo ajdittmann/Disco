@@ -1,5 +1,5 @@
 #include "../omega.h"
-#include "../paul.h"
+#include "../disco.h"
 
 /*
  * Disk-like flow in hydrostatic equilibrium. Setup assumes barotropic gas

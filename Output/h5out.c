@@ -1,5 +1,5 @@
 
-#include "../paul.h"
+#include "../disco.h"
 #include <hdf5.h>
 #include "../analysis.h"
 
@@ -208,6 +208,8 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "Log_Zoning", &(pars->LogZoning),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Vertcal_Zoning", &(pars->VerticalZoning),
+                    H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "R_Periodic", &(pars->R_Periodic),
                     H5T_NATIVE_INT);
     dumpVal(filename, "Pars", "Z_Periodic", &(pars->Z_Periodic),
@@ -279,16 +281,24 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Viscosity_Profile", &(pars->visc_profile),
                     H5T_NATIVE_INT);
+
+    dumpVal(filename, "Pars", "Use_Bulk_Viscosity", &(pars->bulk_visc_flag),
+                    H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Bulk_Viscosity", &(pars->bulk_viscosity),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Bulk_Viscosity_Par", &(pars->bulk_visc_par),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Bulk_Viscosity_Profile", &(pars->bulk_visc_profile),
+                    H5T_NATIVE_INT);
+
+
     dumpVal(filename, "Pars", "Include_Atmos", &(pars->include_atmos),
                     H5T_NATIVE_INT);
-    
     dumpVal(filename, "Pars", "Mach_Number", &(pars->Disk_Mach),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Mass_Ratio", &(pars->Mass_Ratio),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Eccentricity", &(pars->Eccentricity),
-                    H5T_NATIVE_DOUBLE);
-    dumpVal(filename, "Pars", "Inclination", &(pars->Inclination),
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Drift_Rate", &(pars->Drift_Rate),
                     H5T_NATIVE_DOUBLE);
@@ -296,6 +306,20 @@ void writePars(struct domain *theDomain, char filename[])
                     H5T_NATIVE_DOUBLE);
     dumpVal(filename, "Pars", "Grav2D", &(pars->grav2D),
                     H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Planet_Par0", &(pars->planetPar0),
+                    H5T_NATIVE_INT);
+    dumpVal(filename, "Pars", "Planet_Par1", &(pars->planetPar1),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par2", &(pars->planetPar2),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par3", &(pars->planetPar3),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par4", &(pars->planetPar4),
+                    H5T_NATIVE_DOUBLE);
+    dumpVal(filename, "Pars", "Planet_Par5", &(pars->planetPar5),
+                    H5T_NATIVE_DOUBLE);
+
+
     
     dumpVal(filename, "Pars", "Constrained_Transport", &(pars->CT),
                     H5T_NATIVE_INT);
@@ -381,7 +405,7 @@ void writePlanets(struct domain *theDomain, char filename[])
 {
     int Npl = theDomain->Npl;
 
-    int NpDat = 9 + NUM_PL_KIN;
+    int NpDat = 10 + NUM_PL_KIN;
 
     double PlanetData[Npl*NpDat];
     int p;
@@ -397,10 +421,11 @@ void writePlanets(struct domain *theDomain, char filename[])
         PlanetData[NpDat*p + 6] = (double)pl->type;
         PlanetData[NpDat*p + 7] = pl->vz;
         PlanetData[NpDat*p + 8] = pl->z;
+        PlanetData[NpDat*p + 9] = pl->f;
 
         int q;
         for(q=0; q<NUM_PL_KIN; q++)
-            PlanetData[NpDat*p + q + 9] = theDomain->pl_kin[p*NUM_PL_KIN + q];
+            PlanetData[NpDat*p + q + 10] = theDomain->pl_kin[p*NUM_PL_KIN + q];
     }
 
     hsize_t fdims2[2];

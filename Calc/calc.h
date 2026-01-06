@@ -1,5 +1,6 @@
 #ifndef DISCO_CALC
 #define DISCO_CALC
+#include "../disco.h"
 
 int bondi_newt(double Mdot, double GM, double gam, double rho0, 
                 double *r, double *rho, double *u, double *P, int N);
@@ -14,4 +15,7 @@ double bondi_rel_solve(double Mdot, double GM, double r, double gam,
 
 double magnetosonic_cf_int_newt(double rho, double rho0, double cs0,
                                     double cA0, double gam);
+
+void movePlanetsRK(int Npl,  struct planet * thePlanets , double dt );
+
 #endif

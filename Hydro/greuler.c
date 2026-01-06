@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../geometry.h"
 #include "../hydro.h"
 #include "../omega.h"

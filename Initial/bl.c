@@ -1,4 +1,4 @@
-#include "../paul.h"
+#include "../disco.h"
 #include "../omega.h"
 
 static double M = 0.0;
