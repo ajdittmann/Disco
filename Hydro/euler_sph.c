@@ -8,6 +8,7 @@ static double gamma_law = 0.0;
 static double RHO_FLOOR = 0.0; 
 static double PRE_FLOOR = 0.0; 
 static int include_viscosity = 0;
+static int bulk_viscosity = 0;
 static int isothermal = 0;
 static int polar_sources_r = 0;
 static int polar_sources_th = 0;
@@ -18,6 +19,7 @@ void setHydroParams( struct domain * theDomain ){
    RHO_FLOOR = theDomain->theParList.Density_Floor;
    PRE_FLOOR = theDomain->theParList.Pressure_Floor;
    include_viscosity = theDomain->theParList.visc_flag;
+   bulk_viscosity = theDomain->theParList.bulk_visc_flag;
    if(theDomain->theParList.NoBC_Rmin == 1)
        polar_sources_r = 1;
    if(theDomain->theParList.NoBC_Zmin == 1
@@ -287,6 +289,17 @@ void visc_flux(const double * prim, const double * gradr, const double * gradp,
    flux[LLL] = -2 * nu * rho * spn;
    flux[SZZ] = -2 * nu * rho * stn;
    flux[TAU] = -2 * nu * rho * ( vr*srn + om_off*spn + vt*stn);
+
+   if(bulk_viscosity)
+   {
+      double zeta = get_zeta(x, prim);
+      double brr = 3*nc[0]*divV_o_d;
+      double bpp = 3*nc[1]*SQR(r*sinth)*divV_o_d;
+      double btt = 3*nc[2]*SQR(r)*divV_o_d;
+      flux[SRR] += -zeta * rho * brr;
+      flux[LLL] += -zeta * rho * bpp;
+      flux[SZZ] += -zeta * rho * btt;
+   }
 }
 
 void visc_source(const double * prim, const double * gradr, const double *gradp,
@@ -324,6 +337,16 @@ void visc_source(const double * prim, const double * gradr, const double *gradp,
    double om_t = get_om2( x );
 
    cons[TAU] += (2 * rho * nu * (srp * om_r + spt * om_t)) * dVdt;
+
+   if (bulk_viscosity)
+   {
+      double zeta = get_zeta(x, prim);
+      double bspp = 3*divV_o_d/SQR(r*sinth);
+      double bstt = 3*divV_o_d/(r*r);
+
+      cons[SRR] -= (rho * zeta * (r * bstt + r*sinth*sinth * bspp)) * dVdt;
+      cons[SZZ] -= (rho * zeta * (r*r*sinth*costh * bspp)) * dVdt;
+   }
 }
 
 void flux_to_E( const double * Flux , const double * Ustr , const double * x , double * E1_riemann , double * B1_riemann , double * E2_riemann , double * B2_riemann , int dim ){
@@ -399,6 +422,13 @@ double mindt(const double * prim , double w , const double * xp , const double *
        double dt_visc = 0.5*dx*dx/nu;
        if( dt > dt_visc )
            dt = dt_visc;
+       if(bulk_viscosity)
+       {
+           nu = get_zeta(x, prim);
+           dt_visc  = 0.5*dx*dx/nu;
+           if( dt > dt_visc )
+               dt = dt_visc;
+       }
    }
 
    return( dt );
