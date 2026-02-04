@@ -6,6 +6,7 @@ static int grav2D = 0;
 static int polar_sources_r = 0;
 static int polar_sources_p = 0;
 static int polar_sources_z = 0;
+static double quadfact = 0.0;
 
 void setGravParams( struct domain * theDomain ){
 
@@ -30,7 +31,9 @@ void setGravParams( struct domain * theDomain ){
            polar_sources_z = 1;
        }
    }
-
+   double bin_q = theDomain->theParList.Mass_Ratio;
+   double bin_e = theDomain->theParList.Eccentricity;
+   quadfact = 0.25*bin_q*(1.0 + 1.5*SQR(bin_e))/SQR(1.0 + bin_q);
 }
 
 double phigrav( double M , double r , double eps , int type)
@@ -87,9 +90,13 @@ double phigrav( double M , double r , double eps , int type)
     {
         return 0.0;
     }
-    if(type == PLDONG)
+    else if(type == PLDONG)
     {
         return( M*(r*r + 1.5*eps*eps)*pow(r*r + eps*eps, -1.5) ) ;
+    }
+    if(type == PLBINQUAD)
+    {
+        return( M*(1.0 + quadfact/SQR(r) )/r ); // a_b is implicitly 1.
     }
     return 0.0;
 }
@@ -147,9 +154,13 @@ double fgrav( double M , double r , double eps , int type)
     {
         return M*r;
     }
-    if(type == PLDONG)
+    else if(type == PLDONG)
     {
         return( r*M*(2.5*eps*eps + r*r)*pow(r*r + eps*eps, -2.5) );
+    }
+    if(type == PLBINQUAD)
+    {
+        return( M*(1.0 + 3.0*quadfact/SQR(r) )/SQR(r) ); // a_b is implicitly 1.
     }
     return 0.0;
     
