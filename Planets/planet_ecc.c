@@ -30,7 +30,7 @@ void initializePlanets( struct planet * thePlanets ){
    double e  = e_planet;
    double R = a*(1.-e);
    double om = pow( a , -1.5 )*sqrt(1.-e*e)/(1.-e)/(1.-e);
- 
+
    double q = q_planet;
    double mu = q/(1.+q);
 

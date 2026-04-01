@@ -4,10 +4,11 @@
 #include "../geometry.h"
 #include "../omega.h"
 
-static double gamma_law = 0.0; 
-static double RHO_FLOOR = 0.0; 
-static double PRE_FLOOR = 0.0; 
+static double gamma_law = 0.0;
+static double RHO_FLOOR = 0.0;
+static double PRE_FLOOR = 0.0;
 static int include_viscosity = 0;
+static int bulk_viscosity = 0;
 static int isothermal = 0;
 
 void setHydroParams( struct domain * theDomain ){
@@ -16,6 +17,7 @@ void setHydroParams( struct domain * theDomain ){
    RHO_FLOOR = theDomain->theParList.Density_Floor;
    PRE_FLOOR = theDomain->theParList.Pressure_Floor;
    include_viscosity = theDomain->theParList.visc_flag;
+   bulk_viscosity = theDomain->theParList.bulk_visc_flag;
 }
 
 int set_B_flag(void){
@@ -191,6 +193,18 @@ void visc_flux(const double * prim, const double * gradx, const double * grady,
    flux[LLL] = -2 * nu * rho * syn;
    flux[SZZ] = -2 * nu * rho * szn;
    flux[TAU] = -2 * nu * rho * ( vx*sxn + vy_off*syn + vz*szn);
+
+   if(bulk_viscosity)
+   {
+      double zeta = get_zeta(x, prim);
+      double bxx = 3*n[0]*divV_o_d;
+      double byy = 3*n[1]*divV_o_d;
+      double bzz = 3*n[2]*divV_o_d;
+      flux[SRR] += -zeta * rho * bxx;
+      flux[LLL] += -zeta * rho * byy;
+      flux[SZZ] += -zeta * rho * bzz;
+   }
+
 }
 
 void visc_source(const double * prim, const double * gradr, const double *gradp,
@@ -266,6 +280,13 @@ double mindt(const double * prim , double w , const double * xp , const double *
        double dt_visc = 0.5*dx*dx/nu;
        if( dt > dt_visc )
            dt = dt_visc;
+       if(bulk_viscosity)
+       {
+           nu = get_zeta(x, prim);
+           dt_visc  = 0.5*dx*dx/nu;
+           if( dt > dt_visc )
+               dt = dt_visc;
+       }
    }
 
    return( dt );

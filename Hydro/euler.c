@@ -330,7 +330,7 @@ void visc_source(const double * prim, const double * gradr, const double *gradp,
    if (bulk_viscosity)
    {
       double zeta = get_zeta(x, prim);
-      double bspp = 3*r*divV_o_d/(r*r*r);
+      double bspp = 3*divV_o_d/(r*r);
       cons[SRR] -= (r * rho * zeta * bspp) * dVdt;
    }
 
