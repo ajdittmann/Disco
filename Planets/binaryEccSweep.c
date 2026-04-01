@@ -101,7 +101,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    }
 
    if (t >= wait){
-      e = e_planet + edot*t;
+      e = e_planet + edot*(t-wait);
       f = e*a;
       b = sqrt( fabs(a*a - f*f) );
       l = b*sqrt(2*fabs(en));

@@ -27,10 +27,10 @@ void initial( double * prim , double * x ){
 
    double Nu = nu*pow(fmax(x[0],1e-10), p);
 
-   double depth = nu/(Mach*SQR(Mach*mu));
+   double depth = 1.0/(1.0 + 25.0*nu/(Mach*SQR(Mach*mu)));
    double width = pow( nu*SQR(SQR(SQR(Mach)))  , -0.2);
 
-   double rho = 1.0*pow(R, -p)*(1.0 - depth*exp(-SQR(SQR((R-1.0)/width))));
+   double rho = pow(R, -p)*(1.0 - depth*exp(-SQR(SQR((R-1.0)/width))));
    double Pp = rho*get_cs2(x)/gam;
 
 
