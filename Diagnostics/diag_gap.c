@@ -15,7 +15,7 @@ void setDiagParams( struct domain * theDomain )
 
 int num_diagnostics(void)
 {
-    return(22);
+    return(34);
 }
 
 int num_snapshot_rz(void)
@@ -124,6 +124,23 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     Qrz[19] = rho*(1.0 - exp(-cut1*cut1));
     Qrz[20] = rho*(1.0 - exp(-cut2*cut2));
     Qrz[21] = rho*(1.0 - exp(-cut3*cut3));
+
+    Qrz[22] = (1.0 - exp(-cut1*cut1))*Qrz[9];
+    Qrz[23] = (1.0 - exp(-cut1*cut2))*Qrz[9];
+    Qrz[24] = (1.0 - exp(-cut3*cut3))*Qrz[9];
+
+    Qrz[25] = (1.0 - exp(-cut1*cut1))*Qrz[10];
+    Qrz[26] = (1.0 - exp(-cut1*cut2))*Qrz[10];
+    Qrz[27] = (1.0 - exp(-cut3*cut3))*Qrz[10];
+
+    Qrz[28] = (1.0 - exp(-cut1*cut1))*Qrz[12];
+    Qrz[29] = (1.0 - exp(-cut1*cut2))*Qrz[12];
+    Qrz[30] = (1.0 - exp(-cut3*cut3))*Qrz[12];
+
+    Qrz[31] = (1.0 - exp(-cut1*cut1))*Qrz[13];
+    Qrz[32] = (1.0 - exp(-cut1*cut2))*Qrz[13];
+    Qrz[33] = (1.0 - exp(-cut3*cut3))*Qrz[13];
+
 }
 
 void get_snapshot_rz(const double *x, const double *prim, double *Qrz, 
