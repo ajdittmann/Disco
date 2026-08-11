@@ -36,7 +36,7 @@ void setGravParams( struct domain * theDomain ){
    quadfact = 0.25*bin_q*(1.0 + 1.5*SQR(bin_e))/SQR(1.0 + bin_q);
 }
 
-double phigrav( double M , double r , double eps , int type)
+double phigrav( double M , double r, double eps , int type)
 {
     if(type == PLPOINTMASS)
     {
@@ -94,7 +94,7 @@ double phigrav( double M , double r , double eps , int type)
     {
         return( M*(r*r + 1.5*eps*eps)*pow(r*r + eps*eps, -1.5) ) ;
     }
-    if(type == PLBINQUAD)
+    else if(type == PLBINQUAD)
     {
         return( M*(1.0 + quadfact/SQR(r) )/r ); // a_b is implicitly 1.
     }
@@ -158,12 +158,11 @@ double fgrav( double M , double r , double eps , int type)
     {
         return( r*M*(2.5*eps*eps + r*r)*pow(r*r + eps*eps, -2.5) );
     }
-    if(type == PLBINQUAD)
+    else if(type == PLBINQUAD)
     {
         return( M*(1.0 + 3.0*quadfact/SQR(r) )/SQR(r) ); // a_b is implicitly 1.
     }
     return 0.0;
-    
 }
 
 void adjust_gas( struct planet * pl , double * x , double * prim , double gam ){
@@ -196,7 +195,7 @@ double planetaryPotential(struct planet *pl, const double *xyz)
      * Returns the gravitational potential (with correct sign) at position
      * (r, phi, z) from planet pl.
      */
-    
+
     double xp = pl->xyz[0];
     double yp = pl->xyz[1];
     double zp = pl->xyz[2];
@@ -211,13 +210,24 @@ double planetaryPotential(struct planet *pl, const double *xyz)
         yp = xyz[1];
         z = 1.0;
     }
+    if(pl->type == PLHARMONIC )
+    {
+        double dx = xyz[0] - xp;
+        double dy = xyz[1] - yp;
+        double rc = sqrt(dx*dx + dy*dy * SQR(pl->eps) );
+        double ir = 1.0/rc;
 
-    double dx = xyz[0] - xp;
-    double dy = xyz[1] - yp;
-    double dz = z - zp;
-    double script_r = sqrt(dx*dx + dy*dy + dz*dz);
+        return -pl->M*( ir - 0.5*SQR(z)*CUBE(ir) );
+    }
+    else{
+        double dx = xyz[0] - xp;
+        double dy = xyz[1] - yp;
+        double dz = z - zp;
+        double script_r = sqrt(dx*dx + dy*dy + dz*dz);
 
-    return -phigrav(pl->M, script_r, pl->eps, pl->type);
+        return -phigrav(pl->M, script_r, pl->eps, pl->type);
+    }
+
 }
 
 void planetaryForce( struct planet * pl , const double *xyz, double *Fxyz)
@@ -227,7 +237,7 @@ void planetaryForce( struct planet * pl , const double *xyz, double *Fxyz)
      * planet at location xyz. The force on the planet is the -'ve of this
      * value.
      */
-    
+
     double xp = pl->xyz[0];
     double yp = pl->xyz[1];
     double zp = pl->xyz[2];
@@ -243,31 +253,48 @@ void planetaryForce( struct planet * pl , const double *xyz, double *Fxyz)
         z = 1.0;
     }
 
-    if(pl->type == PLUNIFORM)
+    if(pl->type == PLHARMONIC )
     {
-        xp = xyz[0] + 1.0*cos(pl->phi);
-        yp = xyz[1] + 1.0*sin(pl->phi);
-        zp = xyz[2];
+        double dx = xyz[0] - xp;
+        double dy = xyz[1] - yp;
+        double rc = sqrt(dx*dx + dy*dy + SQR(pl->eps) );
+        double ir = 1.0/rc;
+
+        double f_r = -pl->M*( SQR(ir) - 1.5*SQR(z*SQR(ir)) );
+        double f_z = -pl->M*z * CUBE(ir);
+        Fxyz[0] = f_r * dx * ir;
+        Fxyz[1] = f_r * dy * ir;
+        Fxyz[2] = f_z;
     }
-    else if(pl->type == PLLINEARX)
+    else
     {
-        xp = xyz[0] + xyz[0]*cos(pl->phi);
-        yp = xyz[1] + xyz[0]*sin(pl->phi);
-        zp = xyz[2];
+        if(pl->type == PLUNIFORM)
+        {
+            xp = xyz[0] + 1.0*cos(pl->phi);
+            yp = xyz[1] + 1.0*sin(pl->phi);
+            zp = xyz[2];
+        }
+        else if(pl->type == PLLINEARX)
+        {
+            xp = xyz[0] + xyz[0]*cos(pl->phi);
+            yp = xyz[1] + xyz[0]*sin(pl->phi);
+            zp = xyz[2];
+        }
+
+        double dx = xyz[0] - xp;
+        double dy = xyz[1] - yp;
+        double dz = z - zp;
+        double script_r = sqrt(dx*dx + dy*dy + dz*dz);
+
+        double f1 = -fgrav( pl->M , script_r , pl->eps , pl->type);
+
+        double ir = 1.0 / script_r;
+
+        Fxyz[0] = f1 * dx * ir;
+        Fxyz[1] = f1 * dy * ir;
+        Fxyz[2] = f1 * dz * ir;
     }
 
-    double dx = xyz[0] - xp;
-    double dy = xyz[1] - yp;
-    double dz = z - zp;
-    double script_r = sqrt(dx*dx + dy*dy + dz*dz);
-
-    double f1 = -fgrav( pl->M , script_r , pl->eps , pl->type);
-
-    double ir = 1.0 / script_r;
-
-    Fxyz[0] = f1 * dx * ir;
-    Fxyz[1] = f1 * dy * ir;
-    Fxyz[2] = f1 * dz * ir;
 }
 
 void planet_src( struct planet * pl, const double * prim, double * cons,
