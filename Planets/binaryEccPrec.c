@@ -1,4 +1,3 @@
-
 #include "../disco.h"
 
 static double q_planet = 1.0;
@@ -7,6 +6,7 @@ static double e_planet = 0.0;
 static double eps = 0.05;
 static double pomegadot = 0.0;
 
+
 void setPlanetParams( struct domain * theDomain ){
 
    theDomain->Npl = 2;
@@ -14,7 +14,7 @@ void setPlanetParams( struct domain * theDomain ){
    Mach = theDomain->theParList.Disk_Mach;
    e_planet = theDomain->theParList.Eccentricity;
    eps = theDomain->theParList.grav_eps;
-   pomegadot = theDomain->theParList.planetPar1*(0.5/M_PI);
+   pomegadot = theDomain->theParList.planetPar1;
 
 }
 
@@ -68,7 +68,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    double TOL = 1e-14;
 
    double r0   = thePlanets[0].r + thePlanets[1].r;
-   double phi0 = thePlanets[1].phi;
+   double phi0 = thePlanets[1].phi - fmod(t*pomegadot, 2*M_PI);
 
    double vr = thePlanets[0].vr + thePlanets[1].vr;
    double omega = thePlanets[1].omega - pomegadot;
@@ -108,13 +108,13 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
    double mu = q_planet/(1.+q_planet);
 
    thePlanets[1].r   = R*(1.-mu);
-   thePlanets[1].phi = phi + pomegadot*dt;
+   thePlanets[1].phi = fmod(phi + pomegadot*(dt+t), 2*M_PI);
    thePlanets[1].omega = l/R/R + pomegadot;
    thePlanets[1].vr = vr*(1.-mu);
 
    thePlanets[0].r   = R*mu;
-   thePlanets[0].phi = phi+M_PI;
-   thePlanets[0].omega = l/R/R;
+   thePlanets[0].phi = fmod(phi+M_PI + pomegadot*(t+dt), 2*M_PI);
+   thePlanets[0].omega = l/R/R + pomegadot;
    thePlanets[0].vr  = vr*mu;
 
 }
