@@ -100,22 +100,12 @@ void setupGrid( struct domain * theDomain ){
    double R0 = theDomain->theParList.LogRadius;
    for( j=-1 ; j<Nr ; ++j ){
       double x = (N0r + j + 1) / (double) Num_R;
-      if( LogZoning == 0 ){
-         theDomain->r_jph[j] = Rmin + x*(Rmax-Rmin);
-      }else if( LogZoning == 1 ){
+      if( LogZoning == 1 ){
          theDomain->r_jph[j] = Rmin*pow(Rmax/Rmin,x);
       }else if( LogZoning == 2 ){
          theDomain->r_jph[j] = R0*(pow(Rmax/R0,x)-1) + Rmin + (R0-Rmin)*x;
       }else{
-         double x1 = 1.0/(1.0 - R0*log(R0/Rmax)/(R0-Rmin));
-         double b = exp((1-Rmin/R0)/x1);
-         double a = log(b)*Rmax/b;
-         if( x>x1 ){
-            theDomain->r_jph[j] = a*pow(b, x)/log(b);
-         }
-         else{
-            theDomain->r_jph[j] = a*pow(b, x1)*x + Rmin;
-         }
+         theDomain->r_jph[j] = Rmin + x*(Rmax-Rmin);
       }
    }
 

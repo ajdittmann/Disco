@@ -18,11 +18,11 @@ void setPlanetParams( struct domain * theDomain ){
 
 }
 
-double root0( double E , double e ){ 
+double root0( double E , double e ){
    return( E  - e*sin(E) );
 }
 
-double root1( double E , double e ){ 
+double root1( double E , double e ){
    return( 1. - e*cos(E) );
 }
 
@@ -36,27 +36,27 @@ void initializePlanets( struct planet * thePlanets ){
    double e  = e_planet;
    double R = a*(1.-e);
    double om = pow( a , -1.5 )*sqrt(1.-e*e)/(1.-e)/(1.-e);
- 
+
    double q = q_planet;
    double mu = q/(1.+q);
 
-   thePlanets[0].M     = 1.0 - mu; 
-   thePlanets[0].vr    = 0.0; 
-   thePlanets[0].omega = om; 
-   thePlanets[0].vz    = 0.0; 
-   thePlanets[0].r     = R*mu; 
-   thePlanets[0].phi   = M_PI; 
-   thePlanets[0].z     = 0.0; 
+   thePlanets[0].M     = 1.0 - mu;
+   thePlanets[0].vr    = 0.0;
+   thePlanets[0].omega = om + pomegadot;
+   thePlanets[0].vz    = 0.0;
+   thePlanets[0].r     = R*mu;
+   thePlanets[0].phi   = M_PI;
+   thePlanets[0].z     = 0.0;
    thePlanets[0].eps   = eps;
    thePlanets[0].type  = PLPOINTMASS;
-  
-   thePlanets[1].M     = mu; 
-   thePlanets[1].vr    = 0.0; 
-   thePlanets[1].omega = om; 
-   thePlanets[1].vz    = 0.0; 
-   thePlanets[1].r     = R*(1.0-mu); 
-   thePlanets[1].phi   = 0.0; 
-   thePlanets[1].z     = 0.0; 
+
+   thePlanets[1].M     = mu;
+   thePlanets[1].vr    = 0.0;
+   thePlanets[1].omega = om + pomegadot;
+   thePlanets[1].vz    = 0.0;
+   thePlanets[1].r     = R*(1.0-mu);
+   thePlanets[1].phi   = 0.0;
+   thePlanets[1].z     = 0.0;
    thePlanets[1].eps   = eps;
    thePlanets[1].type  = PLPOINTMASS;
 
@@ -96,7 +96,7 @@ void movePlanets( struct planet * thePlanets , double t , double dt ){
          double dE = -ff/dfdE;
          E += dE;
          ff = root0( E , e ) - M;
-      } 
+      }
       double x = a*cos(E)-f;
       double y = b*sin(E);
       double R   = sqrt(x*x+y*y);

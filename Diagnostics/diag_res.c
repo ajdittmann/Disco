@@ -79,6 +79,25 @@ void get_diagnostics(const double *x, const double *prim, double *Qrz,
     double Fxyz[3];
     double Fp;
 
+    double r_p1 = theDomain->thePlanets[0].r;
+    double p_p1 = theDomain->thePlanets[0].phi;
+    double vr_p1 = theDomain->thePlanets[0].vr;
+    double vp_p1 = theDomain->thePlanets[0].omega*r_p1;
+    double cp1 = cos(p_p1);
+    double sp1 = sin(p_p1);
+    double vx_p1 = vr_p1*cp1 - vp_p1*sp1;
+    double vy_p1 = vr_p1*sp1 + vp_p1*cp1;
+
+    double r_p2 = theDomain->thePlanets[1].r;
+    double p_p2 = theDomain->thePlanets[1].phi;
+    double vr_p2 = theDomain->thePlanets[1].vr;
+    double vp_p2 = theDomain->thePlanets[1].omega*r_p2;
+    double cp2 = cos(p_p2);
+    double sp2 = sin(p_p2);
+    double vx_p2 = vr_p2*cp2 - vp_p2*sp2;
+    double vy_p2 = vr_p2*sp2 + vp_p2*cp2;
+
+
     planetaryForce( theDomain->thePlanets + 0, xyz, Fxyz);
     Fp = cosp * Fxyz[1] - sinp * Fxyz[0];
     Qrz[9] = rho * r * Fp;                              //Torque density from pl 0

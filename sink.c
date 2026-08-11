@@ -384,6 +384,48 @@ void cooling(const double *prim, double *cons,
       //cons[TAU] += rho*dV*( enCurrent - enTarget)*Tm1;	//N.B. Tm1 is in [-1 and 0]
     }
   }
+  if(coolType == COOL_POLY || coolType == COOL_POLY_RELAX)
+  {
+    //Beta-cooling
+    double press = prim[PPP];
+    double rho = prim[RHO];
+    double gm1 = gamma_law-1.0;
+    double beta = coolPar1;
+    double p0 = 1/(Mach*Mach);
+
+    double enTarget =  p0*pow(rho,gm1)/gm1;
+    double enCurrent = press/(rho*gm1);
+    double omtot = 0.0;
+
+    if(coolType == COOL_POLY_RELAX || enCurrent > enTarget)
+    {
+      double gx = xyz[0];
+      double gy = xyz[1];
+
+      int pi;
+      double px, py, dx, dy, mag;
+      double Fxyz[3];
+      for (pi=0; pi<Npl; pi++)
+      {
+        px = thePlanets[pi].xyz[0];
+        py = thePlanets[pi].xyz[1];
+
+        dx = gx-px;
+        dy = gy-py;
+        mag = dx*dx + dy*dy;
+        mag = sqrt(mag);
+        planetaryForce( thePlanets + pi, xyz, Fxyz);
+        omtot += sqrt(Fxyz[0]*Fxyz[0] + Fxyz[1]*Fxyz[1] + Fxyz[2]*Fxyz[2])/mag;
+      }
+      omtot = sqrt(omtot);
+
+      ////direct implementation of source term
+      cons[TAU] -= rho*(enCurrent - enTarget)*dt*dV*omtot/beta;
+      //integrate source term over timestep
+      //double Tm1 = expm1(-dt*omtot/beta);
+      //cons[TAU] += rho*dV*( enCurrent - enTarget)*Tm1;	//N.B. Tm1 is in [-1 and 0]
+    }
+  }
 }
 
 
