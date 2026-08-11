@@ -27,8 +27,7 @@ void initial( double * prim , double * x ){
 
    double Nu = nu*pow(fmax(x[0],1e-10), p);
 
-   //double depth = 1.0/(1.0 + 25.0*nu/(Mach*SQR(Mach*mu)));
-   double depth = 1.0/(1.0 + 3*25.0*nu/(Mach*SQR(Mach*mu)));
+   double depth = 1.0/(1.0 + 25.0*nu/(Mach*SQR(Mach*mu)));
    double width = pow( nu*SQR(SQR(SQR(Mach)))  , -0.2);
 
    double rho = pow(R, -p)*(1.0 - depth*exp(-SQR(SQR((R-1.0)/width))));
