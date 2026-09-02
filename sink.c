@@ -252,7 +252,7 @@ void sink_src(const double *prim, double *cons, const double *xp,
               f_acc = 0.0;
             }
           }
-          rate = sinkPar1 * f_acc * thePlanets[pi].omega;
+          rate = sinkPar1 * f_acc;       // using code units for rate
           rate = -expm1(-rate*dt) / dt;  // replace instantaneous rate with
                                          // avg rate over timestep, useful
                                          // when rate * dt ~ 1.0
@@ -260,8 +260,6 @@ void sink_src(const double *prim, double *cons, const double *xp,
 
           if(rate == 0.0 || f_acc == 0.0)
               continue;
-
-          //need to adapt code from Athena++ Cartesian setup....
 
           //delta clamped to [0, 1]
           double delta = fmax(fmin(sinkPar2, 1.0), 0.0);
@@ -317,7 +315,7 @@ void sink_src(const double *prim, double *cons, const double *xp,
           my_gas_track[PL_SNK_PX] += dM * vs_x;
           my_gas_track[PL_SNK_PY] += dM * vs_y;
           my_gas_track[PL_SNK_PZ] += dM * vs_z;
-          my_gas_track[PL_SNK_JZ] += dM * r*Vs_rpz[1];
+          my_gas_track[PL_SNK_JZ] += dM * Vs_rpz[1];
           my_gas_track[PL_SNK_SZ] += dM * (dx * vs_y - dy * vs_x);
           my_gas_track[PL_SNK_MX] += dM * dx;
           my_gas_track[PL_SNK_MY] += dM * dy;
